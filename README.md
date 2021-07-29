@@ -14,4 +14,4 @@ Kakao.sendLink('roomName', {
 }, 'custom')
 ```
 
-레포 전체를 다운받은뒤 압축풀고 kakaolink-main을 kakaolink로 변경후 폴더 전체를 global_modules에 옮겨주세요
+release에서 압축파일을 다운받고 압축해제 한 다음 폴더 전체를 global_modules에 옮겨주세요
