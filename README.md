@@ -11,7 +11,7 @@ Kakao.sendLink('roomName', {
     template_args: {
 
     }
-}, 'custom')
+}, 'custom') // or 'default' for not use custom template
 ```
 
 release에서 압축파일을 다운받고 압축해제 한 다음 폴더 전체를 global_modules에 옮겨주세요
