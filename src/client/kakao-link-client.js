@@ -53,7 +53,7 @@ module.exports = /** @class */ (function () {
         this.referer = getLoginRes.url().toExternalForm();
         this.cookies = getLoginRes.cookies();
 
-        this.cookies.put("TIARA", request({ method: 'GET', url: BasicConfig.getTiaraUrl }).cookie('TIARA')) //temp code
+        this.cookies.putAll(request({ method: 'GET', url: BasicConfig.getTiaraUrl }).cookies())
 
         const loginRes = getLoginRes.parse()
         const cryptoKey = loginRes.select('input[name=p]').attr('value') //CryptoJS Key(AES)
