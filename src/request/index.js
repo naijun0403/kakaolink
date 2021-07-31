@@ -2,6 +2,8 @@
  * Created by archethic on 2021/07/28
  */
 
+'use strict';
+
 /**
  * request by jsoup
  * @param {{ method: 'get' | 'GET' | 'post' | 'POST', url: string, data: {} | string, headers: {}, cookies: {}, followRedirect: boolean, referer: string, returnType: 'json' | 'text' | 'jsoup', dataType: 'data' | 'requestBody' }} obj requestObj

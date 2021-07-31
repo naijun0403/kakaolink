@@ -2,6 +2,8 @@
  * Created by archethic on 2021/07/28
  */
 
+'use strict';
+
  exports.BasicConfig = {
     getLoginUrl: "https://sharer.kakao.com/talk/friends/picker/link",
     getTiaraUrl: "https://stat.tiara.kakao.com/track?d=" + encodeURIComponent(JSON.stringify({"sdk":{"type":"WEB","version":"1.1.15"}})),

@@ -2,6 +2,8 @@
  * Created by archethic on 2021/07/28
  */
 
+'use strict';
+
 const { BasicConfig } = require("../config");
 const { KakaoLinkLoginError, CryptoError, AccessError, ApiKeyError, KakaoLinkSendError } = require("../error");
 const { request } = require("../request");

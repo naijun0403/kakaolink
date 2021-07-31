@@ -2,6 +2,8 @@
  * Created by archethic on 2021/07/28
  */
 
+'use strict';
+
 const customError = require("./custom-error");
 
 exports.KakaoLinkLoginError = customError('KakaoLinkLoginError'); //Login Error;
