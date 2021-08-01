@@ -19,4 +19,4 @@ release 또는 링크에서 압축파일을 다운받고 압축해제 한 다음
 ## download
 [github release](https://github.com/archethic/kakaolink/releases)
 
-[Developer Server](http://arthic.dev/download/kakaolink)
+[Developer Server](https://arthic.dev/download/kakaolink)
