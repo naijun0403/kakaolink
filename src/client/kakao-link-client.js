@@ -68,6 +68,7 @@ module.exports = /** @class */ (function () {
                 webview_v: '2',
                 email: CryptoJS.AES.encrypt(email, cryptoKey),
                 password: CryptoJS.AES.encrypt(password, cryptoKey),
+                stay_signed_in: 'true',
                 continue: decodeURIComponent(this.referer.split('=')[1]),
                 third: 'false',
                 k: 'true',
