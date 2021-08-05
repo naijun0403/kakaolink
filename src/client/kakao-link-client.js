@@ -48,8 +48,8 @@ module.exports = /** @class */ (function () {
 
         this.cookies.putAll(request({ method: 'GET', url: BasicConfig.getTiaraUrl }).cookies())
 
-        const loginRes = getLoginRes.parse()
-        const cryptoKey = loginRes.select('input[name=p]').attr('value') //CryptoJS Key(AES)
+        const loginRes = getLoginRes.parse();
+        const cryptoKey = loginRes.select('input[name=p]').attr('value'); //CryptoJS Key(AES)
 
         const getAuthRes = request({
             method: 'POST',
@@ -67,7 +67,7 @@ module.exports = /** @class */ (function () {
                 authenticity_token: loginRes.select('head > meta:nth-child(3)').attr('content') //이거 햇갈렸는데 csrfToken 이었음
             },
             cookies: this.cookies
-        })
+        });
 
         switch (JSON.parse(getAuthRes.body()).status) {
             case 0:
@@ -84,11 +84,11 @@ module.exports = /** @class */ (function () {
             default:
                 throw new KakaoLinkLoginError('Unknown Error with status: ' + JSON.parse(getAuthRes.body()).status);
                 break;
-        }
+        };
 
-        this.cookies.putAll(getAuthRes.cookies())
+        this.cookies.putAll(getAuthRes.cookies());
 
-        return true
+        return true;
     }
 
     /**
@@ -114,7 +114,7 @@ module.exports = /** @class */ (function () {
         });
 
         if(getLinkRes.statusCode() === 401) throw new ApiKeyError('Please check the apiKey again');
-        if(getLinkRes.statusCode() !== 200) throw new KakaoLinkSendError('Unknown Error with status: ' + getLinkRes.statusCode())
+        if(getLinkRes.statusCode() !== 200) throw new KakaoLinkSendError('Unknown Error with status: ' + getLinkRes.statusCode());
 
         this.cookies.putAll(getLinkRes.cookies());
 
@@ -184,7 +184,7 @@ module.exports = /** @class */ (function () {
         this.apiKey = null;
         this.cookies = {};
 
-        return true
+        return true;
     }
 
     return KakaoLinkClient;
