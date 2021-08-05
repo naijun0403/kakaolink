@@ -113,6 +113,7 @@ module.exports = /** @class */ (function () {
             }
         });
 
+        if(getLinkRes.statusCode() === 401) throw new ApiKeyError('Please check the apiKey again');
         if(getLinkRes.statusCode() !== 200) throw new KakaoLinkSendError('Unknown Error with status: ' + getLinkRes.statusCode())
 
         this.cookies.putAll(getLinkRes.cookies());
