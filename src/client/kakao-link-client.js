@@ -36,19 +36,11 @@ module.exports = /** @class */ (function () {
         if(typeof (email || password) !== 'string') throw new TypeError('Either email or password is not a String');
         if(this.apiKey === undefined || this.apiKey === null) throw new Error('apiKey not registered');
         const getLoginRes = request({
-            method: 'POST',
-            url: BasicConfig.getLoginUrl,
-            data: {
-                app_key: this.apiKey,
-                validation_action: 'default', //원래는 커스텀이지만, default로 해야 params에 {}들어감
-                validation_params: '{}',
-                ka: this.kakaoAgent,
-                lcba: '', //없어도 되는걸로 추정 하지만 호환성을 위해 추가
-            },
-            followRedirect: true
-        }) // redirect됨
+            method: 'GET',
+            url: BasicConfig.accountsUrl,
+            referer: 'https://accounts.kakao.com/'
+        });
 
-        if(getLoginRes.statusCode() === 401) throw new ApiKeyError('Please check the apiKey again');
         if(getLoginRes.statusCode() !== 200) throw new KakaoLinkLoginError('Login Failed with status: ' + getLoginRes.statusCode());
 
         this.referer = getLoginRes.url().toExternalForm();
