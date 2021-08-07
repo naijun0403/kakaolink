@@ -100,7 +100,9 @@ module.exports = /** @class */ (function () {
      * @param {'custom' | 'default'} type send Type
      */
     KakaoLinkClient.prototype.sendLink = function (room, obj, type) {
-        if(!obj.link_ver) obj["link_ver"] = '4.0';
+        if(type !== 'default') {
+            if(!obj['link_ver']) obj['link_ver'] = '4.0'
+        }
         const getLinkRes = request({
             method: 'POST',
             url: BasicConfig.getLoginUrl,
