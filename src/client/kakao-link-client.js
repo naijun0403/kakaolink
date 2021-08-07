@@ -141,6 +141,7 @@ module.exports = /** @class */ (function () {
             if(x.title === room) {
                 id = x.id;
                 count = x.memberCount;
+                return;
             }
         });
 
