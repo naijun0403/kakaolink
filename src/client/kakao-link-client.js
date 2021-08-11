@@ -23,7 +23,7 @@ module.exports = /** @class */ (function () {
         
         this.apiKey = apiKey;
         this.kakaoAgent = 'sdk/1.25.7 os/javascript lang/ko-kr device/MacIntel origin/' + encodeURIComponent(url || 'https://arthic.dev');
-        this.cookies = {};
+        this.cookies = new java.util.LinkedHashMap();
     }
 
     /**
@@ -183,7 +183,7 @@ module.exports = /** @class */ (function () {
         if(getLogout.statusCode() !== 200) throw new Error('Logout Failed with status: ' + getLogout.statusCode());
         
         this.apiKey = null;
-        this.cookies = {};
+        this.cookies = new java.util.LinkedHashMap();
 
         return true;
     }
