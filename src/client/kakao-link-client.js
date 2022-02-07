@@ -15,6 +15,7 @@ module.exports = /** @class */ (function () {
      * @param {String} apiKey JSKey
      * @param {String} url Web Platform Url
      * @param {JSON} cookies don't use it
+     * @throws {TypeError}
      */
     function KakaoLinkClient(apiKey, url) {
         if(typeof (apiKey || url) !== 'string') throw new TypeError('Either apiKey or url is not a String');
@@ -24,6 +25,7 @@ module.exports = /** @class */ (function () {
         this.apiKey = apiKey;
         this.kakaoAgent = 'sdk/1.25.7 os/javascript lang/ko-kr device/MacIntel origin/' + encodeURIComponent(url || 'https://arthic.dev');
         this.cookies = new java.util.LinkedHashMap();
+        this.isLogin = false;
     }
 
     /**
@@ -31,6 +33,7 @@ module.exports = /** @class */ (function () {
      * @param {String} email Kakao Accounts Email
      * @param {String} password Kakao Accounts Password
      * @returns {boolean | Error}
+     * @throws {KakaoLinkLoginError}
      */
     KakaoLinkClient.prototype.login = function (email, password) {
         if(typeof (email || password) !== 'string') throw new TypeError('Either email or password is not a String');
@@ -73,10 +76,10 @@ module.exports = /** @class */ (function () {
             case 0:
                 break;
             case -484:
-                throw new CryptoError('CryptoError Contact to Developer');
+                throw new CryptoError('Encryption failed.');
                 break;
             case -435:
-                throw new AccessError('Please Access Allow Country');
+                throw new AccessError('The country you are trying to access is blocked.');
                 break;
             case -450:
                 throw new KakaoLinkLoginError('Email or password is incorrect');
@@ -88,6 +91,7 @@ module.exports = /** @class */ (function () {
 
         this.cookies.putAll(getAuthRes.cookies());
 
+        this.isLogin = true;
         return true;
     }
 
@@ -98,8 +102,10 @@ module.exports = /** @class */ (function () {
      * content: { title: string, description: string, image_url: string, link: any }, social: { likeCount: number, commentCount: number, shareCount: number }, 
      * buttons: [{title: string, link: { web_url: string, moblie_web_url: string }}] } }} obj Kakao Send Info
      * @param {'custom' | 'default'} type send Type
+     * @throws {KakaoLinkSendError}
      */
     KakaoLinkClient.prototype.sendLink = function (room, obj, type) {
+        if (!this.isLogin) throw new KakaoLinkSendError('You cannot access the KakaoLink API before logging in.')
         if(!obj['link_ver']) obj['link_ver'] = '4.0'
         const getLinkRes = request({
             method: 'POST',
@@ -134,6 +140,8 @@ module.exports = /** @class */ (function () {
         });
 
         let id, count = null;
+
+        if (roomData === undefined) throw new KakaoLinkSendError('The room information could not be retrieved for an unknown reason.')
 
         roomData["chats"].map(x => {
             if(x.title === room) {
@@ -171,8 +179,10 @@ module.exports = /** @class */ (function () {
     /**
      * logout
      * @returns {Boolean | Error}
+     * @throws {Error}
      */
     KakaoLinkClient.prototype.logout = function () {
+        if (!this.isLogin) return true;
         const getLogout = request({
             method: 'GET',
             url: BasicConfig.logoutUrl,
