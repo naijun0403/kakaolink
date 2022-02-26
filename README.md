@@ -20,3 +20,9 @@ Kakao.sendLink('roomName', {
 [github release](https://github.com/archethic/kakaolink/releases)
 
 [Developer Server](https://arthic.dev/kakaolink.zip)
+
+## error
+[error.md](https://github.com/archethic/kakaolink/blob/main/doc/user/error.md)를 참고해주세요
+
+## migration
+[migration.md](https://github.com/archethic/kakaolink/blob/main/doc/user/migration.md)를 참고해주세요
