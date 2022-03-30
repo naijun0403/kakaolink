@@ -34,7 +34,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
     KakaoLinkClient.prototype.login = function (email, password) {
         if(typeof (email || password) !== 'string') throw new TypeError('Either email or password is not a String');
         if(this.apiKey === undefined || this.apiKey === null) throw new Error('apiKey not registered');
-        const getLoginRes = request({
+        var getLoginRes = request({
             method: 'GET',
             url: BasicConfig.accountsUrl,
             referer: 'https://accounts.kakao.com/'
@@ -47,10 +47,10 @@ exports.KakaoLinkClient = /** @class */ (function () {
 
         this.cookies.putAll(request({ method: 'GET', url: BasicConfig.getTiaraUrl }).cookies())
 
-        const loginRes = getLoginRes.parse();
-        const cryptoKey = loginRes.select('input[name=p]').attr('value'); //CryptoJS Key(AES)
+        var loginRes = getLoginRes.parse();
+        var cryptoKey = loginRes.select('input[name=p]').attr('value'); //CryptoJS Key(AES)
 
-        const getAuthRes = request({
+        var getAuthRes = request({
             method: 'POST',
             url: BasicConfig.getAuthUrl,
             referer: this.referer,
@@ -103,7 +103,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
     KakaoLinkClient.prototype.sendLink = function (room, obj, type) {
         if (!this.isLogin) throw new KakaoLinkSendError('You cannot access the KakaoLink API before logging in.')
         if(!obj['link_ver']) obj['link_ver'] = '4.0'
-        const getLinkRes = request({
+        var getLinkRes = request({
             method: 'POST',
             url: BasicConfig.getLoginUrl,
             cookies: this.cookies,
@@ -120,10 +120,10 @@ exports.KakaoLinkClient = /** @class */ (function () {
 
         this.cookies.putAll(getLinkRes.cookies());
 
-        const linkRes = getLinkRes.parse();
-        const LinkParams = linkRes.select('#validatedTalkLink').attr('value');
-        const csrfToken = linkRes.select('div').last().attr('ng-init').slice(7).replace("'", '');
-        const roomData = request({
+        var linkRes = getLinkRes.parse();
+        var LinkParams = linkRes.select('#validatedTalkLink').attr('value');
+        var csrfToken = linkRes.select('div').last().attr('ng-init').slice(7).replace("'", '');
+        var roomData = request({
             method: 'GET',
             url: BasicConfig.getChatData,
             cookies: this.cookies,
@@ -135,7 +135,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
             returnType: 'json'
         });
 
-        let id, count = null;
+        var id, count = null;
 
         if (roomData === undefined) throw new KakaoLinkSendError('The room information could not be retrieved for an unknown reason.')
 
@@ -149,7 +149,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
 
         if(id === null || count === null) throw new KakaoLinkSendError('Room name '+ room +' not found. please check again');
         
-        const sendLink = request({
+        var sendLink = request({
             method: 'POST',
             url: BasicConfig.sendLinkUrl,
             referer: BasicConfig.getLoginUrl,
@@ -179,7 +179,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
      */
     KakaoLinkClient.prototype.logout = function () {
         if (!this.isLogin) return true;
-        const getLogout = request({
+        var getLogout = request({
             method: 'GET',
             url: BasicConfig.logoutUrl,
             referer: 'https://accounts.kakao.com/',
@@ -201,7 +201,7 @@ var request = function (obj) {
     obj.method = org.jsoup.Connection.Method[obj.method.toUpperCase()];
     if(!/^http(s)?\:\/\/.+/.test(obj.url)) throw new Error(obj.url + " is not a valid url");
 
-    let req = org.jsoup.Jsoup.connect(obj.url).method(obj.method);
+    var req = org.jsoup.Jsoup.connect(obj.url).method(obj.method);
 
     if(!obj.dataType) obj.dataType = 'data';
     if(obj.dataType === 'data') {
@@ -232,14 +232,14 @@ var CustomError = /** @class */ function (ErrorName) {
         this.message = message;
     }
     function CustomErrorType(message) {
-        Error.captureStackTrace(this, this.constructor);
+        Error.captureStackTrace(this, this.varructor);
         this.message = message;
         errForm && errForm.call(this, arguments[0]);
     }
 
     CustomErrorType.prototype = new Error();
     CustomErrorType.prototype.name = ErrorName;
-    CustomErrorType.prototype.constructor = CustomErrorType;
+    CustomErrorType.prototype.varructor = CustomErrorType;
     
     return CustomErrorType;
 }
