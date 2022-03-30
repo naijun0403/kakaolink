@@ -19,7 +19,7 @@ Kakao.sendLink('roomName', {
 ## download
 [github release](https://github.com/archethic/kakaolink/releases)
 
-[Developer Server](https://arthic.dev/kakaolink.zip)
+[Developer Server](https://arthic.dev/kakaolink.zip) // 구버전
 
 ## error
 [error.md](https://github.com/archethic/kakaolink/blob/main/doc/user/error.md)를 참고해주세요
