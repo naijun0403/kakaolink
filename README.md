@@ -26,3 +26,6 @@ Kakao.sendLink('roomName', {
 
 ## migration
 [migration.md](https://github.com/archethic/kakaolink/blob/main/doc/user/migration.md)를 참고해주세요
+
+## 채팅 자동응답 봇
+[kakaolink.js](https://github.com/archethic/kakaolink/blob/main/dist/kakaolink.js)를 넣어주시길 바랍니다. 이는 폴더가 아닌 파일모듈입니다.
