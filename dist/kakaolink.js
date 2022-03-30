@@ -232,14 +232,14 @@ var CustomError = /** @class */ function (ErrorName) {
         this.message = message;
     }
     function CustomErrorType(message) {
-        Error.captureStackTrace(this, this.varructor);
+        Error.captureStackTrace(this, this.constructor);
         this.message = message;
         errForm && errForm.call(this, arguments[0]);
     }
 
     CustomErrorType.prototype = new Error();
     CustomErrorType.prototype.name = ErrorName;
-    CustomErrorType.prototype.varructor = CustomErrorType;
+    CustomErrorType.prototype.constructor = CustomErrorType;
     
     return CustomErrorType;
 }
