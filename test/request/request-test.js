@@ -22,3 +22,14 @@
  * SOFTWARE.
  */
 
+const {RequestClient} = require("../../src/request/request-client");
+
+let client = new RequestClient('example.com');
+client.request(
+    'POST',
+    '/test',
+    {},
+    {}
+).then(e => {
+    e.body();
+})

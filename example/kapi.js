@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2022 naijun
+ * Copyright (c) 2021 naijun0403
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,3 +22,35 @@
  * SOFTWARE.
  */
 
+const { KakaoApiService, KakaoLinkClient } = require('kakaolink')
+
+const client = BotProject.getClient();
+
+const linkClient = new KakaoLinkClient();
+
+KakaoApiService.createService().login({
+    email: 'email',
+    password: 'password',
+    keepLogin: true,
+    apiKey: 'apiKey',
+    url: 'url'
+}).then(e => {
+    linkClient.login(e);
+}).catch(e => {
+    console.error(e)
+});
+
+client.on('message', (data) => {
+    if (data.message === '!카링테스트') {
+        linkClient.sendLink(data.room.name, {
+            template_id: 12345,
+            template_args: {
+
+            }
+        }, 'custom').then(e => {
+            data.room.send('카링 보내기 성공!')
+        }).catch(e => {
+            data.room.send(e);
+        })
+    }
+})

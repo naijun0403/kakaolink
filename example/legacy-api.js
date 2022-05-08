@@ -1,20 +1,55 @@
 /**
- * Created by archethic on 2021/08/06
+ * MIT License
+ *
+ * Copyright (c) 2021 naijun0403
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
-const { KakaoLinkClient } = require('kakaolink');
-const Kakao = new KakaoLinkClient('jsKey', 'url');
+const { KakaoApiService, KakaoLinkClient } = require('kakaolink')
 
-Kakao.login('email', 'password');
+const linkClient = new KakaoLinkClient();
+
+KakaoApiService.createService().login({
+    email: 'email',
+    password: 'password',
+    keepLogin: true,
+    apiKey: 'apiKey',
+    url: 'url'
+}).then(e => {
+    linkClient.login(e);
+}).catch(e => {
+    console.error(e)
+});
 
 function response(room, msg, sender, isGroupChat, replier, imageDB, packageName) {
     if(msg === '!카카오링크') {
-        Kakao.sendLink('roomName', {
-            template_id: 00000,
+        linkClient.sendLink('roomName', {
+            template_id: 12345,
             template_args: {
-        
+
             }
-        }, 'custom')
+        }, 'custom').then(e => {
+            replier.reply('카링 보내기 성공!')
+        }).catch(e => {
+            replier.reply(e);
+        })
     }
 }
 
