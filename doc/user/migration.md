@@ -56,7 +56,7 @@ Kakao.sendLink('roomName', {
     template_id: 12345,
     template_args: {
 
-    }}, 'custom')
+    }}, 'custom').then().catch()
 ```
 
 3번째에 있는 타입은 해당 모듈의 경우 커스텀 템플릿을 사용하실꺼면 생략해도 무방합니다.
