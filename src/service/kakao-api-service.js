@@ -44,6 +44,8 @@ exports.KakaoApiService = /** @class */ (function () {
 
         if (!data.hasOwnProperty('keepLogin')) data.keepLogin = true;
 
+        if (!/^http(s)?:\/\/.+/.test(data.url)) throw new TypeError("The url does not match the web url format");
+
         return new Promise((resolve, reject) => {
             this.client.request(
                 'GET',
@@ -55,7 +57,7 @@ exports.KakaoApiService = /** @class */ (function () {
                     Referer: 'https://accounts.kakao.com/'
                 }
             ).then(e => {
-                if (e.statusCode() !== 200) reject('Login Failed with status: ' + e.statusCode());
+                if (e.statusCode() !== 200) reject('For an unknown reason, the information required to log in could not be retrieved with status: ' + e.statusCode());
 
                 let referer = e.url().toExternalForm();
 

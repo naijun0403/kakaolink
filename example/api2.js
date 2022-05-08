@@ -26,7 +26,7 @@ const bot = BotManager.getCurrentBot();
 
 const { KakaoApiService, KakaoLinkClient } = require('kakaolink')
 
-const linkClient = new KakaoLinkClient();
+const Kakao = new KakaoLinkClient();
 
 KakaoApiService.createService().login({
     email: 'email',
@@ -35,14 +35,14 @@ KakaoApiService.createService().login({
     apiKey: 'apiKey',
     url: 'url'
 }).then(e => {
-    linkClient.login(e);
+    Kakao.login(e);
 }).catch(e => {
     console.error(e)
 });
 
 function onMessage(msg) {
     if(msg.content === '!카카오링크') {
-        linkClient.sendLink('roomName', {
+        Kakao.sendLink('roomName', {
             template_id: 12345,
             template_args: {
 

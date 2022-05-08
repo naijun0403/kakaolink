@@ -26,7 +26,7 @@ const { KakaoApiService, KakaoLinkClient } = require('kakaolink')
 
 const client = BotProject.getClient();
 
-const linkClient = new KakaoLinkClient();
+const Kakao = new KakaoLinkClient();
 
 KakaoApiService.createService().login({
     email: 'email',
@@ -35,14 +35,14 @@ KakaoApiService.createService().login({
     apiKey: 'apiKey',
     url: 'url'
 }).then(e => {
-    linkClient.login(e);
+    Kakao.login(e);
 }).catch(e => {
     console.error(e)
 });
 
 client.on('message', (data) => {
     if (data.message === '!카링테스트') {
-        linkClient.sendLink(data.room.name, {
+        Kakao.sendLink(data.room.name, {
             template_id: 12345,
             template_args: {
 
