@@ -68,7 +68,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
             this.Promise = /** @type PromiseConstructor */ Promise;
         }
 
-        return new Promise((resolve, reject) => {
+        return new this.Promise((resolve, reject) => {
             this.client.request(
                 'POST',
                 '/talk/friends/picker/link',
