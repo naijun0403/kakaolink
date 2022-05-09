@@ -46,7 +46,13 @@ exports.KakaoApiService = /** @class */ (function () {
 
         if (!/^http(s)?:\/\/.+/.test(data.url)) throw new TypeError("The url does not match the web url format");
 
-        return new Promise((resolve, reject) => {
+        if (!isExistsPromise()) {
+            this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise').Promise;
+        } else {
+            this.Promise = /** @type PromiseConstructor */ Promise;
+        }
+
+        return new this.Promise((resolve, reject) => {
             this.client.request(
                 'GET',
                 '/login',

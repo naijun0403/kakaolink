@@ -62,7 +62,11 @@ exports.KakaoLinkClient = /** @class */ (function () {
         if (!this.isLogin) throw new Error('You cannot access the KakaoLink API before logging in.')
         if (!data.hasOwnProperty('link_ver')) data['link_ver'] = '4.0';
 
-        if (!isExistsPromise()) this.Promise = require('../polyfill/promise').Promise;
+        if (!isExistsPromise()) {
+            this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise').Promise;
+        } else {
+            this.Promise = /** @type PromiseConstructor */ Promise;
+        }
 
         return new Promise((resolve, reject) => {
             this.client.request(
