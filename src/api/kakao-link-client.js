@@ -63,7 +63,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
         if (!data.hasOwnProperty('link_ver')) data['link_ver'] = '4.0';
 
         if (!isExistsPromise()) {
-            this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise').Promise;
+            this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise');
         } else {
             this.Promise = /** @type PromiseConstructor */ Promise;
         }

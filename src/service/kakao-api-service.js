@@ -37,8 +37,6 @@ exports.KakaoApiService = /** @class */ (function () {
      * @param data {{email:string;password:string;keepLogin:boolean;url:string;apiKey:string;}}
      */
     KakaoApiService.prototype.login = function (data) {
-        if (!isExistsPromise()) this.Promise = require('../polyfill/promise').Promise;
-
         if (!data.hasOwnProperty('email') || !data.hasOwnProperty('password')) throw new Error('No email or password entered.');
         if (!data.hasOwnProperty('url') || !data.hasOwnProperty('apiKey')) throw new Error('No url or apiKey entered.');
 
@@ -47,7 +45,7 @@ exports.KakaoApiService = /** @class */ (function () {
         if (!/^http(s)?:\/\/.+/.test(data.url)) throw new TypeError("The url does not match the web url format");
 
         if (!isExistsPromise()) {
-            this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise').Promise;
+            this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise');
         } else {
             this.Promise = /** @type PromiseConstructor */ Promise;
         }

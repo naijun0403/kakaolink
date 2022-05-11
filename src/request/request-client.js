@@ -23,6 +23,7 @@
  */
 
 const qs = require('../modules/qs')
+const {isExistsPromise} = require("../util/is-promise");
 
 /**
  * HTTP Request Client
@@ -48,7 +49,14 @@ exports.RequestClient = /** @class */ (function () {
         data,
         headers
     ) {
-        return new Promise((resolve, reject) => {
+
+        if (!isExistsPromise()) {
+            this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise');
+        } else {
+            this.Promise = /** @type PromiseConstructor */ Promise;
+        }
+
+        return new this.Promise((resolve, reject) => {
             try {
                 method = method || 'GET';
                 path = path || '/';
