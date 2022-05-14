@@ -88,8 +88,8 @@ exports.KakaoApiService = /** @class */ (function () {
                         {
                             os: 'web',
                             webview_v: '2',
-                            email: CryptoJS.AES.encrypt(data.email, cryptoKey).toString(),
-                            password: CryptoJS.AES.encrypt(data.password, cryptoKey).toString(),
+                            email: CryptoJS.AES.encrypt(String(data.email), String(cryptoKey)).toString(),
+                            password: CryptoJS.AES.encrypt(String(data.password), String(cryptoKey)).toString(),
                             stay_signed_in: data.keepLogin.toString(),
                             continue: decodeURIComponent(referer.split('=')[1]),
                             third: 'false',

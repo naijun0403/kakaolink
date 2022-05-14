@@ -77,7 +77,11 @@ exports.RequestClient = /** @class */ (function () {
                     request = org.jsoup.Jsoup.connect('https://' + this.host + path).method(method);
 
                     if (typeof data === "string") request.requestBody(data);
-                    else request.data(data)
+                    else {
+                        Object.keys(data).forEach(e => {
+                            request.data(e, data[e]);
+                        });
+                    }
                 }
 
                 request.headers(headers);
