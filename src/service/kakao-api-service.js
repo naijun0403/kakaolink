@@ -128,7 +128,11 @@ exports.KakaoApiService = /** @class */ (function () {
 
                         resolve(cookies);
                     })
+                }).catch(err => {
+                    reject(err);
                 })
+            }).catch(err => {
+                reject(err);
             })
         })
     }

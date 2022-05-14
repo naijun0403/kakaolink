@@ -135,6 +135,8 @@ exports.KakaoLinkClient = /** @class */ (function () {
                 }).catch(err => {
                     reject(err);
                 })
+            }).catch(err => {
+                reject(err);
             })
         });
     }
