@@ -52,5 +52,3 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName)
         })
     }
 }
-
-const logoutKaling = () => Kakao.logout(); //please don't use this
