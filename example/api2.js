@@ -37,7 +37,7 @@ KakaoApiService.createService().login({
 }).then(e => {
     Kakao.login(e);
 }).catch(e => {
-    console.error(e)
+    Log.e(e);
 });
 
 function onMessage(msg) {

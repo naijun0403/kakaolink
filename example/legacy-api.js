@@ -35,7 +35,7 @@ KakaoApiService.createService().login({
 }).then(e => {
     Kakao.login(e);
 }).catch(e => {
-    console.error(e)
+    Log.e(e);
 });
 
 function response(room, msg, sender, isGroupChat, replier, imageDB, packageName) {
