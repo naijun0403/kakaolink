@@ -38,6 +38,11 @@ exports.KakaoDevClient = /** @class */ (function () {
         }
     }
 
+    /**
+     * Login (set Cookies)
+     *
+     * @param cookies
+     */
     KakaoDevClient.prototype.login = function (cookies) {
         this.cookies = cookies;
         this.client.setCookies(cookies);
@@ -51,6 +56,11 @@ exports.KakaoDevClient = /** @class */ (function () {
         });
     }
 
+    /**
+     * get AppList
+     *
+     * @return {Promise<Record<string, unknown>>}
+     */
     KakaoDevClient.prototype.getAppList = function () {
         if (this.devToken === undefined || !this.isLogin) throw new Error('You cannot access the KakaoLink API before logging in.');
 
@@ -74,12 +84,24 @@ exports.KakaoDevClient = /** @class */ (function () {
         })
     }
 
+    /**
+     * Update App Information
+     * @param {number} appId
+     * @param {{name: string; company: string}} obj
+     * @return {Promise<Record<string, unknown>>}
+     */
     KakaoDevClient.prototype.updateApp = function (appId, obj) {
+        if (!obj.hasOwnProperty('name') || !obj.hasOwnProperty('company')) throw new Error('No name or company entered.');
+
         return new this.Promise((resolve, reject) => {
+            let data = { name: 'UPDATE_PARTIAL' };
+            data['payload.name'] = obj['name'];
+            data['payload.company'] = obj['company'];
+
             this.client.request(
                 'POST',
                 '/_api/admin-api/app/' + appId,
-                obj,
+                data,
                 {
                     Referer: 'https://developers.kakao.com/console/app/' + appId + '/config',
                     'KD-CLIENT-TOKEN': this.devToken
@@ -94,6 +116,13 @@ exports.KakaoDevClient = /** @class */ (function () {
         })
     }
 
+    /**
+     * request Data with query
+     * @param {string} method
+     * @param {string} query
+     * @param {string} variables
+     * @return {Promise<unknown>}
+     */
     KakaoDevClient.prototype.requestData = function (method, query, variables) {
         if (this.devToken === undefined || !this.isLogin) throw new Error('You cannot access the KakaoLink API before logging in.');
 
@@ -120,6 +149,11 @@ exports.KakaoDevClient = /** @class */ (function () {
         })
     }
 
+    /**
+     * get Developer Token (personal)
+     *
+     * @return {Promise<string>}
+     */
     KakaoDevClient.prototype.getDeveloperToken = function () {
         if (!this.isLogin) throw new Error('You cannot access the KakaoLink API before logging in.');
 
@@ -144,6 +178,11 @@ exports.KakaoDevClient = /** @class */ (function () {
         });
     }
 
+    /**
+     * get KDT Cookie
+     *
+     * @return {Promise<boolean>}
+     */
     KakaoDevClient.prototype.getKdt = function () {
         if (!this.isLogin) throw new Error('You cannot access the KakaoLink API before logging in.');
 

@@ -34,6 +34,7 @@ exports.KakaoApiService = /** @class */ (function () {
 
     /**
      * login
+     *
      * @param data {{email:string;password:string;keepLogin:boolean;url:string;apiKey:string;}}
      */
     KakaoApiService.prototype.login = function (data) {
@@ -137,6 +138,11 @@ exports.KakaoApiService = /** @class */ (function () {
         })
     }
 
+    /**
+     * create Service
+     *
+     * @return {KakaoApiService}
+     */
     KakaoApiService.createService = function () {
         return new KakaoApiService();
     }
