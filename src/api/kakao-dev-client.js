@@ -42,11 +42,13 @@ exports.KakaoDevClient = /** @class */ (function () {
         this.cookies = cookies;
         this.client.setCookies(cookies);
         this.isLogin = true;
-        this.getDeveloperToken().then(e => {
-            this.devToken = e;
-        }).catch(err => {
-            throw new Error(err);
-        })
+        this.getKdt().then(_ => {
+            this.getDeveloperToken().then(e => {
+                this.devToken = e;
+            }).catch(err => {
+                throw new Error(err);
+            })
+        });
     }
 
     KakaoDevClient.prototype.getAppList = function () {
@@ -72,7 +74,27 @@ exports.KakaoDevClient = /** @class */ (function () {
         })
     }
 
-    KakaoDevClient.prototype.requestData = function (method, query) {
+    KakaoDevClient.prototype.updateApp = function (appId, obj) {
+        return new this.Promise((resolve, reject) => {
+            this.client.request(
+                'POST',
+                '/_api/admin-api/app/' + appId,
+                obj,
+                {
+                    Referer: 'https://developers.kakao.com/console/app/' + appId + '/config',
+                    'KD-CLIENT-TOKEN': this.devToken
+                }
+            ).then(e => {
+                if (e.statusCode() !== 200) reject('The request to update app failed for an unknown reason with status: ' + e.statusCode());
+
+                resolve(JSON.parse(e.body()));
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
+
+    KakaoDevClient.prototype.requestData = function (method, query, variables) {
         if (this.devToken === undefined || !this.isLogin) throw new Error('You cannot access the KakaoLink API before logging in.');
 
         return new this.Promise((resolve, reject) => {
@@ -81,7 +103,7 @@ exports.KakaoDevClient = /** @class */ (function () {
                 '/_api/graphql',
                 JSON.stringify({
                     operationName: method,
-                    variables: {},
+                    variables: Object.assign({}, variables),
                     query: 'query ' + method + ' ' + query
                 }),
                 {
@@ -120,6 +142,25 @@ exports.KakaoDevClient = /** @class */ (function () {
                 reject(err);
             })
         });
+    }
+
+    KakaoDevClient.prototype.getKdt = function () {
+        if (!this.isLogin) throw new Error('You cannot access the KakaoLink API before logging in.');
+
+        return new this.Promise((resolve, reject) => {
+            this.client.request(
+                'GET',
+                '/login',
+                {},
+                {
+                    Referer: 'https://accounts.kakao.com/',
+                }
+            ).then(e => {
+                resolve(true);
+            }).catch(err => {
+                reject(err);
+            })
+        })
     }
 
     return KakaoDevClient;
