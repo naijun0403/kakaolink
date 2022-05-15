@@ -1,7 +1,7 @@
-/**
+/*
  * MIT License
  *
- * Copyright (c) 2022 naijun
+ * Copyright (c) 2021 naijun0403
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,32 @@
  * SOFTWARE.
  */
 
-exports.KakaoApiService = require('./src/service/kakao-api-service').KakaoApiService;
-exports.KakaoLinkClient = require('./src/api/kakao-link-client').KakaoLinkClient;
-exports.TiaraFactory = require('./src/tiara/index').TiaraFactory;
-exports.KakaoDevClient = require('./src/api/kakao-dev-client').KakaoDevClient;
+const { KakaoApiService, KakaoDevClient } = require('../index')
+
+const DevClient = new KakaoDevClient();
+
+KakaoApiService.createService().login({
+    email: 'email',
+    password: 'password',
+    keepLogin: true,
+    apiKey: 'apiKey',
+    url: 'url'
+}).then(e => {
+    DevClient.login(e);
+}).catch(e => {
+    Log.e(e);
+});
+
+function response(room, msg, sender, isGroupChat, replier, imageDB, packageName) {
+    if (msg === '!카링변경') {
+        const id = DevClient.getAppList()['data']['members'][0]['app']['id'];
+        DevClient.updateApp(id, {
+            name: '앱 이름',
+            company: 'company 이름'
+        }).then(e => {
+            replier.reply('변경 완료');
+        }).catch(err => {
+            replier.reply(err);
+        })
+    }
+}
