@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-const { KakaoApiService, KakaoDevClient } = require('../index')
+const { KakaoApiService, KakaoDevClient } = require('kakaolink')
 
 const DevClient = new KakaoDevClient();
 
