@@ -76,8 +76,8 @@ exports.KakaoDevClient = /** @class */ (function () {
                 '            }\n' +
                 '        }\n' +
                 '    }\n' +
-                '}').then(e => {
-                    resolve(e);
+                '}', {}).then(e => {
+                    resolve(e['data']['members']);
             }).catch(err => {
                 reject(err);
             })
@@ -86,6 +86,7 @@ exports.KakaoDevClient = /** @class */ (function () {
 
     /**
      * Update App Information
+     *
      * @param {number} appId
      * @param {{name: string; company: string}} obj
      * @return {Promise<Record<string, unknown>>}
@@ -118,9 +119,10 @@ exports.KakaoDevClient = /** @class */ (function () {
 
     /**
      * request Data with query
+     *
      * @param {string} method
      * @param {string} query
-     * @param {string} variables
+     * @param {Record<string, unknown>} variables
      * @return {Promise<unknown>}
      */
     KakaoDevClient.prototype.requestData = function (method, query, variables) {
