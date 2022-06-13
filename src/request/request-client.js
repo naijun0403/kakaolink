@@ -87,7 +87,11 @@ exports.RequestClient = /** @class */ (function () {
                 request.headers(headers);
                 request.cookies(this.cookies);
 
-                const res = request.ignoreContentType(true).ignoreHttpErrors(true).execute();
+                const res = request
+                    .ignoreContentType(true)
+                    .ignoreHttpErrors(true)
+                    .followRedirects(false)
+                    .execute();
                 this.cookies.putAll(res.cookies());
 
                 resolve(res);
