@@ -168,7 +168,7 @@ exports.KakaoDevClient = /** @class */ (function () {
                     Referer: 'https://developers.kakao.com'
                 }
             ).then(e => {
-                const data = JSON.parse(e.body().match(/SERVER_DATA = (.*);/s)[1]);
+                const data = JSON.parse(e.body().match(/SERVER_DATA = ([^]*);/)[1]);
                 const devToken = data['KO-DEVELOPER-TOKEN'];
                 if (devToken === undefined) {
                     reject('Failed to fetch developer token for unknown reason.');
