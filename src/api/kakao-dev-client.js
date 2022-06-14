@@ -48,8 +48,9 @@ exports.KakaoDevClient = /** @class */ (function () {
         this.client.setCookies(cookies);
         this.isLogin = true;
         this.getKdt().then(_ => {
-            this.getDeveloperToken().then(e => {
-                this.devToken = e;
+            this.getDeveloperData().then(e => {
+                this.devToken = e.devToken;
+                this.devId = e.devId;
             }).catch(err => {
                 throw new Error(err);
             })
@@ -62,7 +63,7 @@ exports.KakaoDevClient = /** @class */ (function () {
      * @return {Promise<Record<string, unknown>>}
      */
     KakaoDevClient.prototype.getAppList = function () {
-        if (this.devToken === undefined || !this.isLogin) throw new Error('You cannot access the KakaoLink API before logging in.');
+        if (this.devToken === undefined || !this.isLogin) throw new Error('You cannot access the KakaoDev API before logging in.');
 
         return new this.Promise((resolve, reject) => {
             this.requestData('GET_APPS', '{\n' +
@@ -78,6 +79,75 @@ exports.KakaoDevClient = /** @class */ (function () {
                 '    }\n' +
                 '}', {}).then(e => {
                     resolve(e['data']['members']);
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
+
+    /**
+     * Create App
+     * 
+     * @param {{name: string; company: string}} obj 
+     * @returns {Promise<Record<string, unknown>>}
+     */
+    KakaoDevClient.prototype.createApp = function (obj) {
+        if (!obj.hasOwnProperty('name') || !obj.hasOwnProperty('company')) throw new Error('No name or company entered.');
+
+        return new this.Promise((resolve, reject) => {
+            let data = { name: 'CREATE_WITH_DEFAULT' };
+            data['payload.owner_developer_id'] = Number(this.devId);
+            data['payload.name'] = obj['name'];
+            data['payload.company'] = obj['company'];
+
+            this.client.request(
+                'POST',
+                '/_api/admin-api/app',
+                data,
+                {
+                    Referer: 'https://developers.kakao.com/console/app',
+                    'KD-CLIENT-TOKEN': this.devToken
+                }
+            ).then(e => {
+                if (e.statusCode() !== 200) reject('The request to update app failed for an unknown reason with status: ' + e.statusCode());
+
+                resolve(JSON.parse(e.body()));
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
+
+    /**
+     * update App platform web urls
+     * 
+     * @param {number} appId
+     * @param {string[]} urls
+     * @returns {Promise<Record<string, unknown>>}
+     */
+     KakaoDevClient.prototype.updateWebUrls = function (appId, urls) {
+        urls = urls || [];
+
+        return new this.Promise((resolve, reject) => {
+            const data = {
+                name: 'UPDATE',
+                payload: {
+                    web_site_url: urls
+                }
+            };
+
+            this.client.request(
+                'POST',
+                '/_api/admin-api/app/' + appId + '/platform/web',
+                JSON.stringify(data),
+                {
+                    Referer: 'https://developers.kakao.com/console/app/' + appId + '/config/platform',
+                    'KD-CLIENT-TOKEN': this.devToken
+                }
+            ).then(e => {
+                if (e.statusCode() !== 200) reject('The request to update app failed for an unknown reason with status: ' + e.statusCode());
+
+                resolve(JSON.parse(e.body()));
             }).catch(err => {
                 reject(err);
             })
@@ -126,7 +196,7 @@ exports.KakaoDevClient = /** @class */ (function () {
      * @return {Promise<unknown>}
      */
     KakaoDevClient.prototype.requestData = function (method, query, variables) {
-        if (this.devToken === undefined || !this.isLogin) throw new Error('You cannot access the KakaoLink API before logging in.');
+        if (this.devToken === undefined || !this.isLogin) throw new Error('You cannot access the KakaoDev API before logging in.');
 
         return new this.Promise((resolve, reject) => {
             this.client.request(
@@ -152,12 +222,12 @@ exports.KakaoDevClient = /** @class */ (function () {
     }
 
     /**
-     * get Developer Token (personal)
+     * get Developer Data (personal)
      *
-     * @return {Promise<string>}
+     * @return {Promise<{devToken: string; devId: string}}>}
      */
-    KakaoDevClient.prototype.getDeveloperToken = function () {
-        if (!this.isLogin) throw new Error('You cannot access the KakaoLink API before logging in.');
+    KakaoDevClient.prototype.getDeveloperData = function () {
+        if (!this.isLogin) throw new Error('You cannot access the KakaoDev API before logging in.');
 
         return new this.Promise((resolve, reject) => {
             this.client.request(
@@ -169,11 +239,12 @@ exports.KakaoDevClient = /** @class */ (function () {
                 }
             ).then(e => {
                 const data = JSON.parse(e.body().match(/SERVER_DATA = ([^]*);/)[1]);
-                const devToken = data['KO-DEVELOPER-TOKEN'];
-                if (devToken === undefined) {
+                const devToken = data['KD-DEVELOPER-TOKEN'];
+                const devId = data['KD-DEVELOPER-ID'];
+                if (devToken === undefined || devId === undefined) {
                     reject('Failed to fetch developer token for unknown reason.');
                 }
-                resolve(devToken);
+                resolve({devToken: devToken, devId: devId});
             }).catch(err => {
                 reject(err);
             })
@@ -186,7 +257,7 @@ exports.KakaoDevClient = /** @class */ (function () {
      * @return {Promise<boolean>}
      */
     KakaoDevClient.prototype.getKdt = function () {
-        if (!this.isLogin) throw new Error('You cannot access the KakaoLink API before logging in.');
+        if (!this.isLogin) throw new Error('You cannot access the KakaoDev API before logging in.');
 
         return new this.Promise((resolve, reject) => {
             this.client.request(
