@@ -224,7 +224,7 @@ exports.KakaoDevClient = /** @class */ (function () {
     /**
      * get Developer Data (personal)
      *
-     * @return {Promise<{devToken: string; devId: string}}>}
+     * @return {Promise<{devToken: string; devId: string}>}
      */
     KakaoDevClient.prototype.getDeveloperData = function () {
         if (!this.isLogin) throw new Error('You cannot access the KakaoDev API before logging in.');
