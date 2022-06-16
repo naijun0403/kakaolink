@@ -190,7 +190,7 @@ exports.KakaoDevClient = /** @class */ (function () {
     }
 
     /**
-     * request Data with query
+     * request Data with query (graphql)
      *
      * @param {string} method
      * @param {string} query
@@ -216,6 +216,9 @@ exports.KakaoDevClient = /** @class */ (function () {
                     'x-requested-with': 'XMLHttpRequest'
                 }
             ).then(e => {
+                if (e.statusCode() === 500) {
+                    reject(JSON.parse(e.body())['message'])
+                }
                 if (e.statusCode() !== 200) reject('The request to graphql failed for an unknown reason with status: ' + e.statusCode());
 
                 resolve(JSON.parse(e.body()));
