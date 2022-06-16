@@ -60,7 +60,7 @@ exports.KakaoDevClient = /** @class */ (function () {
     /**
      * get AppList
      *
-     * @return {Promise<Record<string, unknown>>}
+     * @return {Promise<Array<{app_id:number;app:{icon:string;platform:{web:{web_site_url:Array<string>}}}}>>}
      */
     KakaoDevClient.prototype.getAppList = function () {
         if (this.devToken === undefined || !this.isLogin) throw new Error('You cannot access the KakaoDev API before logging in.');
@@ -70,6 +70,7 @@ exports.KakaoDevClient = /** @class */ (function () {
                 '    members {\n' +
                 '        app_id\n' +
                 '        app {\n' +
+                '            icon\n' +
                 '            platform {\n' +
                 '                web {\n' +
                 '                    web_site_url\n' +
@@ -175,7 +176,8 @@ exports.KakaoDevClient = /** @class */ (function () {
                 data,
                 {
                     Referer: 'https://developers.kakao.com/console/app/' + appId + '/config',
-                    'KD-CLIENT-TOKEN': this.devToken
+                    'KD-CLIENT-TOKEN': this.devToken,
+                    'x-requested-with': 'XMLHttpRequest'
                 }
             ).then(e => {
                 if (e.statusCode() !== 200) reject('The request to update app failed for an unknown reason with status: ' + e.statusCode());
@@ -208,8 +210,10 @@ exports.KakaoDevClient = /** @class */ (function () {
                     query: 'query ' + method + ' ' + query
                 }),
                 {
+                    'Content-Type': 'application/json',
                     Referer: 'https://developers.kakao.com/console/app',
-                    'kd-client-token': this.devToken
+                    'kd-client-token': this.devToken,
+                    'x-requested-with': 'XMLHttpRequest'
                 }
             ).then(e => {
                 if (e.statusCode() !== 200) reject('The request to graphql failed for an unknown reason with status: ' + e.statusCode());

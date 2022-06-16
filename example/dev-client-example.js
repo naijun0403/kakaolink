@@ -40,14 +40,18 @@ KakaoApiService.createService().login({
 
 function response(room, msg, sender, isGroupChat, replier, imageDB, packageName) {
     if (msg === '!카링변경') {
-        const id = DevClient.getAppList()[0]['app']['id'];
-        DevClient.updateApp(id, {
-            name: '앱 이름',
-            company: 'company 이름'
-        }).then(e => {
-            replier.reply('변경 완료');
+        const list = DevClient.getAppList().then(e => {
+            const id = e[0]['app_id']
+            DevClient.updateApp(id, {
+                name: 'STUPID',
+                company: 'company'
+            }).then(e => {
+                replier.reply('변경 완료');
+            }).catch(err => {
+                replier.reply(err);
+            })
         }).catch(err => {
-            replier.reply(err);
+            Log.e(err);
         })
     }
 }
