@@ -36,7 +36,8 @@ exports.KakaoLinkClient = /** @class */ (function () {
     }
 
     /**
-     * Login Client
+     * Login (set Cookies)
+     *
      * @param cookies
      */
     KakaoLinkClient.prototype.login = function (cookies) {
@@ -52,6 +53,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
 
     /**
      * Kakao Link Send
+     *
      * @param {String} room Room Name
      * @param {{ link_ver: '4.0', template_id: number | string, template_args: any, template_object: { button_title: string, object_type: 'feed' | 'list' | 'location' | 'commerce' | 'text',
      * content: { title: string, description: string, image_url: string, link: any }, social: { likeCount: number, commentCount: number, shareCount: number },
@@ -143,7 +145,8 @@ exports.KakaoLinkClient = /** @class */ (function () {
 
     /**
      * generate Kakao Agent
-     * @param url
+     *
+     * @param {string} url
      * @return {string}
      * @private
      */

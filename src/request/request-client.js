@@ -80,14 +80,20 @@ exports.RequestClient = /** @class */ (function () {
                     else {
                         Object.keys(data).forEach(e => {
                             request.data(e, data[e]);
-                        });
+                        }); // https://github.com/mozilla/rhino/issues/247
                     }
                 }
 
-                request.headers(headers);
+                Object.keys(headers).forEach(e => {
+                    request.header(e, headers[e]);
+                }); // https://github.com/mozilla/rhino/issues/247
                 request.cookies(this.cookies);
 
-                const res = request.ignoreContentType(true).execute();
+                const res = request
+                    .ignoreContentType(true)
+                    .ignoreHttpErrors(true)
+                    .followRedirects(false)
+                    .execute();
                 this.cookies.putAll(res.cookies());
 
                 resolve(res);
