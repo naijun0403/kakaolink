@@ -39,14 +39,18 @@ exports.KakaoLinkClient = /** @class */ (function () {
      * Login (set Cookies)
      *
      * @param cookies
+     * @param {{apiKey: string; url: string;}} info
      */
-    KakaoLinkClient.prototype.login = function (cookies) {
+    KakaoLinkClient.prototype.login = function (cookies, info) {
+        if (info === undefined) throw new Error('No AccountInfo Entered');
+        if (!info.hasOwnProperty('apiKey') || !info.hasOwnProperty('url')) throw new Error('No apiKey or url entered');
+
+        if (!/^http(s)?:\/\/.+/.test(info.url)) throw new TypeError("The url does not match the web url format");
+
         this.cookies = cookies;
         this.isLogin = true;
-        this.apiKey = cookies.get('apiKey');
-        this.url = cookies.get('url')
-        cookies.remove('apiKey');
-        cookies.remove('url');
+        this.apiKey = info.apiKey;
+        this.url = info.url;
         this.kakaoAgent = this.generateKakaoAgent(this.url);
         this.client.setCookies(cookies);
     }

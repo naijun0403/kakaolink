@@ -76,10 +76,36 @@ exports.KakaoDevClient = /** @class */ (function () {
                 '                    web_site_url\n' +
                 '                }\n' +
                 '            }\n' +
+                '            app_key {\n' +
+                '              JAVASCRIPT_KEY\n' +
+                '            }\n' +
                 '        }\n' +
                 '    }\n' +
                 '}', {}).then(e => {
                     resolve(e['data']['members']);
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
+
+    KakaoDevClient.prototype.getAuthKey = function (appId) {
+        if (this.devToken === undefined || !this.isLogin) throw new Error('You cannot access the KakaoDev API before logging in.');
+
+        return new this.Promise((resolve, reject) => {
+            this.requestData('GET_APP', 'query GET_APP($app_id: Int!) {\n' +
+                '  member(app_id: $app_id) {\n' +
+                '    app {\n' +
+                '      app_key {\n' +
+                '        NATIVE_APP_KEY\n' +
+                '        JAVASCRIPT_KEY\n' +
+                '        REST_API_KEY\n' +
+                '        ADMIN_KEY\n' +
+                '      }\n' +
+                '    }\n' +
+                '  }\n' +
+                '}\n',  { appId: appId }).then(e => {
+                    resolve(e['data']['member']);
             }).catch(err => {
                 reject(err);
             })

@@ -30,8 +30,6 @@ KakaoApiService.createService().login({
     email: 'email',
     password: 'password',
     keepLogin: true,
-    apiKey: 'apiKey',
-    url: 'url'
 }).then(e => {
     DevClient.login(e);
 }).catch(e => {

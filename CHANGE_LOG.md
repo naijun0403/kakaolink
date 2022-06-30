@@ -12,3 +12,29 @@
 ## 3.6
 메신저봇 지원 
 `Promise` Polyfill 변경
+
+## 3.7
+`KakaoDevClient`가 추가되었습니다.
+> 앱 정보 바꾸기, 앱 정보 불러오기, 앱 생성하기 ...
+
+## 3.7.1
+약간 로그인 방식이 변경되었습니다.
+
+```js
+const Kakao = new KakaoLinkClient();
+
+KakaoApiService.createService().login({
+    email: 'email',
+    password: 'password',
+    keepLogin: true,
+}).then(e => {
+    Kakao.login(e, {
+        apiKey: 'apiKey',
+        url: 'url'
+    });
+}).catch(e => {
+    Log.e(e);
+});
+```
+
+만일 당신이 원한다면 `apiKey`와 `url`은 명시할 이유가 없습니다.

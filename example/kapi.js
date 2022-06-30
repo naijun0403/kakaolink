@@ -32,10 +32,11 @@ KakaoApiService.createService().login({
     email: 'email',
     password: 'password',
     keepLogin: true,
-    apiKey: 'apiKey',
-    url: 'url'
 }).then(e => {
-    Kakao.login(e);
+    Kakao.login(e, {
+        apiKey: 'apiKey',
+        url: 'url'
+    });
 }).catch(e => {
     console.error(e)
 });

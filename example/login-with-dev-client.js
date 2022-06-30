@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  *
  * Copyright (c) 2021 naijun0403
@@ -22,37 +22,38 @@
  * SOFTWARE.
  */
 
-const bot = BotManager.getCurrentBot();
-
-const { KakaoApiService, KakaoLinkClient } = require('kakaolink')
+const { KakaoApiService, KakaoLinkClient, KakaoDevClient} = require('../index')
 
 const Kakao = new KakaoLinkClient();
+const DevClient = new KakaoDevClient();
 
 KakaoApiService.createService().login({
     email: 'email',
     password: 'password',
     keepLogin: true,
 }).then(e => {
-    Kakao.login(e, {
-        apiKey: 'apiKey',
-        url: 'url'
-    });
+    DevClient.login(e);
+    DevClient.getAppList().then(r => {
+        Kakao.login(e, {
+            apiKey: r[0]['app']['app_key']['JAVASCRIPT_KEY'],
+            url: r[0]['app']['web']['web_site_url'][0]
+        });
+    })
 }).catch(e => {
     Log.e(e);
 });
 
-function onMessage(msg) {
-    if(msg.content === '!카카오링크') {
+function response(room, msg, sender, isGroupChat, replier, imageDB, packageName) {
+    if(msg === '!카카오링크') {
         Kakao.sendLink('roomName', {
             template_id: 12345,
             template_args: {
 
             }
         }, 'custom').then(e => {
-            msg.reply('카링 보내기 성공!')
+            replier.reply('카링 보내기 성공!')
         }).catch(e => {
-            msg.reply(e);
+            replier.reply(e);
         })
     }
 }
-bot.addListener(Event.MESSAGE, onMessage);
