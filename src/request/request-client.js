@@ -23,7 +23,8 @@
  */
 
 const qs = require('../modules/qs')
-const {isExistsPromise} = require("../util/is-promise");
+const { isExistsPromise } = require("../util/is-promise");
+const { checkIsFile } = require("../util/file-exists");
 
 /**
  * HTTP Request Client
@@ -66,6 +67,7 @@ exports.RequestClient = /** @class */ (function () {
                 method = org.jsoup.Connection.Method[method.toUpperCase()];
 
                 let request = null;
+                let fis = null;
 
                 if (method === org.jsoup.Connection.Method['GET']) {
                     if (Object.keys(data).length === 0) {
@@ -79,7 +81,16 @@ exports.RequestClient = /** @class */ (function () {
                     if (typeof data === "string") request.requestBody(data);
                     else {
                         Object.keys(data).forEach(e => {
-                            request.data(e, data[e]);
+                            if (typeof data[e] !== "object") {
+                                request.data(e, data[e]);
+                            } else {
+                                let file = new java.io.File(data[e]['path']);
+                                fis = new java.io.FileInputStream(file);
+                                if (!checkIsFile(file)) {
+                                    reject('The file path you entered is not valid.');
+                                }
+                                request.data(e, file.getName(), fis);
+                            }
                         }); // https://github.com/mozilla/rhino/issues/247
                     }
                 }
@@ -95,6 +106,10 @@ exports.RequestClient = /** @class */ (function () {
                     .followRedirects(false)
                     .execute();
                 this.cookies.putAll(res.cookies());
+
+                if (fis !== null) {
+                    fis.close();
+                }
 
                 resolve(res);
             } catch (e) {

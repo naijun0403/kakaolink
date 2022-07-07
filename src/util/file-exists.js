@@ -22,18 +22,6 @@
  * SOFTWARE.
  */
 
-const {RequestClient} = require("../../src/request/request-client");
-
-let client = new RequestClient('example.com');
-client.request(
-    'POST',
-    '/test',
-    {
-        a: {
-            path: "/sdcard/test.zip"
-        }
-    },
-    {}
-).then(e => {
-    e.body();
-})
+exports.checkIsFile = function (file) {
+    return file.exists() && file.isFile();
+}
