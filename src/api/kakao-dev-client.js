@@ -123,7 +123,7 @@ exports.KakaoDevClient = /** @class */ (function () {
         if (!obj.hasOwnProperty('name') || !obj.hasOwnProperty('company')) throw new Error('No name or company entered.');
 
         return new this.Promise((resolve, reject) => {
-            let data = { name: 'CREATE_WITH_DEFAULT' };
+            const data = { name: 'CREATE_WITH_DEFAULT' };
             data['payload.owner_developer_id'] = Number(this.devId);
             data['payload.name'] = obj['name'];
             data['payload.company'] = obj['company'];
@@ -230,6 +230,29 @@ exports.KakaoDevClient = /** @class */ (function () {
         })
     }
 
+    KakaoDevClient.prototype.purgeUrl = function (url) {
+        if (isNullOrUndefined(url)) throw new Error('No url entered.');
+
+        return new this.Promise((resolve, reject) => {
+            this.client.request(
+                'POST',
+                '/tool/debugger/api/sharing/purge',
+                {
+                    url: url
+                },
+                {
+                    Referer: 'https://developers.kakao.com/tool/debugger/sharing'
+                }
+            ).then(e => {
+                if (e.statusCode() !== 200) reject('The request to purge url failed for an unknown reason with status: ' + e.statusCode());
+
+                resolve(JSON.parse(e.body()));
+            }).catch(err => {
+                reject(err);
+            });
+        });
+    }
+
     /**
      * request Data with query (graphql)
      *
@@ -257,9 +280,7 @@ exports.KakaoDevClient = /** @class */ (function () {
                     'x-requested-with': 'XMLHttpRequest'
                 }
             ).then(e => {
-                if (e.statusCode() === 500) {
-                    reject(JSON.parse(e.body())['message'])
-                }
+                if (e.statusCode() === 500) reject(JSON.parse(e.body())['message'])
                 if (e.statusCode() !== 200) reject('The request to graphql failed for an unknown reason with status: ' + e.statusCode());
 
                 resolve(JSON.parse(e.body()));
