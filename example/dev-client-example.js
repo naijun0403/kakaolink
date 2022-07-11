@@ -42,7 +42,8 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName)
             const id = e[0]['app_id']
             DevClient.updateApp(id, {
                 name: 'STUPID',
-                company: 'company'
+                company: 'company',
+                image: new java.io.File('/sdcard/test.png')
             }).then(e => {
                 replier.reply('변경 완료');
             }).catch(err => {

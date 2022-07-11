@@ -24,6 +24,7 @@
 
 const {RequestClient} = require("../request/request-client");
 const {isExistsPromise} = require("../util/is-promise");
+const {isNullOrUndefined} = require("../util/is-null-or-undefined");
 
 exports.KakaoDevClient = /** @class */ (function () {
     function KakaoDevClient() {
@@ -126,6 +127,13 @@ exports.KakaoDevClient = /** @class */ (function () {
             data['payload.owner_developer_id'] = Number(this.devId);
             data['payload.name'] = obj['name'];
             data['payload.company'] = obj['company'];
+            data['payload.icon_image_kage_token'] = obj['image'];
+
+            if (
+                isNullOrUndefined(data['payload.name']) ||
+                isNullOrUndefined(data['payload.company']) ||
+                isNullOrUndefined(data['payload.icon_image_kage_token'])
+            ) reject('data must be not null or undefined');
 
             this.client.request(
                 'POST',
@@ -195,6 +203,13 @@ exports.KakaoDevClient = /** @class */ (function () {
             let data = { name: 'UPDATE_PARTIAL' };
             data['payload.name'] = obj['name'];
             data['payload.company'] = obj['company'];
+            data['payload.icon_image_kage_token'] = obj['image'];
+
+            if (
+                isNullOrUndefined(data['payload.name']) ||
+                isNullOrUndefined(data['payload.company']) ||
+                isNullOrUndefined(data['payload.icon_image_kage_token'])
+            ) reject('data must be not null or undefined');
 
             this.client.request(
                 'POST',

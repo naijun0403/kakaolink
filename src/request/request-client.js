@@ -24,7 +24,6 @@
 
 const qs = require('../modules/qs')
 const { isExistsPromise } = require("../util/is-promise");
-const { checkIsFile } = require("../util/file-exists");
 
 /**
  * HTTP Request Client
@@ -84,12 +83,12 @@ exports.RequestClient = /** @class */ (function () {
                             if (typeof data[e] !== "object") {
                                 request.data(e, data[e]);
                             } else {
-                                let file = new java.io.File(data[e]['path']);
-                                fis = new java.io.FileInputStream(file);
-                                if (!checkIsFile(file)) {
-                                    reject('The file path you entered is not valid.');
+                                if (data[e] instanceof java.io.File) {
+                                    fis = new java.io.FileInputStream(data[e]);
+                                    request.data(e, data[e].getName(), fis);
+                                } else {
+                                    request.data(e, data[e]['name'], data[e]['stream']);
                                 }
-                                request.data(e, file.getName(), fis);
                             }
                         }); // https://github.com/mozilla/rhino/issues/247
                     }

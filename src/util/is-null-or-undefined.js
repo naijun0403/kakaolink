@@ -22,6 +22,4 @@
  * SOFTWARE.
  */
 
-exports.checkIsFile = function (file) {
-    return file.exists() && file.isFile();
-}
+exports.isNullOrUndefined = (data) => data === null || data === undefined;

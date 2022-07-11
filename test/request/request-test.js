@@ -24,13 +24,17 @@
 
 const {RequestClient} = require("../../src/request/request-client");
 
+let file = new java.io.File("/sdcard/test.zip");
+let fis = new java.io.FileInputStream(file);
+
 let client = new RequestClient('example.com');
 client.request(
     'POST',
     '/test',
     {
         a: {
-            path: "/sdcard/test.zip"
+            name: file.getName(),
+            stream: fis
         }
     },
     {}
