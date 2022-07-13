@@ -26,6 +26,7 @@ const {RequestClient} = require("../request/request-client");
 const {isExistsPromise} = require("../util/is-promise");
 const {constants} = require("../config");
 const {CryptoJS} = require("../crypto");
+const { setTimeout } = require('../polyfill/timers');
 
 exports.KakaoApiService = /** @class */ (function () {
     function KakaoApiService() {
@@ -49,87 +50,98 @@ exports.KakaoApiService = /** @class */ (function () {
         }
 
         return new this.Promise((resolve, reject) => {
-            this.client.request(
-                'GET',
-                '/login',
-                {
-                    continue: 'https://accounts.kakao.com/weblogin/account/info'
-                },
-                {
-                    Referer: 'https://accounts.kakao.com/'
-                }
-            ).then(e => {
-                if (e.statusCode() !== 200) reject('For an unknown reason, the information required to log in could not be retrieved with status: ' + e.statusCode());
-
-                let referer = e.url().toExternalForm();
-
-                this.client.changeHost('stat.tiara.kakao.com')
-
+            setTimeout(() => {
                 this.client.request(
                     'GET',
-                    '/track',
+                    '/login',
                     {
-                        d: JSON.stringify(constants.tiaraData)
+                        continue: 'https://accounts.kakao.com/weblogin/account/info'
                     },
                     {
                         Referer: 'https://accounts.kakao.com/'
                     }
-                ).then(_ => {
-                    const parsedData = e.parse();
+                ).then(e => {
+                    if (e.statusCode() !== 200) reject('For an unknown reason, the information required to log in could not be retrieved with status: ' + e.statusCode());
 
-                    const cryptoKey = parsedData.select('input[name=p]').attr('value');
+                    let referer = e.url().toExternalForm();
 
-                    this.client.changeHost('accounts.kakao.com');
+                    this.client.changeHost('stat.tiara.kakao.com')
+
                     this.client.request(
-                        'POST',
-                        '/weblogin/authenticate.json',
+                        'GET',
+                        '/track',
                         {
-                            os: 'web',
-                            webview_v: '2',
-                            email: CryptoJS.AES.encrypt(String(data.email), String(cryptoKey)).toString(),
-                            password: CryptoJS.AES.encrypt(String(data.password), String(cryptoKey)).toString(),
-                            stay_signed_in: data.keepLogin.toString(),
-                            continue: decodeURIComponent(referer.split('=')[1]),
-                            third: 'false',
-                            k: 'true',
-                            authenticity_token: parsedData.select('head > meta:nth-child(3)').attr('content')
+                            d: JSON.stringify(constants.tiaraData)
                         },
                         {
-                            Referer: referer
+                            Referer: 'https://accounts.kakao.com/'
                         }
-                    ).then(r => {
-                        if (r.statusCode() !== 200) reject('An error occurred while loading authenticate.json with status: ' + r.statusCode());
+                    ).then(_ => {
+                        const parsedData = e.parse();
 
-                        const loginRes = JSON.parse(r.body());
+                        const cryptoKey = parsedData.select('input[name=p]').attr('value');
 
-                        switch (loginRes['status']) {
-                            case 0:
-                                break;
-                            case -484:
-                                reject('Encryption failed.');
-                                break;
-                            case -435:
-                                reject('The country you are trying to access is blocked.');
-                                break;
-                            case -450:
-                                reject('Email or password is incorrect');
-                                break;
-                            default:
-                                reject('An unknown error occurred during login with status: ' + loginRes['status']);
-                                break;
-                        }
+                        this.client.changeHost('accounts.kakao.com');
+                        this.client.request(
+                            'POST',
+                            '/weblogin/authenticate.json',
+                            {
+                                os: 'web',
+                                webview_v: '2',
+                                email: CryptoJS.AES.encrypt(String(data.email), String(cryptoKey)).toString(),
+                                password: CryptoJS.AES.encrypt(String(data.password), String(cryptoKey)).toString(),
+                                stay_signed_in: data.keepLogin.toString(),
+                                continue: decodeURIComponent(referer.split('=')[1]),
+                                third: 'false',
+                                k: 'true',
+                                authenticity_token: parsedData.select('head > meta:nth-child(3)').attr('content')
+                            },
+                            {
+                                Referer: referer
+                            }
+                        ).then(r => {
+                            if (r.statusCode() !== 200) reject('An error occurred while loading authenticate.json with status: ' + r.statusCode());
 
-                        let cookies = this.client.getCookies();
+                            const loginRes = JSON.parse(r.body());
 
-                        resolve(cookies);
+                            switch (loginRes['status']) {
+                                case 0:
+                                    break;
+                                case -484:
+                                    reject('Encryption failed.');
+                                    break;
+                                case -435:
+                                    reject('The country you are trying to access is blocked.');
+                                    break;
+                                case -450:
+                                    reject('Email or password is incorrect');
+                                    break;
+                                default:
+                                    reject('An unknown error occurred during login with status: ' + loginRes['status']);
+                                    break;
+                            }
+
+                            let cookies = this.client.getCookies();
+
+                            resolve(cookies);
+                        })
+                    }).catch(err => {
+                        reject(err);
                     })
                 }).catch(err => {
                     reject(err);
                 })
-            }).catch(err => {
-                reject(err);
-            })
+            }, 0)
         })
+    }
+
+    /**
+     * get release version
+     *
+     * @return {string}
+     */
+    KakaoApiService.getReleaseVersion = function () {
+        return "1.0.0";
     }
 
     /**

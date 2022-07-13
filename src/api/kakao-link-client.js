@@ -24,6 +24,7 @@
 
 const {RequestClient} = require("../request/request-client");
 const {isExistsPromise} = require("../util/is-promise");
+const { setTimeout } = require('../polyfill/timers');
 
 exports.KakaoLinkClient = /** @class */ (function () {
     function KakaoLinkClient() {
@@ -75,75 +76,77 @@ exports.KakaoLinkClient = /** @class */ (function () {
         }
 
         return new this.Promise((resolve, reject) => {
-            this.client.request(
-                'POST',
-                '/talk/friends/picker/link',
-                {
-                    app_key: this.apiKey,
-                    validation_action: type || 'custom',
-                    validation_params: JSON.stringify(data),
-                    ka: this.kakaoAgent,
-                    lcba: ''
-                },
-                {}
-            ).then(e => {
-                if (e.statusCode() === 401) reject('Please check the apiKey again');
-                if (e.statusCode() !== 200) reject('An unknown error occurred while sending the message with status: ' + e.statusCode());
-
-                const parsedData = e.parse();
-                const csrfToken = String(parsedData.select('div').last().attr('ng-init').slice(7).replace("'", ''));
-                const linkData = parsedData.select('#validatedTalkLink').attr('value');
-
+            setTimeout(() => {
                 this.client.request(
-                    'GET',
-                    '/api/talk/chats',
-                    {},
+                    'POST',
+                    '/talk/friends/picker/link',
                     {
-                        Referer: 'https://sharer.kakao.com/talk/friends/picker/link',
-                        'Csrf-Token': csrfToken,
-                        'App-Key': this.apiKey
-                    }
-                ).then(r => {
-                    const roomData = /** @type {{chats: Array<{id:string;title:string;memberCount:number;}>}} */ JSON.parse(r.body());
+                        app_key: this.apiKey,
+                        validation_action: type || 'custom',
+                        validation_params: JSON.stringify(data),
+                        ka: this.kakaoAgent,
+                        lcba: ''
+                    },
+                    {}
+                ).then(e => {
+                    if (e.statusCode() === 401) reject('Please check the apiKey again');
+                    if (e.statusCode() !== 200) reject('An unknown error occurred while sending the message with status: ' + e.statusCode());
 
-                    let id = null, memberCount = null;
-                    roomData['chats'].forEach(element => {
-                        if (element.title === room) {
-                            memberCount = element.memberCount;
-                            id = element.id;
-                            return false;
-                        }
-                    });
-
-                    if (id === null || memberCount === null) reject('There is no room called "' + room + '", please check again');
+                    const parsedData = e.parse();
+                    const csrfToken = String(parsedData.select('div').last().attr('ng-init').slice(7).replace("'", ''));
+                    const linkData = parsedData.select('#validatedTalkLink').attr('value');
 
                     this.client.request(
-                        'POST',
-                        '/api/talk/message/link',
-                        JSON.stringify({
-                            validatedTalkLink: JSON.parse(linkData),
-                            securityKey: roomData['securityKey'],
-                            receiverType: 'chat',
-                            receiverIds: [id],
-                            receiverChatRoomMemberCount: [memberCount]
-                        }),
+                        'GET',
+                        '/api/talk/chats',
+                        {},
                         {
                             Referer: 'https://sharer.kakao.com/talk/friends/picker/link',
-                            'App-Key': this.apiKey,
                             'Csrf-Token': csrfToken,
-                            'Content-Type': 'application/json;charset=utf-8'
+                            'App-Key': this.apiKey
                         }
-                    ).then(result => {
-                        resolve(result)
+                    ).then(r => {
+                        const roomData = /** @type {{chats: Array<{id:string;title:string;memberCount:number;}>}} */ JSON.parse(r.body());
+
+                        let id = null, memberCount = null;
+                        roomData['chats'].forEach(element => {
+                            if (element.title === room) {
+                                memberCount = element.memberCount;
+                                id = element.id;
+                                return false;
+                            }
+                        });
+
+                        if (id === null || memberCount === null) reject('There is no room called "' + room + '", please check again');
+
+                        this.client.request(
+                            'POST',
+                            '/api/talk/message/link',
+                            JSON.stringify({
+                                validatedTalkLink: JSON.parse(linkData),
+                                securityKey: roomData['securityKey'],
+                                receiverType: 'chat',
+                                receiverIds: [id],
+                                receiverChatRoomMemberCount: [memberCount]
+                            }),
+                            {
+                                Referer: 'https://sharer.kakao.com/talk/friends/picker/link',
+                                'App-Key': this.apiKey,
+                                'Csrf-Token': csrfToken,
+                                'Content-Type': 'application/json;charset=utf-8'
+                            }
+                        ).then(result => {
+                            resolve(result)
+                        }).catch(err => {
+                            reject(err);
+                        })
                     }).catch(err => {
                         reject(err);
                     })
                 }).catch(err => {
                     reject(err);
                 })
-            }).catch(err => {
-                reject(err);
-            })
+            }, 0)
         });
     }
 
