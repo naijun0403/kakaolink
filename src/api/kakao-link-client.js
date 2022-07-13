@@ -24,7 +24,7 @@
 
 const {RequestClient} = require("../request/request-client");
 const {isExistsPromise} = require("../util/is-promise");
-const { setTimeout } = require('../polyfill/timers');
+var { setTimeout } = require('../polyfill/timers');
 
 exports.KakaoLinkClient = /** @class */ (function () {
     function KakaoLinkClient() {

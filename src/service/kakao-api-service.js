@@ -26,7 +26,7 @@ const {RequestClient} = require("../request/request-client");
 const {isExistsPromise} = require("../util/is-promise");
 const {constants} = require("../config");
 const {CryptoJS} = require("../crypto");
-const { setTimeout } = require('../polyfill/timers');
+var { setTimeout } = require('../polyfill/timers');
 
 exports.KakaoApiService = /** @class */ (function () {
     function KakaoApiService() {

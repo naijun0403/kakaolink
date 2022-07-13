@@ -25,7 +25,7 @@
 const {RequestClient} = require("../request/request-client");
 const {isExistsPromise} = require("../util/is-promise");
 const {isNullOrUndefined} = require("../util/is-null-or-undefined");
-const { setTimeout } = require('../polyfill/timers');
+var { setTimeout } = require('../polyfill/timers');
 
 exports.KakaoDevClient = /** @class */ (function () {
     function KakaoDevClient() {
