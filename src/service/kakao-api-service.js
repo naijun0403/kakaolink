@@ -37,6 +37,7 @@ exports.KakaoApiService = /** @class */ (function () {
      * login
      *
      * @param data {{email:string;password:string;keepLogin:boolean}}
+     * @return {Promise<Object>}
      */
     KakaoApiService.prototype.login = function (data) {
         if (!data.hasOwnProperty('email') || !data.hasOwnProperty('password')) throw new Error('No email or password entered.');

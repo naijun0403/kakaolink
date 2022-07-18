@@ -25,35 +25,69 @@
 const {RequestClient} = require("../request/request-client");
 const {isExistsPromise} = require("../util/is-promise");
 var { setTimeout } = require('../polyfill/timers');
+const {KakaoApiService} = require("../service/kakao-api-service");
 
 exports.KakaoLinkClient = /** @class */ (function () {
     function KakaoLinkClient() {
         this.cookies = null;
         this.client = new RequestClient('sharer.kakao.com')
         this.isLogin = false;
-        this.apiKey = null;
-        this.url = null;
         this.kakaoAgent = null;
+        if (arguments.length === 2) {
+            /** @deprecated legacy method  */
+
+            this.apiKey = arguments[0];
+            this.url = arguments[1];
+        } else {
+            this.apiKey = null;
+            this.url = null;
+        }
+    }
+
+    /**
+     * @deprecated
+     * @forRemoval since next release
+     * @param {string} email
+     * @param {string} password
+     */
+    KakaoLinkClient.prototype.loginLegacy = function (email, password) {
+        KakaoApiService.createService().login({
+            email: email,
+            password: password,
+            keepLogin: true,
+        }).then(e => {
+            this.login(e, {
+                apiKey: this.apiKey,
+                url: this.url,
+            })
+        }).catch(e => {
+            throw e;
+        })
     }
 
     /**
      * Login (set Cookies)
      *
-     * @param cookies
-     * @param {{apiKey: string; url: string;}} info
+     * @param {string | Object} cookies
+     * @param {{apiKey: string; url: string;} | string} info
      */
     KakaoLinkClient.prototype.login = function (cookies, info) {
-        if (info === undefined) throw new Error('No AccountInfo Entered');
-        if (!info.hasOwnProperty('apiKey') || !info.hasOwnProperty('url')) throw new Error('No apiKey or url entered');
+        if (typeof cookies === "string" && typeof info === 'string') {
+            // deprecated way
+            this.loginLegacy(cookies, info);
+        } else {
+            if (info === undefined) throw new Error('No AccountInfo Entered');
+            if (!info.hasOwnProperty('apiKey') || !info.hasOwnProperty('url')) throw new Error('No apiKey or url entered');
 
-        if (!/^http(s)?:\/\/.+/.test(info.url)) throw new TypeError("The url does not match the web url format");
+            if (!/^http(s)?:\/\/.+/.test(info.url)) throw new TypeError("The url does not match the web url format");
 
-        this.cookies = cookies;
-        this.isLogin = true;
-        this.apiKey = info.apiKey;
-        this.url = info.url;
-        this.kakaoAgent = this.generateKakaoAgent(this.url);
-        this.client.setCookies(cookies);
+            this.cookies = cookies;
+            this.isLogin = true;
+            this.apiKey = info.apiKey;
+            this.url = info.url;
+            this.kakaoAgent = this.generateKakaoAgent(this.url);
+            this.client.setCookies(cookies);
+        }
     }
 
     /**
