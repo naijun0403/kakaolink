@@ -1,40 +1,11 @@
 # CHANGE_LOG
-버전 3.5부터 작성합니다.
-## 3.5
-요청 방식을 비동기로 재구현하였습니다. (`Promise`)
+## 1.0.0
+`KakaoDevClient`가 대부분의 기능이 구현되었습니다.
 
-모듈의 대부분을 재구현 하였습니다.
+이에 따라 로그인시 디벨로퍼 계정과 봇 계정이 같다면 `apiKey`, `url`을 들고옵니다.
 
-로그인 방식이 변경되었습니다.
-> example 폴더를 참고해주세요
+`KakaoLinkClient`에 `kakaolink-legacy` 3.5 이전 방식이 다시 호환됩니다.
 
-`tiara`쿠키를 받을때 누락된 데이터가 다시 들어갑니다.
-## 3.6
-메신저봇 지원 
-`Promise` Polyfill 변경
+`KakaoApiService`에 `getReleaseVersion`메소드가 추가되서 버전을 확인 할 수 있습니다.
 
-## 3.7
-`KakaoDevClient`가 추가되었습니다.
-> 앱 정보 바꾸기, 앱 정보 불러오기, 앱 생성하기 ...
-
-## 3.7.1
-약간 로그인 방식이 변경되었습니다.
-
-```js
-const Kakao = new KakaoLinkClient();
-
-KakaoApiService.createService().login({
-    email: 'email',
-    password: 'password',
-    keepLogin: true,
-}).then(e => {
-    Kakao.login(e, {
-        apiKey: 'apiKey',
-        url: 'url'
-    });
-}).catch(e => {
-    Log.e(e);
-});
-```
-
-만일 당신이 원한다면 `apiKey`와 `url`은 명시할 이유가 없습니다.
+동기방식에서 비동기로 완벽하게 전환되었습니다.
