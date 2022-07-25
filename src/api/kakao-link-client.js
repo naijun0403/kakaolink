@@ -25,7 +25,6 @@
 const {RequestClient} = require("../request/request-client");
 const {isExistsPromise} = require("../util/is-promise");
 var { setTimeout } = require('../polyfill/timers');
-const {KakaoApiService} = require("../service/kakao-api-service");
 
 exports.KakaoLinkClient = /** @class */ (function () {
     function KakaoLinkClient() {
@@ -51,6 +50,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
      * @param {string} password
      */
     KakaoLinkClient.prototype.loginLegacy = function (email, password) {
+        const { KakaoApiService } = require("../service/kakao-api-service");
         KakaoApiService.createService().login({
             email: email,
             password: password,

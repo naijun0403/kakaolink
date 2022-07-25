@@ -32,12 +32,13 @@ KakaoApiService.createService().login({
     password: 'password',
     keepLogin: true,
 }).then(e => {
-    DevClient.login(e);
-    DevClient.getAppSimpleList().then(r => {
-        Kakao.login(e, {
-            apiKey: r.appKey,
-            url: r.webUrl[0]
-        });
+    DevClient.login(e).then(() => {
+        DevClient.getAppSimpleList().then(r => {
+            Kakao.login(e, {
+                apiKey: r.appKey,
+                url: r.webUrl[0]
+            });
+        })
     })
 }).catch(e => {
     Log.e(e);

@@ -95,14 +95,13 @@ exports.KakaoApiService = /** @class */ (function () {
                                 continue: decodeURIComponent(referer.split('=')[1]),
                                 third: 'false',
                                 k: 'true',
-                                authenticity_token: parsedData.select('head > meta:nth-child(3)').attr('content')
+                                authenticity_token: String(parsedData.select('head > meta:nth-child(3)').attr('content'))
                             },
                             {
                                 Referer: referer
                             }
                         ).then(r => {
                             if (r.statusCode() !== 200) reject('An error occurred while loading authenticate.json with status: ' + r.statusCode());
-
                             const loginRes = JSON.parse(r.body());
 
                             switch (loginRes['status']) {
@@ -125,14 +124,10 @@ exports.KakaoApiService = /** @class */ (function () {
                             let cookies = this.client.getCookies();
 
                             resolve(cookies);
-                        })
-                    }).catch(err => {
-                        reject(err);
-                    })
-                }).catch(err => {
-                    reject(err);
-                })
-            }, 0)
+                        }).catch(reject)
+                    }).catch(reject)
+                }).catch(reject)
+            }, 0);
         })
     }
 

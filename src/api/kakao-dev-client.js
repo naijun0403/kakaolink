@@ -46,17 +46,20 @@ exports.KakaoDevClient = /** @class */ (function () {
      * @param cookies
      */
     KakaoDevClient.prototype.login = function (cookies) {
-        this.cookies = cookies;
-        this.client.setCookies(cookies);
-        this.isLogin = true;
-        this.getKdt().then(_ => {
-            this.getDeveloperData().then(e => {
-                this.devToken = e.devToken;
-                this.devId = e.devId;
-            }).catch(err => {
-                throw new Error(err);
-            })
-        });
+        return new this.Promise((resolve, reject) => {
+            setTimeout(() => {
+                this.cookies = cookies;
+                this.client.setCookies(cookies);
+                this.isLogin = true;
+                this.getKdt().then(_ => {
+                    this.getDeveloperData().then(e => {
+                        this.devToken = e.devToken;
+                        this.devId = e.devId;
+                        resolve();
+                    }).catch(reject);
+                });
+            }, 0)
+        })
     }
 
     /**
@@ -103,7 +106,7 @@ exports.KakaoDevClient = /** @class */ (function () {
     KakaoDevClient.prototype.getAppSimpleList = function (index) {
         if (index === undefined) index = 0;
 
-        return new Promise((resolve, reject) => {
+        return new this.Promise((resolve, reject) => {
             setTimeout(() => {
                 this.getAppList().then((e) => {
                     const obj = e[0];
@@ -381,19 +384,6 @@ exports.KakaoDevClient = /** @class */ (function () {
                     reject(err);
                 })
             }, 0)
-        })
-    }
-
-    /**
-     * upload image
-     * Kakao SDK
-     *
-     * @param image
-     */
-    KakaoDevClient.prototype.uploadImage = function (image) {
-        this.getAppList().then(e => {
-            let apiKey = e[0]['app']['app_key']['JAVASCRIPT_KEY']
-            let authData = `KakaoAK ${apiKey}`;
         })
     }
 
