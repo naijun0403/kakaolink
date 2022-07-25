@@ -18,9 +18,6 @@
 ## error
 [error.md](https://github.com/naijun0403/kakaolink/blob/main/doc/user/error.md)를 참고해주세요
 
-## migration
-[migration.md](https://github.com/naijun0403/kakaolink/blob/main/doc/user/migration.md)를 참고해주세요
-
 ## 오픈소스 라이선스
 - [bluebird](https://github.com/petkaantonov/bluebird/blob/master/LICENSE)
 - [querystring](https://github.com/Gozala/querystring/blob/master/LICENSE)
