@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-var stack = new Map();
+var stack = [];
 
 var setTimeout = function (callback, timeout) {
     const args = Array.from(arguments);
@@ -38,11 +38,11 @@ var setTimeout = function (callback, timeout) {
         }
     });
     timer.schedule(task, timeout);
-    stack.set(++stack.size, timer);
+    stack[++stack.size] = timer;
 }
 
 var clearTimeout = (id) => {
-    const timer = stack.get(id);
+    const timer = stack[id];
     if (timer === undefined) {
         return undefined;
     }
