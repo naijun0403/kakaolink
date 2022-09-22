@@ -265,6 +265,12 @@ exports.KakaoDevClient = /** @class */ (function () {
         })
     }
 
+    /**
+     * Purge URL Cache
+     * 
+     * @param {string} url 
+     * @returns {Promise<Record<string, unknown>>}
+     */
     KakaoDevClient.prototype.purgeUrl = function (url) {
         if (isNullOrUndefined(url)) throw new Error('No url entered.');
 
@@ -281,6 +287,37 @@ exports.KakaoDevClient = /** @class */ (function () {
                     }
                 ).then(e => {
                     if (e.statusCode() !== 200) reject('The request to purge url failed for an unknown reason with status: ' + e.statusCode());
+
+                    resolve(JSON.parse(e.body()));
+                }).catch(err => {
+                    reject(err);
+                });
+            }, 0);
+        });
+    }
+
+    /**
+     * Debug Url
+     * 
+     * @param {string} url 
+     * @returns {Promise<Record<string, unknown>>}
+     */
+    KakaoDevClient.prototype.debugUrl = function (url) {
+        if (isNullOrUndefined(url)) throw new Error('No url entered.');
+
+        return new this.Promise((resolve, reject) => {
+            setTimeout(() => {
+                this.client.request(
+                    'POST',
+                    '/tool/debugger/api/sharing/scrap',
+                    {
+                        url: url
+                    },
+                    {
+                        Referer: 'https://developers.kakao.com/tool/debugger/sharing'
+                    }
+                ).then(e => {
+                    if (e.statusCode() !== 200) reject('The request to debug url failed for an unknown reason with status: ' + e.statusCode());
 
                     resolve(JSON.parse(e.body()));
                 }).catch(err => {
