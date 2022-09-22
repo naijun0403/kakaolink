@@ -54,6 +54,8 @@ exports.RequestClient = /** @class */ (function () {
         data,
         headers
     ) {
+        if (!this.Promise) throw new Error('Promise is not defined');
+
         return new this.Promise((resolve, reject) => {
             try {
                 method = method || 'GET';
