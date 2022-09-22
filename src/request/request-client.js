@@ -33,6 +33,11 @@ exports.RequestClient = /** @class */ (function () {
     function RequestClient(host) {
         this.cookies = new java.util.LinkedHashMap();
         this.host = host;
+        if (!isExistsPromise()) {
+            this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise');
+        } else {
+            this.Promise = /** @type PromiseConstructor */ Promise;
+        }
     }
 
     RequestClient.prototype.changeHost = function (host) {
@@ -49,13 +54,6 @@ exports.RequestClient = /** @class */ (function () {
         data,
         headers
     ) {
-
-        if (!isExistsPromise()) {
-            this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise');
-        } else {
-            this.Promise = /** @type PromiseConstructor */ Promise;
-        }
-
         return new this.Promise((resolve, reject) => {
             try {
                 method = method || 'GET';

@@ -59,7 +59,8 @@ exports.KakaoApiService = /** @class */ (function () {
                         continue: 'https://accounts.kakao.com/weblogin/account/info'
                     },
                     {
-                        Referer: 'https://accounts.kakao.com/'
+                        Referer: 'https://accounts.kakao.com/',
+                        'Upgrade-Insecure-Requests': '1'
                     }
                 ).then(e => {
                     if (e.statusCode() !== 200) reject('For an unknown reason, the information required to log in could not be retrieved with status: ' + e.statusCode());
