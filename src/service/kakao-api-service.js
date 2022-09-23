@@ -79,9 +79,13 @@ exports.KakaoApiService = /** @class */ (function () {
                             Referer: 'https://accounts.kakao.com/'
                         }
                     ).then(_ => {
-                        const parsedData = e.parse();
+                        const dataElement = e.parse().getElementById('__NEXT_DATA__');
+                        
+                        if (!dataElement) reject('Cannot get next data.');
 
-                        const cryptoKey = parsedData.select('input[name=p]').attr('value');
+                        const nextData = JSON.parse(dataElement.data()).props.pageProps.pageContext.commonContext;
+
+                        const cryptoKey = nextData.p;
 
                         this.client.changeHost('accounts.kakao.com');
                         this.client.request(
@@ -96,7 +100,7 @@ exports.KakaoApiService = /** @class */ (function () {
                                 continue: decodeURIComponent(referer.split('=')[1]),
                                 third: 'false',
                                 k: 'true',
-                                authenticity_token: String(parsedData.select('head > meta:nth-child(3)').attr('content'))
+                                authenticity_token: String(nextData._csrf)
                             },
                             {
                                 Referer: referer
@@ -138,7 +142,7 @@ exports.KakaoApiService = /** @class */ (function () {
      * @return {string}
      */
     KakaoApiService.getReleaseVersion = function () {
-        return "1.0.0";
+        return "1.0.3";
     }
 
     /**
