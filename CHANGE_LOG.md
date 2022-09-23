@@ -17,3 +17,6 @@
 1. `KakaoApiService`에서 리다이렉트가 계속되며, 로그인이 안되던 버그가 수정되었습니다.
 
 2. `KakaoDevClient`에 `debugUrl`로 카카오 서버를 경우해 url을 scrap 할 수 있습니다.
+
+## 1.0.3
+1. `KakaoApiService`에서 로그인이 안되던 버그가 수정되었습니다.
