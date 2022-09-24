@@ -25,36 +25,55 @@
 const seedKey = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
 
 exports.TiaraFactory = {
+
     generateRandomUUIDWithDateTime() {
-        let t = ["w-"];
-        return t.push(this.shortenID(12)), t.push("_"), t.push(this.currentTimeStamp()), t.join("")
+        let t = ['w-'];
+
+        t.push(this.shortenID(12));
+        t.push('_');
+        t.push(this.currentTimeStamp());
+
+        return t.join('');
     },
 
     generateRandomUUIDWithDateNumber() {
-        let t = ["w-"];
-        return t.push(this.shortenID(12)), t.push("_"), t.push(this.currentTimeStamp().substring(0, 6)), t.push(this.randomNumericString(9)), t.join("")
+        let t = ['w-'];
+
+        t.push(this.shortenID(12));
+        t.push('_');
+        t.push(this.currentTimeStamp().substring(0, 6));
+        t.push(this.randomNumericString(9));
+
+        return t.join('');
     },
 
     currentTimeStamp() {
-        let t = new Date;
-        return t.setHours(t.getHours() + 9), t.toISOString().replace(/[TZ\-:.]/g, "").substring(2)
+        let time = new Date();
+        time.setHours(time.getHours() + 9);
+
+        return time.toISOString().replace(/[TZ\-:.]/g, '').substring(2);
     },
 
-    randomNumericString(t) {
+    randomNumericString(num) {
         let e = [];
-        for (let a = 0; a < t; a++) {
+
+        for (let a = 0; a < num; a++) {
             let n = Math.floor(10 * Math.random());
-            e.push(n)
+            e.push(n);
         }
-        return e.join("")
+
+        return e.join('');
     },
 
-    shortenID(t) {
+    shortenID(id) {
         let e = [];
-        for (let a = 0; a < t; a++) {
+
+        for (let a = 0; a < id; a++) {
             let n = seedKey[Math.floor(Math.random() * seedKey.length)];
-            e.push(n)
+            e.push(n);
         }
-        return e.join("")
+
+        return e.join('');
     }
+
 }
