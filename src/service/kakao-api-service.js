@@ -82,19 +82,22 @@ exports.KakaoApiService = /** @class */ (function () {
                         const parsedData = e.parse();
                         const dataElement = parsedData.getElementById('__NEXT_DATA__');
 
-                        let cryptoKey;
                         let isNextJS = !!dataElement;
 
-                        if (!dataElement) {
+                        let cryptoKey;
+                        let csrfToken;
+
+                        if (!isNextJS) {
                             cryptoKey = parsedData.select('input[name=p]').attr('value');
                             if (cryptoKey === '') reject('Cannot Get CryptoKey');
+
+                            csrfToken = String(parsedData.select('head > meta:nth-child(3)').attr('content'));
                         } else {
                             const nextData = JSON.parse(dataElement.data()).props.pageProps.pageContext.commonContext;
 
                             cryptoKey = nextData.p;
+                            csrfToken = String(nextData._csrf)
                         }
-
-                        let csrfToken = isNextJS ? String(nextData._csrf) : String(parsedData.select('head > meta:nth-child(3)').attr('content'));
 
                         this.client.changeHost('accounts.kakao.com');
                         this.client.request(
@@ -151,7 +154,7 @@ exports.KakaoApiService = /** @class */ (function () {
      * @return {string}
      */
     KakaoApiService.getReleaseVersion = function () {
-        return "1.1.0-snapshot";
+        return "1.0.5";
     }
 
     /**

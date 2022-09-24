@@ -106,10 +106,10 @@ exports.KakaoDevClient = /** @class */ (function () {
     KakaoDevClient.prototype.getAppSimpleList = function (index) {
         if (index === undefined) index = 0;
 
-        return new this.Promise((resolve, reject) => {
+        return new this.Promise(resolve => {
             setTimeout(() => {
                 this.getAppList().then((e) => {
-                    const obj = e[0];
+                    const obj = e[index];
 
                     resolve({ appId: obj.app_id, appKey: obj.app.app_key.JAVASCRIPT_KEY, webUrl: obj.app.platform.web.web_site_url });
                 })
@@ -415,11 +415,7 @@ exports.KakaoDevClient = /** @class */ (function () {
                     {
                         Referer: 'https://accounts.kakao.com/',
                     }
-                ).then(e => {
-                    resolve(true);
-                }).catch(err => {
-                    reject(err);
-                })
+                ).then(resolve).catch(reject)
             }, 0)
         })
     }
