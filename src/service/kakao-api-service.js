@@ -79,13 +79,25 @@ exports.KakaoApiService = /** @class */ (function () {
                             Referer: 'https://accounts.kakao.com/'
                         }
                     ).then(_ => {
-                        const dataElement = e.parse().getElementById('__NEXT_DATA__');
-                        
-                        if (!dataElement) reject('Cannot get next data.');
+                        const parsedData = e.parse();
+                        const dataElement = parsedData.getElementById('__NEXT_DATA__');
 
-                        const nextData = JSON.parse(dataElement.data()).props.pageProps.pageContext.commonContext;
+                        let cryptoKey;
+                        let isNextJS;
 
-                        const cryptoKey = nextData.p;
+                        if (!dataElement) {
+                            cryptoKey = parsedData.select('input[name=p]').attr('value');
+                            if (cryptoKey === '') reject('Cannot Get CryptoKey');
+
+                            isNextJS = false;
+                        } else {
+                            const nextData = JSON.parse(dataElement.data()).props.pageProps.pageContext.commonContext;
+
+                            cryptoKey = nextData.p;
+                            isNextJS = true;
+                        }
+
+                        let csrfToken = isNextJS ? String(nextData._csrf) : String(parsedData.select('head > meta:nth-child(3)').attr('content'));
 
                         this.client.changeHost('accounts.kakao.com');
                         this.client.request(
@@ -100,7 +112,7 @@ exports.KakaoApiService = /** @class */ (function () {
                                 continue: decodeURIComponent(referer.split('=')[1]),
                                 third: 'false',
                                 k: 'true',
-                                authenticity_token: String(nextData._csrf)
+                                authenticity_token: csrfToken
                             },
                             {
                                 Referer: referer

@@ -48,7 +48,7 @@ exports.RequestClient = /** @class */ (function () {
 
     /**
      * request
-     * @return {Promise<{body(): string;statusCode(): number;cookies():{putAll(obj: unknown);};url():{toExternalForm():string};parse():{select(query: string): {attr(str: string): string}}}>}
+     * @return {Promise<{body(): string;statusCode(): number;cookies():{putAll(obj: unknown);};url():{toExternalForm():string};parse():{select(query: string): {attr(str: string): string}; getElementById(id: string): { data(): string; }}}>}
      */
     RequestClient.prototype.request = function (
         method,
