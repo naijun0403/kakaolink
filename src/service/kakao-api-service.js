@@ -83,18 +83,15 @@ exports.KakaoApiService = /** @class */ (function () {
                         const dataElement = parsedData.getElementById('__NEXT_DATA__');
 
                         let cryptoKey;
-                        let isNextJS;
+                        let isNextJS = !!dataElement;
 
                         if (!dataElement) {
                             cryptoKey = parsedData.select('input[name=p]').attr('value');
                             if (cryptoKey === '') reject('Cannot Get CryptoKey');
-
-                            isNextJS = false;
                         } else {
                             const nextData = JSON.parse(dataElement.data()).props.pageProps.pageContext.commonContext;
 
                             cryptoKey = nextData.p;
-                            isNextJS = true;
                         }
 
                         let csrfToken = isNextJS ? String(nextData._csrf) : String(parsedData.select('head > meta:nth-child(3)').attr('content'));
