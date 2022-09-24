@@ -16,7 +16,14 @@
 ## 1.0.2
 1. `KakaoApiService`에서 리다이렉트가 계속되며, 로그인이 안되던 버그가 수정되었습니다.
 
-2. `KakaoDevClient`에 `debugUrl`로 카카오 서버를 경우해 url을 scrap 할 수 있습니다.
+2. `KakaoDevClient`에 `debugUrl`로 카카오 서버를 경우해 `url`을 `scrap` 할 수 있습니다.
 
 ## 1.0.3
 1. `KakaoApiService`에서 로그인이 안되던 버그가 수정되었습니다.
+
+## 1.0.4
+1. 카카오 로그인시 기존 방식과 신 방식 (Next.JS)가 둘다 호환이 되게 변경하였습니다.
+
+2. `tiara`를 받을때 사용하는 데이터를 최신화 하였습니다.
+
+3. `TiaraFactory`의 코드를 개선하였습니다.
