@@ -29,7 +29,7 @@ module.exports = {
         tiaraData: {
             sdk: {
                 type: 'WEB',
-                version: '1.1.20'
+                version: '1.1.22'
             },
             env: {
                 screen: '1920X1080',
@@ -50,7 +50,9 @@ module.exports = {
                     tuid: TiaraFactory.generateRandomUUIDWithDateTime(),
                     tsid: this.tuid,
                     uuid: TiaraFactory.generateRandomUUIDWithDateNumber(),
-                    suid: this.suid
+                    suid: this.suid,
+                    isuid: TiaraFactory.generateRandomUUIDWithDateNumber(),
+                    client_timestamp: Date.now()
                 }
             },
             action: {
