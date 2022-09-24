@@ -24,6 +24,7 @@
 
 const qs = require('../modules/qs')
 const { isExistsPromise } = require("../util/is-promise");
+var { setTimeout } = require('../polyfill/timers');
 
 /**
  * HTTP Request Client
@@ -33,6 +34,7 @@ exports.RequestClient = /** @class */ (function () {
     function RequestClient(host) {
         this.cookies = new java.util.LinkedHashMap();
         this.host = host;
+
         if (!isExistsPromise()) {
             this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise');
         } else {
@@ -57,63 +59,65 @@ exports.RequestClient = /** @class */ (function () {
         if (!this.Promise) throw new Error('Promise is not defined');
 
         return new this.Promise((resolve, reject) => {
-            try {
-                method = method || 'GET';
-                path = path || '/';
-                data = data || {};
-                headers = headers || {};
+            setTimeout(() => {
+                try {
+                    method = method || 'GET';
+                    path = path || '/';
+                    data = data || {};
+                    headers = headers || {};
 
-                method = org.jsoup.Connection.Method[method.toUpperCase()];
+                    method = org.jsoup.Connection.Method[method.toUpperCase()];
 
-                let request = null;
-                let fis = null;
+                    let request = null;
+                    let fis = null;
 
-                if (method === org.jsoup.Connection.Method['GET']) {
-                    if (Object.keys(data).length === 0) {
-                        request = org.jsoup.Jsoup.connect('https://' + this.host + path)
+                    if (method === org.jsoup.Connection.Method['GET']) {
+                        if (Object.keys(data).length === 0) {
+                            request = org.jsoup.Jsoup.connect('https://' + this.host + path)
+                        } else {
+                            request = org.jsoup.Jsoup.connect('https://' + this.host + path + '/?' + qs.stringify(data))
+                        }
                     } else {
-                        request = org.jsoup.Jsoup.connect('https://' + this.host + path + '/?' + qs.stringify(data))
-                    }
-                } else {
-                    request = org.jsoup.Jsoup.connect('https://' + this.host + path).method(method);
+                        request = org.jsoup.Jsoup.connect('https://' + this.host + path).method(method);
 
-                    if (typeof data === "string") request.requestBody(data);
-                    else {
-                        Object.keys(data).forEach(e => {
-                            if (typeof data[e] !== "object") {
-                                request.data(e, data[e]);
-                            } else {
-                                if (data[e] instanceof java.io.File) {
-                                    fis = new java.io.FileInputStream(data[e]);
-                                    request.data(e, data[e].getName(), fis);
+                        if (typeof data === "string") request.requestBody(data);
+                        else {
+                            Object.keys(data).forEach(e => {
+                                if (typeof data[e] !== "object") {
+                                    request.data(e, data[e]);
                                 } else {
-                                    request.data(e, data[e]['name'], data[e]['stream']);
+                                    if (data[e] instanceof java.io.File) {
+                                        fis = new java.io.FileInputStream(data[e]);
+                                        request.data(e, data[e].getName(), fis);
+                                    } else {
+                                        request.data(e, data[e]['name'], data[e]['stream']);
+                                    }
                                 }
-                            }
-                        }); // https://github.com/mozilla/rhino/issues/247
+                            }); // https://github.com/mozilla/rhino/issues/247
+                        }
                     }
+
+                    Object.keys(headers).forEach(e => {
+                        request.header(e, headers[e]);
+                    }); // https://github.com/mozilla/rhino/issues/247
+                    request.cookies(this.cookies);
+
+                    const res = request
+                        .ignoreContentType(true)
+                        .ignoreHttpErrors(true)
+                        .followRedirects(false)
+                        .execute();
+                    this.cookies.putAll(res.cookies());
+
+                    if (fis !== null) {
+                        fis.close();
+                    }
+
+                    resolve(res);
+                } catch (e) {
+                    reject(e);
                 }
-
-                Object.keys(headers).forEach(e => {
-                    request.header(e, headers[e]);
-                }); // https://github.com/mozilla/rhino/issues/247
-                request.cookies(this.cookies);
-
-                const res = request
-                    .ignoreContentType(true)
-                    .ignoreHttpErrors(true)
-                    .followRedirects(false)
-                    .execute();
-                this.cookies.putAll(res.cookies());
-
-                if (fis !== null) {
-                    fis.close();
-                }
-
-                resolve(res);
-            } catch (e) {
-                reject(e);
-            }
+            }, 0);
         })
     }
 
