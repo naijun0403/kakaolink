@@ -5,7 +5,7 @@
 사용법은 [여기](https://github.com/naijun0403/kakaolink/wiki/1.-모듈-적용법)를 참고해주세요.
 
 ## download
-[github release](https://github.com/naijun0403/kakaolink/releases)
+[GitHub release](https://github.com/naijun0403/kakaolink/releases)
 
 ## support
 - [x] `메신저봇 R`
