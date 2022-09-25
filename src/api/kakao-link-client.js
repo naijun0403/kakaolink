@@ -192,7 +192,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
      * @private
      */
     KakaoLinkClient.prototype.generateKakaoAgent = function (url) {
-        return 'sdk/1.25.7 os/javascript lang/ko-KR device/MacIntel origin/' + decodeURIComponent(url || 'https://arthic.dev');
+        return 'sdk/1.25.7+os/javascript+lang/ko-KR+device/Win32+origin/' + decodeURIComponent(url || 'https://arthic.dev');
     }
 
     return KakaoLinkClient;

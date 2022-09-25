@@ -111,6 +111,7 @@ exports.KakaoApiService = /** @class */ (function () {
                                 stay_signed_in: data.keepLogin.toString(),
                                 continue: decodeURIComponent(referer.split('=')[1]),
                                 third: 'false',
+                                sdk: 'false',
                                 k: 'true',
                                 authenticity_token: csrfToken
                             },
