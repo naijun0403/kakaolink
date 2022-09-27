@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
-const {RequestClient} = require("../request/request-client");
-const {isExistsPromise} = require("../util/is-promise");
-const {constants} = require("../config");
-const {CryptoJS} = require("../crypto");
+const { RequestClient } = require('../request/request-client');
+const { isExistsPromise } = require('../util/is-promise');
+const { constants } = require('../config');
+const { CryptoJS } = require('../crypto');
 var { setTimeout } = require('../polyfill/timers');
 
 exports.KakaoApiService = /** @class */ (function () {
@@ -36,7 +36,7 @@ exports.KakaoApiService = /** @class */ (function () {
     /**
      * login
      *
-     * @param data {{email:string;password:string;keepLogin:boolean}}
+     * @param data {{ email: string; password: string; keepLogin: boolean; }}
      * @return {Promise<Object>}
      */
     KakaoApiService.prototype.login = function (data) {
@@ -152,7 +152,7 @@ exports.KakaoApiService = /** @class */ (function () {
     /**
      * get release version
      *
-     * @return {string}
+     * @return { string }
      */
     KakaoApiService.getReleaseVersion = function () {
         return "1.1.0-snapshot";
@@ -161,7 +161,7 @@ exports.KakaoApiService = /** @class */ (function () {
     /**
      * create Service
      *
-     * @return {KakaoApiService}
+     * @return { KakaoApiService }
      */
     KakaoApiService.createService = function () {
         return new KakaoApiService();

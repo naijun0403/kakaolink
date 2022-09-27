@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-const {RequestClient} = require("../request/request-client");
-const {isExistsPromise} = require("../util/is-promise");
+const { RequestClient } = require('../request/request-client');
+const { isExistsPromise } = require('../util/is-promise');
 var { setTimeout } = require('../polyfill/timers');
 
 exports.KakaoLinkClient = /** @class */ (function () {
@@ -46,8 +46,8 @@ exports.KakaoLinkClient = /** @class */ (function () {
     /**
      * @deprecated
      * @forRemoval since next release
-     * @param {string} email
-     * @param {string} password
+     * @param { string } email
+     * @param { string } password
      */
     KakaoLinkClient.prototype.loginLegacy = function (email, password) {
         const { KakaoApiService } = require("../service/kakao-api-service");
@@ -93,11 +93,11 @@ exports.KakaoLinkClient = /** @class */ (function () {
     /**
      * Kakao Link Send
      *
-     * @param {String} room Room Name
-     * @param {{ link_ver: '4.0', template_id: number | string, template_args: any, template_object: { button_title: string, object_type: 'feed' | 'list' | 'location' | 'commerce' | 'text',
-     * content: { title: string, description: string, image_url: string, link: any }, social: { likeCount: number, commentCount: number, shareCount: number },
+     * @param { string } room Room Name
+     * @param {{ link_ver: '4.0', template_id: number | string, template_args: Record<string, string>, template_object: { button_title: string, object_type: 'feed' | 'list' | 'location' | 'commerce' | 'text',
+     * content: { title: string, description: string, image_url: string, link: Record<string, unknown> }, social: { likeCount: number, commentCount: number, shareCount: number },
      * buttons: [{title: string, link: { web_url: string, moblie_web_url: string }}] } }} data Kakao Send Info
-     * @param {'custom' | 'default'} type send Type
+     * @param { 'custom' | 'default' } type send Type
      */
     KakaoLinkClient.prototype.sendLink = function (room, data, type) {
         if (!this.isLogin) throw new Error('You cannot access the KakaoLink API before logging in.')

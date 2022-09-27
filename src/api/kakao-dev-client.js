@@ -99,9 +99,9 @@ exports.KakaoDevClient = /** @class */ (function () {
     /**
      * get AppList (simple struct)
      *
-     * @param {number?} index
+     * @param { number? } index
      *
-     * @return {Promise<{ appId: number; appKey: string; webUrl: string[] }>}
+     * @return {Promise<{ appId: number; appKey: string; webUrl: string[]; }>}
      */
     KakaoDevClient.prototype.getAppSimpleList = function (index) {
         if (index === undefined) index = 0;
@@ -145,7 +145,7 @@ exports.KakaoDevClient = /** @class */ (function () {
     /**
      * Create App
      * 
-     * @param {{name: string; company: string}} obj 
+     * @param {{ name: string; company: string }} obj
      * @returns {Promise<Record<string, unknown>>}
      */
     KakaoDevClient.prototype.createApp = function (obj) {
@@ -187,9 +187,9 @@ exports.KakaoDevClient = /** @class */ (function () {
     /**
      * update App platform web urls
      * 
-     * @param {number} appId
-     * @param {string[]} urls
-     * @returns {Promise<Record<string, unknown>>}
+     * @param { number } appId
+     * @param { string[] } urls
+     * @returns { Promise<Record<string, unknown>> }
      */
      KakaoDevClient.prototype.updateWebUrls = function (appId, urls) {
         urls = urls || [];
@@ -225,9 +225,9 @@ exports.KakaoDevClient = /** @class */ (function () {
     /**
      * Update App Information
      *
-     * @param {number} appId
-     * @param {{name: string; company: string}} obj
-     * @return {Promise<Record<string, unknown>>}
+     * @param { number } appId
+     * @param {{ name: string; company: string; }} obj
+     * @return { Promise<Record<string, unknown>> }
      */
     KakaoDevClient.prototype.updateApp = function (appId, obj) {
         if (!obj.hasOwnProperty('name') || !obj.hasOwnProperty('company')) throw new Error('No name or company entered.');
@@ -268,8 +268,8 @@ exports.KakaoDevClient = /** @class */ (function () {
     /**
      * Purge URL Cache
      * 
-     * @param {string} url 
-     * @returns {Promise<Record<string, unknown>>}
+     * @param { string } url
+     * @returns { Promise<Record<string, unknown>> }
      */
     KakaoDevClient.prototype.purgeUrl = function (url) {
         if (isNullOrUndefined(url)) throw new Error('No url entered.');
@@ -299,8 +299,8 @@ exports.KakaoDevClient = /** @class */ (function () {
     /**
      * Debug Url
      * 
-     * @param {string} url 
-     * @returns {Promise<Record<string, unknown>>}
+     * @param { string } url
+     * @returns { Promise<Record<string, unknown>> }
      */
     KakaoDevClient.prototype.debugUrl = function (url) {
         if (isNullOrUndefined(url)) throw new Error('No url entered.');
@@ -330,10 +330,10 @@ exports.KakaoDevClient = /** @class */ (function () {
     /**
      * request Data with query (graphql)
      *
-     * @param {string} method
-     * @param {string} query
-     * @param {Record<string, unknown>} variables
-     * @return {Promise<unknown>}
+     * @param { string } method
+     * @param { string } query
+     * @param { Record<string, unknown> } variables
+     * @return { Promise<unknown> }
      */
     KakaoDevClient.prototype.requestData = function (method, query, variables) {
         if (this.devToken === undefined || !this.isLogin) throw new Error('You cannot access the KakaoDev API before logging in.');
@@ -369,7 +369,7 @@ exports.KakaoDevClient = /** @class */ (function () {
     /**
      * get Developer Data (personal)
      *
-     * @return {Promise<{devToken: string; devId: string}>}
+     * @return { Promise<{ devToken: string; devId: string; }> }
      */
     KakaoDevClient.prototype.getDeveloperData = function () {
         if (!this.isLogin) throw new Error('You cannot access the KakaoDev API before logging in.');
@@ -401,7 +401,7 @@ exports.KakaoDevClient = /** @class */ (function () {
     /**
      * get KDT Cookie
      *
-     * @return {Promise<boolean>}
+     * @return { Promise<boolean >}
      */
     KakaoDevClient.prototype.getKdt = function () {
         if (!this.isLogin) throw new Error('You cannot access the KakaoDev API before logging in.');
