@@ -121,6 +121,15 @@ exports.RequestClient = /** @class */ (function () {
         })
     }
 
+    /**
+     * request by object
+     * @param {{ method: string; path: string; data: Record<string, string> | string; headers: Record<string, string> }} obj
+     * @return {Promise<{body(): string;statusCode(): number;cookies():{putAll(obj: unknown);};url():{toExternalForm():string};parse():{select(query: string): {attr(str: string): string}; getElementById(id: string): { data(): string; }}}>}
+     */
+    RequestClient.prototype.requestByObject = function (obj) {
+        return this.request(obj.method, obj.path, obj.data, obj.headers);
+    }
+
     RequestClient.prototype.getCookies = function () {
         return this.cookies;
     }

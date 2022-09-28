@@ -25,8 +25,8 @@
 const { RequestClient } = require('../request/request-client');
 const { isExistsPromise } = require('../util/is-promise');
 const { constants } = require('../config');
-const { CryptoJS } = require('../crypto');
 var { setTimeout } = require('../polyfill/timers');
+const { createAuthenticateRequestForm } = require('./authenticate-builder');
 
 exports.KakaoApiService = /** @class */ (function () {
     function KakaoApiService() {
@@ -56,6 +56,7 @@ exports.KakaoApiService = /** @class */ (function () {
                     'GET',
                     '/login',
                     {
+                        app_type: 'web',
                         continue: 'https://accounts.kakao.com/weblogin/account/info'
                     },
                     {
@@ -87,39 +88,23 @@ exports.KakaoApiService = /** @class */ (function () {
                         let cryptoKey;
                         let csrfToken;
 
-                        if (!isNextJS) {
-                            cryptoKey = parsedData.select('input[name=p]').attr('value');
-                            if (cryptoKey === '') reject('Cannot Get CryptoKey');
-
-                            csrfToken = String(parsedData.select('head > meta:nth-child(3)').attr('content'));
-                        } else {
+                        if (isNextJS) {
                             const nextData = JSON.parse(dataElement.data()).props.pageProps.pageContext.commonContext;
 
                             cryptoKey = nextData.p;
                             csrfToken = String(nextData._csrf)
+                        } else {
+                            cryptoKey = parsedData.select('input[name=p]').attr('value');
+                            if (cryptoKey === '') reject('Cannot Get CryptoKey');
+
+                            csrfToken = String(parsedData.select('head > meta:nth-child(3)').attr('content'));
                         }
 
                         this.client.changeHost('accounts.kakao.com');
-                        this.client.request(
-                            'POST',
-                            '/weblogin/authenticate.json',
-                            {
-                                os: 'web',
-                                webview_v: '2',
-                                email: CryptoJS.AES.encrypt(String(data.email), String(cryptoKey)).toString(),
-                                password: CryptoJS.AES.encrypt(String(data.password), String(cryptoKey)).toString(),
-                                stay_signed_in: data.keepLogin.toString(),
-                                continue: decodeURIComponent(referer.split('=')[1]),
-                                third: 'false',
-                                sdk: 'false',
-                                k: 'true',
-                                authenticity_token: csrfToken
-                            },
-                            {
-                                Referer: referer
-                            }
-                        ).then(r => {
+
+                        this.client.requestByObject(createAuthenticateRequestForm(isNextJS, data, referer, cryptoKey, csrfToken)).then(r => {
                             if (r.statusCode() !== 200) reject('An error occurred while loading authenticate.json with status: ' + r.statusCode());
+
                             const loginRes = JSON.parse(r.body());
 
                             switch (loginRes['status']) {
@@ -142,11 +127,11 @@ exports.KakaoApiService = /** @class */ (function () {
                             let cookies = this.client.getCookies();
 
                             resolve(cookies);
-                        }).catch(reject)
+                        }).catch(reject);
                     }).catch(reject)
                 }).catch(reject)
             }, 0);
-        })
+        });
     }
 
     /**
@@ -155,7 +140,7 @@ exports.KakaoApiService = /** @class */ (function () {
      * @return { string }
      */
     KakaoApiService.getReleaseVersion = function () {
-        return "1.1.0-snapshot";
+        return "1.0.6-snapshot";
     }
 
     /**
