@@ -142,7 +142,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
 
                     let channelData = null;
 
-                    structData['data']['chats'].forEach((value, index, array) => {
+                    structData['data']['chats'].forEach(value => {
                         if (value.title === room) {
                             channelData = value;
                             return true;
