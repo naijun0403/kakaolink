@@ -25,7 +25,7 @@
 const { RequestClient } = require('../request/request-client');
 const { isExistsPromise } = require('../util/is-promise');
 var { setTimeout } = require('../polyfill/timers');
-const { Base64 } = require('../util/base64');
+const { Base64Util } = require('../util/base64-util');
 
 exports.KakaoLinkClient = /** @class */ (function () {
     function KakaoLinkClient() {
@@ -133,7 +133,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
 
                     const encodedServerData = linkBody.match(/serverData = "(.*)"/)[1];
 
-                    const serverData = Base64.decode(encodedServerData);
+                    const serverData = Base64Util.decode(encodedServerData);
 
                     /** @type {{ data: { shortKey: string; csrf: string; checksum: string; chats: Array<{ id: string; title: string; member_count: number; display_member_images: string[] }> } }} */
                     const structData = JSON.parse(serverData);
@@ -151,7 +151,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
 
                     if (channelData === null) reject('There is no room called "' + room + '", please check again');
 
-                    const receiver = Base64.encode(
+                    const receiver = Base64Util.encode(
                         JSON.stringify(channelData)
                     )
 

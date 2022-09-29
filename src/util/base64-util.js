@@ -24,7 +24,7 @@
 
 const { Buffer } = require('../modules/buffer');
 
-exports.Base64 = {
+exports.Base64Util = {
 
     encode(str) {
         return String(android.util.Base64.encodeToString(new java.lang.String(str).getBytes(), android.util.Base64.NO_WRAP));
