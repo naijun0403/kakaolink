@@ -2,8 +2,6 @@
 ## how to use?
 [example](https://github.com/naijun0403/kakaolink/blob/main/example)을 참고해주세요
 
-사용법은 [여기](https://github.com/naijun0403/kakaolink/wiki/1.-모듈-적용법)를 참고해주세요.
-
 ## download
 [GitHub release](https://github.com/naijun0403/kakaolink/releases)
 

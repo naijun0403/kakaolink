@@ -140,7 +140,7 @@ exports.KakaoApiService = /** @class */ (function () {
      * @return { string }
      */
     KakaoApiService.getReleaseVersion = function () {
-        return "1.0.6-snapshot";
+        return "1.0.6";
     }
 
     /**
