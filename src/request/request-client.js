@@ -48,13 +48,19 @@ exports.RequestClient = /** @class */ (function () {
 
     /**
      * request
+     * @param method { string }
+     * @param path { string }
+     * @param data { Record<string, unknown> }
+     * @param headers { Record<string, string> }
+     * @param followRedirect { boolean? }
      * @return {Promise<{body(): string;statusCode(): number;cookies():{putAll(obj: unknown);};url():{toExternalForm():string};parse():{select(query: string): {attr(str: string): string}; getElementById(id: string): { data(): string; }}}>}
      */
     RequestClient.prototype.request = function (
         method,
         path,
         data,
-        headers
+        headers,
+        followRedirect
     ) {
         if (!this.Promise) throw new Error('Promise is not defined');
 
@@ -65,6 +71,7 @@ exports.RequestClient = /** @class */ (function () {
                     path = path || '/';
                     data = data || {};
                     headers = headers || {};
+                    followRedirect = followRedirect || false
 
                     method = org.jsoup.Connection.Method[method.toUpperCase()];
 
@@ -105,7 +112,7 @@ exports.RequestClient = /** @class */ (function () {
                     const res = request
                         .ignoreContentType(true)
                         .ignoreHttpErrors(true)
-                        .followRedirects(false)
+                        .followRedirects(followRedirect)
                         .execute();
                     this.cookies.putAll(res.cookies());
 

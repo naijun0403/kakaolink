@@ -25,6 +25,7 @@
 const { RequestClient } = require('../request/request-client');
 const { isExistsPromise } = require('../util/is-promise');
 var { setTimeout } = require('../polyfill/timers');
+const { Base64 } = require('../util/base64');
 
 exports.KakaoLinkClient = /** @class */ (function () {
     function KakaoLinkClient() {
@@ -111,72 +112,64 @@ exports.KakaoLinkClient = /** @class */ (function () {
 
         return new this.Promise((resolve, reject) => {
             setTimeout(() => {
+                const dataString = JSON.stringify(data);
+
                 this.client.request(
                     'POST',
-                    '/talk/friends/picker/link',
+                    '/picker/link',
                     {
                         app_key: this.apiKey,
                         validation_action: type || 'custom',
-                        validation_params: JSON.stringify(data),
+                        validation_params: dataString,
                         ka: this.kakaoAgent,
-                        lcba: ''
                     },
-                    {}
+                    {},
+                    true
                 ).then(e => {
                     if (e.statusCode() === 401) reject('Please check the apiKey again');
                     if (e.statusCode() !== 200) reject('An unknown error occurred while sending the message with status: ' + e.statusCode());
 
-                    const parsedData = e.parse();
-                    const csrfToken = String(parsedData.select('div').last().attr('ng-init').slice(7).replace("'", ''));
-                    const linkData = parsedData.select('#validatedTalkLink').attr('value');
+                    const linkBody = e.body();
+
+                    const encodedServerData = linkBody.match(/serverData = "(.*)"/)[1];
+
+                    const serverData = Base64.decode(encodedServerData);
+
+                    /** @type {{ data: { shortKey: string; csrf: string; checksum: string; chats: Array<{ id: string; title: string; member_count: number; display_member_images: string[] }> } }} */
+                    const structData = JSON.parse(serverData);
+
+                    const { shortKey, csrfToken, checksum } = structData['data'];
+
+                    let channelData = null;
+
+                    structData['data']['chats'].forEach((value, index, array) => {
+                        if (value.title === room) {
+                            channelData = value;
+                            return true;
+                        }
+                    })
+
+                    if (channelData === null) reject('There is no room called "' + room + '", please check again');
+
+                    const receiver = Base64.encode(
+                        JSON.stringify(channelData)
+                    )
 
                     this.client.request(
-                        'GET',
-                        '/api/talk/chats',
-                        {},
+                        'POST',
+                        '/picker/send',
                         {
-                            Referer: 'https://sharer.kakao.com/talk/friends/picker/link',
-                            'Csrf-Token': csrfToken,
-                            'App-Key': this.apiKey
-                        }
+                            app_key: this.apiKey,
+                            short_key: shortKey,
+                            _csrf: csrfToken,
+                            checksum: checksum,
+                            receiver: receiver
+                        },
+                        {}
                     ).then(r => {
-                        const roomData = /** @type {{chats: Array<{id:string;title:string;memberCount:number;}>}} */ JSON.parse(r.body());
+                        resolve({ success: true, status: r.statusCode() })
+                    }).catch(reject)
 
-                        let id = null, memberCount = null;
-                        roomData['chats'].forEach(element => {
-                            if (element.title === room) {
-                                memberCount = element.memberCount;
-                                id = element.id;
-                                return false;
-                            }
-                        });
-
-                        if (id === null || memberCount === null) reject('There is no room called "' + room + '", please check again');
-
-                        this.client.request(
-                            'POST',
-                            '/api/talk/message/link',
-                            JSON.stringify({
-                                validatedTalkLink: JSON.parse(linkData),
-                                securityKey: roomData['securityKey'],
-                                receiverType: 'chat',
-                                receiverIds: [id],
-                                receiverChatRoomMemberCount: [memberCount]
-                            }),
-                            {
-                                Referer: 'https://sharer.kakao.com/talk/friends/picker/link',
-                                'App-Key': this.apiKey,
-                                'Csrf-Token': csrfToken,
-                                'Content-Type': 'application/json;charset=utf-8'
-                            }
-                        ).then(result => {
-                            resolve(result)
-                        }).catch(err => {
-                            reject(err);
-                        })
-                    }).catch(err => {
-                        reject(err);
-                    })
                 }).catch(err => {
                     reject(err);
                 })
@@ -192,7 +185,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
      * @private
      */
     KakaoLinkClient.prototype.generateKakaoAgent = function (url) {
-        return 'sdk/1.25.7+os/javascript+lang/ko-KR+device/Win32+origin/' + decodeURIComponent(url || 'https://arthic.dev');
+        return 'sdk/2.0.0 os/javascript sdk type/javascript lang/ko device/Win32 origin/' + decodeURIComponent(url || 'https://arthic.dev');
     }
 
     return KakaoLinkClient;
