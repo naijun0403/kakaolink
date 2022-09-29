@@ -165,7 +165,8 @@ exports.KakaoLinkClient = /** @class */ (function () {
                             checksum: checksum,
                             receiver: receiver
                         },
-                        {}
+                        {},
+                        true
                     ).then(r => {
                         resolve({ success: true, status: r.statusCode() })
                     }).catch(reject)
