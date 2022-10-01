@@ -63,7 +63,7 @@ function createAuthenticateRequestForm(isNextJS, form, referer, cryptoKey, csrfT
                 email: CryptoJS.AES.encrypt(String(form.email), String(cryptoKey)).toString(),
                 password: CryptoJS.AES.encrypt(String(form.password), String(cryptoKey)).toString(),
                 stay_signed_in: form.keepLogin.toString(),
-                continue: decodeURIComponent(referer.split('=')[1]),
+                continue: decodeURIComponent(referer.split('continue=')[1]),
                 third: 'false',
                 sdk: 'false',
                 k: 'true',
