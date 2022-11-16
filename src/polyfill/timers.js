@@ -22,35 +22,51 @@
  * SOFTWARE.
  */
 
-var stack = [];
+(function (module, exports, require) {
+    const { isGreenApp } = require('../util/is-green-app');
 
-var setTimeout = function (callback, timeout) {
-    const args = Array.from(arguments);
+    const stack = [];
 
-    // function arguments
-    args.pop();
-    args.pop();
+    const setTimeout_support = function (callback, timeout) {
+        const args = Array.from(arguments);
 
-    const timer = new java.util.Timer();
-    const task = new java.util.TimerTask({
-        run: function () {
-            callback.call(this, args);
+        // function arguments
+        args.pop();
+        args.pop();
+
+        if (isGreenApp()) {
+            return setTimeout(callback, timeout, args);
         }
-    });
-    timer.schedule(task, timeout);
-    stack[++stack.size] = timer;
-}
 
-var clearTimeout = (id) => {
-    const timer = stack[id];
-    if (timer === undefined) {
-        return undefined;
+        const timer = new java.util.Timer();
+        const task = new java.util.TimerTask({
+            run: function () {
+                callback.call(this, args);
+            }
+        });
+        timer.schedule(task, timeout);
+
+        const id = ++stack.size;
+        stack[id] = timer;
+
+        return id;
     }
 
-    timer.cancel();
-}
+    const clearTimeout_support = (id) => {
+        if (isGreenApp()) {
+            return clearTimeout(id);
+        }
 
-module.exports = {
-    setTimeout: setTimeout,
-    clearTimeout: clearTimeout,
-}
+        const timer = stack[id];
+        if (timer === undefined) {
+            return undefined;
+        }
+
+        timer.cancel();
+    }
+
+    module.exports = {
+        setTimeout: setTimeout_support,
+        clearTimeout: clearTimeout_support,
+    }
+})(module, exports, require);

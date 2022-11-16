@@ -7,13 +7,11 @@
 
 ## support
 - [x] `메신저봇 R`
-- [ ] `채팅 자동응답 봇`
+- [x] `채팅 자동응답 봇`
 - [x] [`SkyLine`](https://github.com/SkyLineLab/SkyLine)
 
 ### 채팅 자동응답 봇 지원
-> `채팅 자동응답 봇`은 베타 6부터 지원할 계획에 있어요 근데 그게 아직 릴리즈가 안되었어요 
-> 
-> 자세한 내용은 [여기](/doc/user/support.md)를 참고해주세요
+[kakaolink.js](/dist/kakaolink.js)를 이용해주세요
 
 ## error
 [error.md](/doc/user/error.md)를 참고해주세요

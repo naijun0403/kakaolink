@@ -21,22 +21,3 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-exports.TemplateBuilder = (function () {
-    const { CustomTemplateBuilder } = require('./custom');
-    const { DefaultTemplateBuilder } = require('./default');
-
-    function TemplateBuilder() {
-
-    }
-
-    TemplateBuilder.newCustomBuilder = function () {
-        return new CustomTemplateBuilder();
-    }
-
-    TemplateBuilder.newDefaultBuilder = function () {
-        return new DefaultTemplateBuilder();
-    }
-
-    return TemplateBuilder;
-})();

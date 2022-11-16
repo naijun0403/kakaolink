@@ -179,6 +179,12 @@ exports.KakaoLinkClient = /** @class */ (function () {
     }
 
     /**
+     * support other module method
+     * @deprecated
+     */
+    KakaoLinkClient.prototype.send = this.sendLink;
+
+    /**
      * generate Kakao Agent
      *
      * @param {string} url
@@ -186,7 +192,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
      * @private
      */
     KakaoLinkClient.prototype.generateKakaoAgent = function (url) {
-        return 'sdk/2.0.0 os/javascript sdk type/javascript lang/ko device/Win32 origin/' + decodeURIComponent(url || 'https://arthic.dev');
+        return 'sdk/2.0.1 os/javascript sdk type/javascript lang/ko device/Win32 origin/' + decodeURIComponent(url || 'https://arthic.dev');
     }
 
     return KakaoLinkClient;

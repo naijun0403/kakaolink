@@ -1,0 +1,85 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 naijun0403
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+exports.CustomTemplateBuilder = (function () {
+    function CustomTemplateBuilder() {
+        this.templateId = 0;
+        this.linkVer = '4.0';
+        this.obj = {};
+    }
+
+    /**
+     * set link version
+     * @param {string} linkVer
+     * @returns {CustomTemplateBuilder}
+     */
+    CustomTemplateBuilder.prototype.setLinkVersion = function (linkVer) {
+        this.linkVer = linkVer;
+        return this;
+    }
+
+    /**
+     * set template id
+     * @param {number} templateId
+     * @returns {CustomTemplateBuilder}
+     */
+    CustomTemplateBuilder.prototype.setTemplateId = function (templateId) {
+        this.templateId = templateId;
+        return this;
+    }
+
+    /**
+     * add param
+     * @param {string} name
+     * @param {string} value
+     * @returns {CustomTemplateBuilder}
+     */
+    CustomTemplateBuilder.prototype.addParam = function (name, value) {
+        this.obj[name] = value;
+        return this;
+    }
+
+    /**
+     * build data
+     * @returns {BuildData}
+     */
+    CustomTemplateBuilder.prototype.build = function () {
+        return {
+            link_ver: this.linkVer,
+            template_id: this.templateId,
+            template_args: this.obj
+        };
+    }
+
+    CustomTemplateBuilder.newBuilder = function () {
+        return new CustomTemplateBuilder();
+    }
+    /**
+     * @typedef BuildData
+     * @property {number} template_id
+     * @property {string} link_ver
+     * @property {Record<string, *>} template_args
+     */
+    return CustomTemplateBuilder;
+})();

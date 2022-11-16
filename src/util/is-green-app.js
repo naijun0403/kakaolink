@@ -22,21 +22,9 @@
  * SOFTWARE.
  */
 
-exports.TemplateBuilder = (function () {
-    const { CustomTemplateBuilder } = require('./custom');
-    const { DefaultTemplateBuilder } = require('./default');
-
-    function TemplateBuilder() {
-
-    }
-
-    TemplateBuilder.newCustomBuilder = function () {
-        return new CustomTemplateBuilder();
-    }
-
-    TemplateBuilder.newDefaultBuilder = function () {
-        return new DefaultTemplateBuilder();
-    }
-
-    return TemplateBuilder;
-})();
+exports.isGreenApp = function () {
+    const clazz = java.lang.Class.forName('android.app.ActivityThread');
+    const method = clazz.getDeclaredMethod("currentPackageName", null);
+    const packageName = String(method.invoke(clazz, null));
+    return packageName === 'com.darktornado.chatbot';
+}

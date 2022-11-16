@@ -22,21 +22,11 @@
  * SOFTWARE.
  */
 
-exports.TemplateBuilder = (function () {
-    const { CustomTemplateBuilder } = require('./custom');
-    const { DefaultTemplateBuilder } = require('./default');
+const { TemplateBuilder } = require('../../src/template');
 
-    function TemplateBuilder() {
+TemplateBuilder.newCustomBuilder()
+    .setTemplateId(1234)
+    .addParam('test', 'test')
+    .build();
 
-    }
-
-    TemplateBuilder.newCustomBuilder = function () {
-        return new CustomTemplateBuilder();
-    }
-
-    TemplateBuilder.newDefaultBuilder = function () {
-        return new DefaultTemplateBuilder();
-    }
-
-    return TemplateBuilder;
-})();
+TemplateBuilder.newDefaultBuilder();

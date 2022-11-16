@@ -111,8 +111,14 @@ exports.RequestClient = /** @class */ (function () {
 
                     const res = request
                         .ignoreContentType(true)
+                        .ignoreHttpErrors(true)
                         .followRedirects(followRedirect)
                         .execute();
+
+                    const status = res.statusCode();
+
+                    if (status < 200 || status >= 400) throw new Error('Http Error with status: ' + status);
+
                     this.cookies.putAll(res.cookies());
 
                     if (fis !== null) {

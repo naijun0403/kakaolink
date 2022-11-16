@@ -22,21 +22,10 @@
  * SOFTWARE.
  */
 
-exports.TemplateBuilder = (function () {
-    const { CustomTemplateBuilder } = require('./custom');
-    const { DefaultTemplateBuilder } = require('./default');
-
-    function TemplateBuilder() {
+exports.DefaultTemplateBuilder = (function () {
+    function DefaultTemplateBuilder() {
 
     }
 
-    TemplateBuilder.newCustomBuilder = function () {
-        return new CustomTemplateBuilder();
-    }
-
-    TemplateBuilder.newDefaultBuilder = function () {
-        return new DefaultTemplateBuilder();
-    }
-
-    return TemplateBuilder;
+    return DefaultTemplateBuilder;
 })();
