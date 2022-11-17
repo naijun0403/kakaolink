@@ -8552,7 +8552,7 @@ code.google.com/p/crypto-js/wiki/License
          * @private
          */
         KakaoLinkClient.prototype.generateKakaoAgent = function (url) {
-            return 'sdk/2.0.1 os/javascript sdk type/javascript lang/ko device/Win32 origin/' + decodeURIComponent(url || 'https://arthic.dev');
+            return 'sdk/2.0.1 os/javascript sdk_type/javascript lang/ko device/Win32 origin/' + decodeURIComponent(url || 'https://arthic.dev');
         }
 
         return KakaoLinkClient;
