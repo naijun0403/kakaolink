@@ -8169,8 +8169,6 @@ code.google.com/p/crypto-js/wiki/License
 
                         const status = res.statusCode();
 
-                        Log.d(status)
-
                         if (status < 200 || status >= 400) throw new Error('Http Error with status: ' + status);
 
                         this.cookies.putAll(res.cookies());
@@ -8474,14 +8472,16 @@ code.google.com/p/crypto-js/wiki/License
 
                     this.client.request(
                         'POST',
-                        '/picker/link',
+                        '/talk/friends/picker/link',
                         {
                             app_key: this.apiKey,
                             validation_action: type || 'custom',
                             validation_params: dataString,
                             ka: this.kakaoAgent,
                         },
-                        {},
+                        {
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0',
+                        },
                         true
                     ).then(e => {
                         if (e.statusCode() === 401) reject('Please check the apiKey again');
@@ -8523,7 +8523,9 @@ code.google.com/p/crypto-js/wiki/License
                                 checksum: checksum,
                                 receiver: receiver
                             },
-                            {},
+                            {
+                                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0',
+                            },
                             true
                         ).then(r => {
                             resolve({ success: true, status: r.statusCode() })
