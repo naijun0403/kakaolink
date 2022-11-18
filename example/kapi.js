@@ -38,7 +38,7 @@ KakaoApiService.createService().login({
         url: 'url'
     });
 }).catch(e => {
-    console.error(e)
+    throw e;
 });
 
 client.on('message', (data) => {

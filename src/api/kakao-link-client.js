@@ -172,12 +172,12 @@ exports.KakaoLinkClient = /** @class */ (function () {
                         },
                         true
                     ).then(r => {
+                        if (r.statusCode() !== 200) reject('KakaoShareMessage sending failed with status: ' + r.statusCode());
+
                         resolve({ success: true, status: r.statusCode() })
                     }).catch(reject)
 
-                }).catch(err => {
-                    reject(err);
-                })
+                }).catch(reject)
             }, 0)
         });
     }

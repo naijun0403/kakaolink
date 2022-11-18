@@ -33,7 +33,7 @@ KakaoApiService.createService().login({
 }).then(e => {
     DevClient.login(e);
 }).catch(e => {
-    Log.e(e);
+    throw e;
 });
 
 function response(room, msg, sender, isGroupChat, replier, imageDB, packageName) {

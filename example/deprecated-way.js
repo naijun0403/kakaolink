@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-const { KakaoLinkClient } = require('kakaolink')
+const { KakaoLinkClient } = require('kakaolink');
 
 const Kakao = new KakaoLinkClient('apiKey', 'url');
 
-Kakao.login('email', 'password')
+Kakao.login('email', 'password');
 
 function response(room, msg, sender, isGroupChat, replier, imageDB, packageName) {
     if(msg === '!카카오링크') {

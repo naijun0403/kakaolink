@@ -57,7 +57,7 @@ exports.KakaoDevClient = /** @class */ (function () {
                         this.devId = e.devId;
                         resolve();
                     }).catch(reject);
-                });
+                }).catch(reject);
             }, 0)
         })
     }
@@ -359,9 +359,7 @@ exports.KakaoDevClient = /** @class */ (function () {
                     if (e.statusCode() !== 200) reject('The request to graphql failed for an unknown reason with status: ' + e.statusCode());
 
                     resolve(JSON.parse(e.body()));
-                }).catch(err => {
-                    reject(err);
-                })
+                }).catch(reject)
             }, 0);
         })
     }
@@ -384,16 +382,18 @@ exports.KakaoDevClient = /** @class */ (function () {
                         Referer: 'https://developers.kakao.com'
                     }
                 ).then(e => {
+                    if (e.statusCode() !== 200) reject('Failed to fetch developer token for unknown reason: ' + e.statusCode());
+
                     const data = JSON.parse(e.body().match(/SERVER_DATA = ([^]*);/)[1]);
                     const devToken = data['KD-DEVELOPER-TOKEN'];
                     const devId = data['KD-DEVELOPER-ID'];
+
                     if (devToken === undefined || devId === undefined) {
                         reject('Failed to fetch developer token for unknown reason.');
                     }
-                    resolve({devToken: devToken, devId: devId});
-                }).catch(err => {
-                    reject(err);
-                })
+
+                    resolve({ devToken: devToken, devId: devId });
+                }).catch(reject)
             }, 0)
         });
     }
@@ -415,7 +415,11 @@ exports.KakaoDevClient = /** @class */ (function () {
                     {
                         Referer: 'https://accounts.kakao.com/',
                     }
-                ).then(resolve).catch(reject)
+                ).then(r => {
+                    if (r.statusCode() !== 200) reject('Failed to get kakao developer token: ' + r.statusCode());
+
+                    resolve(r);
+                }).catch(reject)
             }, 0)
         })
     }

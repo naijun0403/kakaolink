@@ -8102,7 +8102,7 @@ code.google.com/p/crypto-js/wiki/License
          * request
          * @param method { string }
          * @param path { string }
-         * @param data { Record<string, unknown> }
+         * @param data { Record<string, unknown> | string }
          * @param headers { Record<string, string> }
          * @param followRedirect { boolean? }
          * @return {Promise<{body(): string;statusCode(): number;cookies():{putAll(obj: unknown);};url():{toExternalForm():string};parse():{select(query: string): {attr(str: string): string}; getElementById(id: string): { data(): string; }}}>}
@@ -8166,10 +8166,6 @@ code.google.com/p/crypto-js/wiki/License
                             .ignoreHttpErrors(true)
                             .followRedirects(followRedirect)
                             .execute();
-
-                        const status = res.statusCode();
-
-                        if (status < 200 || status >= 400) throw new Error('Http Error with status: ' + status);
 
                         this.cookies.putAll(res.cookies());
 
@@ -8528,12 +8524,12 @@ code.google.com/p/crypto-js/wiki/License
                             },
                             true
                         ).then(r => {
+                            if (r.statusCode() !== 200) reject('KakaoShareMessage sending failed with status: ' + r.statusCode());
+
                             resolve({ success: true, status: r.statusCode() })
                         }).catch(reject)
 
-                    }).catch(err => {
-                        reject(err);
-                    })
+                    }).catch(reject)
                 }, 0)
             });
         }
@@ -8588,7 +8584,7 @@ code.google.com/p/crypto-js/wiki/License
                             this.devId = e.devId;
                             resolve();
                         }).catch(reject);
-                    });
+                    }).catch(reject);
                 }, 0)
             })
         }
@@ -8890,9 +8886,7 @@ code.google.com/p/crypto-js/wiki/License
                         if (e.statusCode() !== 200) reject('The request to graphql failed for an unknown reason with status: ' + e.statusCode());
 
                         resolve(JSON.parse(e.body()));
-                    }).catch(err => {
-                        reject(err);
-                    })
+                    }).catch(reject)
                 }, 0);
             })
         }
@@ -8915,16 +8909,18 @@ code.google.com/p/crypto-js/wiki/License
                             Referer: 'https://developers.kakao.com'
                         }
                     ).then(e => {
+                        if (e.statusCode() !== 200) reject('Failed to fetch developer token for unknown reason: ' + e.statusCode());
+
                         const data = JSON.parse(e.body().match(/SERVER_DATA = ([^]*);/)[1]);
                         const devToken = data['KD-DEVELOPER-TOKEN'];
                         const devId = data['KD-DEVELOPER-ID'];
+
                         if (devToken === undefined || devId === undefined) {
                             reject('Failed to fetch developer token for unknown reason.');
                         }
-                        resolve({devToken: devToken, devId: devId});
-                    }).catch(err => {
-                        reject(err);
-                    })
+
+                        resolve({ devToken: devToken, devId: devId });
+                    }).catch(reject)
                 }, 0)
             });
         }
@@ -8946,7 +8942,11 @@ code.google.com/p/crypto-js/wiki/License
                         {
                             Referer: 'https://accounts.kakao.com/',
                         }
-                    ).then(resolve).catch(reject)
+                    ).then(r => {
+                        if (r.statusCode() !== 200) reject('Failed to get kakao developer token: ' + r.statusCode());
+
+                        resolve(r);
+                    }).catch(reject)
                 }, 0)
             })
         }

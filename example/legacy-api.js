@@ -36,7 +36,7 @@ KakaoApiService.createService().login({
         url: 'url'
     });
 }).catch(e => {
-    Log.e(e);
+    throw e;
 });
 
 function response(room, msg, sender, isGroupChat, replier, imageDB, packageName) {

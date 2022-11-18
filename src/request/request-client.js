@@ -50,7 +50,7 @@ exports.RequestClient = /** @class */ (function () {
      * request
      * @param method { string }
      * @param path { string }
-     * @param data { Record<string, unknown> }
+     * @param data { Record<string, unknown> | string }
      * @param headers { Record<string, string> }
      * @param followRedirect { boolean? }
      * @return {Promise<{body(): string;statusCode(): number;cookies():{putAll(obj: unknown);};url():{toExternalForm():string};parse():{select(query: string): {attr(str: string): string}; getElementById(id: string): { data(): string; }}}>}
@@ -114,10 +114,6 @@ exports.RequestClient = /** @class */ (function () {
                         .ignoreHttpErrors(true)
                         .followRedirects(followRedirect)
                         .execute();
-
-                    const status = res.statusCode();
-
-                    if (status < 200 || status >= 400) throw new Error('Http Error with status: ' + status);
 
                     this.cookies.putAll(res.cookies());
 
