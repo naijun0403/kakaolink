@@ -72,6 +72,33 @@ exports.DefaultTemplateBuilder = (function () {
     }
 
     /**
+     * set object type as list
+     * @returns { DefaultTemplateBuilder }
+     */
+    DefaultTemplateBuilder.prototype.setTypeAsList = function () {
+        this.setType('list');
+        return this;
+    }
+
+    /**
+     * set object type as location
+     * @returns { DefaultTemplateBuilder }
+     */
+    DefaultTemplateBuilder.prototype.setTypeAsLocation = function () {
+        this.setType('location');
+        return this;
+    }
+
+    /**
+     * set object type as commerce
+     * @returns { DefaultTemplateBuilder }
+     */
+    DefaultTemplateBuilder.prototype.setTypeAsCommerce = function () {
+        this.setType('commerce');
+        return this;
+    }
+
+    /**
      * set item content
      * @param item
      *
@@ -140,6 +167,50 @@ exports.DefaultTemplateBuilder = (function () {
      */
     DefaultTemplateBuilder.prototype.setText = function (text) {
         this.obj['text'] = text;
+        return this;
+    }
+
+    /**
+     * set header title
+     * @param { string } title
+     *
+     * @returns { DefaultTemplateBuilder }
+     */
+    DefaultTemplateBuilder.prototype.setHeaderTitle = function (title) {
+        this.obj['header_title'] = title;
+        return this;
+    }
+
+    /**
+     * using link builder
+     * @param link
+     *
+     * @returns { DefaultTemplateBuilder }
+     */
+    DefaultTemplateBuilder.prototype.setHeaderLink = function (link) {
+        this.obj['header_link'] = link;
+        return this;
+    }
+
+    /**
+     * set address
+     * @param { string } address
+     *
+     * @returns { DefaultTemplateBuilder }
+     */
+    DefaultTemplateBuilder.prototype.setAddress = function (address) {
+        this.obj['address'] = address;
+        return this;
+    }
+
+    /**
+     * set address title
+     * @param { string } title
+     *
+     * @returns { DefaultTemplateBuilder }
+     */
+    DefaultTemplateBuilder.prototype.setAddressTitle = function (title) {
+        this.obj['address_title'] = title;
         return this;
     }
 

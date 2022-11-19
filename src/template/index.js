@@ -30,6 +30,7 @@ exports.TemplateBuilder = (function () {
     const { SocialBuilder } = require('./content/social');
     const { LinkBuilder } = require('./content/link');
     const { ContentBuilder } = require('./content/content');
+    const { CommerceBuilder } = require('./content/commerce');
 
     function TemplateBuilder() {
 
@@ -57,6 +58,10 @@ exports.TemplateBuilder = (function () {
 
     TemplateBuilder.newContentBuilder = function () {
         return new ContentBuilder();
+    }
+
+    TemplateBuilder.newCommerceBuilder = function () {
+        return new CommerceBuilder();
     }
 
     return TemplateBuilder;
