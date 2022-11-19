@@ -23,6 +23,9 @@
  */
 
 exports.DefaultTemplateBuilder = (function () {
+
+    const { Button } = require('../content/button');
+
     function DefaultTemplateBuilder() {
         this.linkVer = '4.0';
         this.obj = {}; // template_object
@@ -60,14 +63,83 @@ exports.DefaultTemplateBuilder = (function () {
     }
 
     /**
-     * set ItemContent
-     *
+     * set object type as text
+     * @returns { DefaultTemplateBuilder }
+     */
+    DefaultTemplateBuilder.prototype.setTypeAsText = function () {
+        this.setType('text');
+        return this;
+    }
+
+    /**
+     * set item content
      * @param item
      *
      * @returns { DefaultTemplateBuilder }
      */
     DefaultTemplateBuilder.prototype.setItemContent = function (item) {
         this.obj['item_content'] = item;
+        return this;
+    }
+
+    /**
+     * set content
+     * @param content
+     *
+     * @returns { DefaultTemplateBuilder }
+     */
+    DefaultTemplateBuilder.prototype.setContent = function (content) {
+        this.obj['content'] = content;
+        return this;
+    }
+
+    /**
+     * set default button title
+     * @param { string } title
+     *
+     * @returns { DefaultTemplateBuilder }
+     */
+    DefaultTemplateBuilder.prototype.setButtonTitle = function (title) {
+        this.obj['button_title'] = title;
+        return this;
+    }
+
+    /**
+     * add button
+     * @param { Button } button
+     *
+     * @returns { DefaultTemplateBuilder }
+     */
+    DefaultTemplateBuilder.prototype.addButton = function (button) {
+        if (button instanceof Button) {
+            if (!this.obj['buttons']) this.obj['buttons'] = [];
+            this.obj['buttons'].push(
+                JSON.parse(JSON.stringify(button))
+            )
+        } else throw new Error('button is not Button instance');
+
+        return this;
+    }
+
+    /**
+     * using link builder
+     * @param link
+     *
+     * @returns { DefaultTemplateBuilder }
+     */
+    DefaultTemplateBuilder.prototype.setLink = function (link) {
+        this.obj['link'] = link;
+        return this;
+    }
+
+    /**
+     * set text
+     * @param { string } text
+     *
+     * @returns { DefaultTemplateBuilder }
+     */
+    DefaultTemplateBuilder.prototype.setText = function (text) {
+        this.obj['text'] = text;
         return this;
     }
 

@@ -22,43 +22,13 @@
  * SOFTWARE.
  */
 
-exports.TemplateBuilder = (function () {
-
-    const { CustomTemplateBuilder } = require('./custom');
-    const { DefaultTemplateBuilder } = require('./default');
-    const { ItemContentBuilder } = require("./content/item-content");
-    const { SocialBuilder } = require('./content/social');
-    const { LinkBuilder } = require('./content/link');
-    const { ContentBuilder } = require('./content/content');
-
-    function TemplateBuilder() {
-
-    }
-
-    TemplateBuilder.newCustomBuilder = function () {
-        return new CustomTemplateBuilder();
-    }
-
-    TemplateBuilder.newDefaultBuilder = function () {
-        return new DefaultTemplateBuilder();
-    }
-
-    TemplateBuilder.newItemContentBuilder = function () {
-        return new ItemContentBuilder();
-    }
-
-    TemplateBuilder.newSocialBuilder = function () {
-        return new SocialBuilder();
-    }
-
-    TemplateBuilder.newLinkBuilder = function () {
-        return new LinkBuilder();
-    }
-
-    TemplateBuilder.newContentBuilder = function () {
-        return new ContentBuilder();
-    }
-
-    return TemplateBuilder;
-
-})();
+/**
+ * Button (link builder)
+ * @param { string } title
+ * @param link
+ * @constructor
+ */
+exports.Button = function (title, link) {
+    this.title = title;
+    this.link = link;
+}

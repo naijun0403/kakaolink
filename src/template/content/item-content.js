@@ -32,8 +32,8 @@ exports.ItemContentBuilder = (function () {
 
     /**
      * set profile text
-     * @param text
-     * @returns {ItemContentBuilder}
+     * @param { string } text
+     * @returns { ItemContentBuilder }
      */
     ItemContentBuilder.prototype.setProfileText = function (text) {
         this.obj['profile_text'] = text;
@@ -42,8 +42,8 @@ exports.ItemContentBuilder = (function () {
 
     /**
      * set profile image url
-     * @param url
-     * @returns {ItemContentBuilder}
+     * @param { string } url
+     * @returns { ItemContentBuilder }
      */
     ItemContentBuilder.prototype.setProfileImageUrl = function (url) {
         this.obj['profile_image_url'] = url;
@@ -52,8 +52,8 @@ exports.ItemContentBuilder = (function () {
 
     /**
      * set title image text
-     * @param text
-     * @returns {ItemContentBuilder}
+     * @param { string } text
+     * @returns { ItemContentBuilder }
      */
     ItemContentBuilder.prototype.setTitleImageText = function (text) {
         this.obj['title_image_text'] = text;
@@ -62,8 +62,8 @@ exports.ItemContentBuilder = (function () {
 
     /**
      * set title image url
-     * @param url
-     * @returns {ItemContentBuilder}
+     * @param { string } url
+     * @returns { ItemContentBuilder }
      */
     ItemContentBuilder.prototype.setTitleImageUrl = function (url) {
         this.obj['title_image_url'] = url;
@@ -72,8 +72,8 @@ exports.ItemContentBuilder = (function () {
 
     /**
      * set title image category
-     * @param category
-     * @returns {ItemContentBuilder}
+     * @param { string } category
+     * @returns { ItemContentBuilder }
      */
     ItemContentBuilder.prototype.setTitleImageCategory = function (category) {
         this.obj['title_image_category'] = category;
@@ -82,8 +82,8 @@ exports.ItemContentBuilder = (function () {
 
     /**
      * add item info
-     * @param itemInfo
-     * @returns {ItemContentBuilder}
+     * @param { ItemInfo } itemInfo
+     * @returns { ItemContentBuilder }
      */
     ItemContentBuilder.prototype.addItemInfo = function (itemInfo) {
         if (itemInfo instanceof ItemInfo) {
@@ -98,7 +98,7 @@ exports.ItemContentBuilder = (function () {
 
     /**
      * set summary
-     * @param text
+     * @param { string } text
      * @returns {ItemContentBuilder}
      */
     ItemContentBuilder.prototype.setSummary = function (text) {
@@ -108,8 +108,8 @@ exports.ItemContentBuilder = (function () {
 
     /**
      * set summary op
-     * @param text
-     * @returns {ItemContentBuilder}
+     * @param { string } text
+     * @returns { ItemContentBuilder }
      */
     ItemContentBuilder.prototype.setSummaryOp = function (text) {
         this.obj['sum_op'] = text;
