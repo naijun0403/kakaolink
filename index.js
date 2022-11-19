@@ -26,3 +26,4 @@ exports.KakaoApiService = require('./src/service/kakao-api-service').KakaoApiSer
 exports.KakaoLinkClient = require('./src/api/kakao-link-client').KakaoLinkClient;
 exports.TiaraFactory = require('./src/tiara/index').TiaraFactory;
 exports.KakaoDevClient = require('./src/api/kakao-dev-client').KakaoDevClient;
+exports.TemplateBuilder = require('./src/template').TemplateBuilder;

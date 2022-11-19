@@ -95,10 +95,8 @@ exports.KakaoLinkClient = /** @class */ (function () {
      * Kakao Link Send
      *
      * @param { string } room Room Name
-     * @param {{ link_ver: '4.0', template_id: number | string, template_args: Record<string, string>, template_object: { button_title: string, object_type: 'feed' | 'list' | 'location' | 'commerce' | 'text',
-     * content: { title: string, description: string, image_url: string, link: Record<string, unknown> }, social: { likeCount: number, commentCount: number, shareCount: number },
-     * buttons: [{title: string, link: { web_url: string, moblie_web_url: string }}] } }} data Kakao Send Info
-     * @param { 'custom' | 'default' } type send Type
+     * @param { Record<string, unknown> } data Kakao Send Info
+     * @param { 'custom' | 'default' } [type] send Type
      */
     KakaoLinkClient.prototype.sendLink = function (room, data, type) {
         if (!this.isLogin) throw new Error('You cannot access the KakaoLink API before logging in.')
@@ -119,7 +117,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
                     '/talk/friends/picker/link',
                     {
                         app_key: this.apiKey,
-                        validation_action: type || 'custom',
+                        validation_action: type || 'default',
                         validation_params: dataString,
                         ka: this.kakaoAgent,
                     },

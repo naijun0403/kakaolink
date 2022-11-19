@@ -23,7 +23,6 @@
  */
 
 const { TemplateBuilder } = require('../../src/template');
-const {ItemContentBuilder} = require("../../src/template/content/item-content");
 
 TemplateBuilder.newCustomBuilder()
     .setTemplateId(1234)
@@ -31,10 +30,11 @@ TemplateBuilder.newCustomBuilder()
     .build();
 
 TemplateBuilder.newDefaultBuilder()
-    .setTypeAsFeed()
-    .setItemContent(
-        TemplateBuilder.newItemContentBuilder()
-            .setProfileText('test')
+    .setTypeAsText()
+    .setText('test')
+    .setLink(
+        TemplateBuilder.newLinkBuilder()
+            .setWebUrl('https://example.com')
             .build()
     )
-    .build()
+    .build();
