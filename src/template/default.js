@@ -24,7 +24,7 @@
 
 exports.DefaultTemplateBuilder = (function () {
 
-    const { Button } = require('../content/button');
+    const { Button } = require('./content/button');
 
     function DefaultTemplateBuilder() {
         this.linkVer = '4.0';

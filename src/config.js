@@ -29,7 +29,7 @@ module.exports = {
         tiaraData: {
             sdk: {
                 type: 'WEB',
-                version: '1.1.22'
+                version: '1.1.23'
             },
             env: {
                 screen: '1920X1080',
@@ -39,11 +39,11 @@ module.exports = {
             common: {
                 svcdomain: 'accounts.kakao.com',
                 deployment: 'production',
-                url: 'https://accounts.kakao.com/login',
-                referrer: 'https://m.search.daum.net/',
-                title: '카카오계정',
-                section: 'login',
-                page: 'pageLogin'
+                url: 'https://accounts.kakao.com/weblogin/account/info',
+                referrer: 'https://logins.daum.net/',
+                title: 'Kakao Account',
+                section: 'manage',
+                page: 'pageManage'
             },
             etc: {
                 client_info: {
@@ -57,7 +57,7 @@ module.exports = {
             },
             action: {
                 type: 'Pageview',
-                name: 'pageLogin',
+                name: 'pageManage',
                 kind: ''
             }
         }

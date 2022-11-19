@@ -24,6 +24,16 @@
 
 'use strict';
 
+const { ItemInfo } = require('../src/template/content/item-info');
+const { CustomTemplateBuilder } = require('../src/template/custom');
+const { DefaultTemplateBuilder } = require('../src/template/default');
+const { ItemContentBuilder } = require('../src/template/content/item-content');
+const { SocialBuilder } = require('../src/template/content/social');
+const { LinkBuilder } = require('../src/template/content/link');
+const { ContentBuilder } = require('../src/template/content/content');
+const { CommerceBuilder } = require('../src/template/content/commerce');
+const { Button } = require('../src/template/content/button');
+const { TiaraFactory } = require('../src/tiara');
 (function (module, exports, require) {
 
     /*
@@ -8020,7 +8030,7 @@ code.google.com/p/crypto-js/wiki/License
             tiaraData: {
                 sdk: {
                     type: 'WEB',
-                    version: '1.1.22'
+                    version: '1.1.23'
                 },
                 env: {
                     screen: '1920X1080',
@@ -8030,11 +8040,11 @@ code.google.com/p/crypto-js/wiki/License
                 common: {
                     svcdomain: 'accounts.kakao.com',
                     deployment: 'production',
-                    url: 'https://accounts.kakao.com/login',
-                    referrer: 'https://m.search.daum.net/',
-                    title: '카카오계정',
-                    section: 'login',
-                    page: 'pageLogin'
+                    url: 'https://accounts.kakao.com/weblogin/account/info',
+                    referrer: 'https://logins.daum.net/',
+                    title: 'Kakao Account',
+                    section: 'manage',
+                    page: 'pageManage'
                 },
                 etc: {
                     client_info: {
@@ -8048,7 +8058,7 @@ code.google.com/p/crypto-js/wiki/License
                 },
                 action: {
                     type: 'Pageview',
-                    name: 'pageLogin',
+                    name: 'pageManage',
                     kind: ''
                 }
             }
@@ -8365,7 +8375,7 @@ code.google.com/p/crypto-js/wiki/License
          * @return { string }
          */
         KakaoApiService.getReleaseVersion = function () {
-            return "1.0.8";
+            return "1.1.0";
         }
 
         /**
@@ -8447,10 +8457,8 @@ code.google.com/p/crypto-js/wiki/License
          * Kakao Link Send
          *
          * @param { string } room Room Name
-         * @param {{ link_ver: '4.0', template_id: number | string, template_args: Record<string, string>, template_object: { button_title: string, object_type: 'feed' | 'list' | 'location' | 'commerce' | 'text',
-         * content: { title: string, description: string, image_url: string, link: Record<string, unknown> }, social: { likeCount: number, commentCount: number, shareCount: number },
-         * buttons: [{title: string, link: { web_url: string, moblie_web_url: string }}] } }} data Kakao Send Info
-         * @param { 'custom' | 'default' } type send Type
+         * @param { Record<string, unknown> } data Kakao Send Info
+         * @param { 'custom' | 'default' } [type] send Type
          */
         KakaoLinkClient.prototype.sendLink = function (room, data, type) {
             if (!this.isLogin) throw new Error('You cannot access the KakaoLink API before logging in.')
@@ -8954,10 +8962,710 @@ code.google.com/p/crypto-js/wiki/License
         return KakaoDevClient;
     })();
 
+    /**
+     * Button (link builder)
+     * @param { string } title
+     * @param link
+     * @constructor
+     */
+    const Button = function (title, link) {
+        this.title = title;
+        this.link = link;
+    }
+
+    const CommerceBuilder = (function () {
+
+        function CommerceBuilder() {
+            this.obj = {};
+        }
+
+        /**
+         * set product name
+         * @param { string } name
+         * @returns { CommerceBuilder }
+         */
+        CommerceBuilder.prototype.setProductName = function (name) {
+            this.obj['product_name'] = name;
+            return this;
+        }
+
+        /**
+         * set regular price
+         * @param { number } price
+         * @returns { CommerceBuilder }
+         */
+        CommerceBuilder.prototype.setRegularPrice = function (price) {
+            this.obj['price'] = price;
+            return this;
+        }
+
+        /**
+         * set discount price
+         * @param { number } price
+         * @returns { CommerceBuilder }
+         */
+        CommerceBuilder.prototype.setDiscountPrice = function (price) {
+            this.obj['discount_price'] = price;
+            return this;
+        }
+
+        /**
+         * set discount rate
+         * @param { number } rate
+         * @returns { CommerceBuilder }
+         */
+        CommerceBuilder.prototype.setDiscountRate = function (rate) {
+            this.obj['discount_rate'] = rate;
+            return this;
+        }
+
+        /**
+         * set currency unit
+         * @param { string } unit
+         * @returns { CommerceBuilder }
+         */
+        CommerceBuilder.prototype.setCurrencyUnit = function (unit) {
+            this.obj['currency_unit'] = unit;
+            return this;
+        }
+
+        /**
+         * set currency unit position
+         * @param { number } position
+         * @returns { CommerceBuilder }
+         */
+        CommerceBuilder.prototype.setCurrencyUnitPosition = function (position) {
+            this.obj['currency_unit_position'] = position;
+            return this;
+        }
+
+        /**
+         * build
+         * @returns {*|{}}
+         */
+        CommerceBuilder.prototype.build = function () {
+            return this.obj;
+        }
+
+        return CommerceBuilder;
+
+    })();
+
+    const ContentBuilder = (function () {
+
+        function ContentBuilder() {
+            this.obj = {};
+        }
+
+        /**
+         * set title
+         * @param { string } title
+         * @returns { ContentBuilder }
+         */
+        ContentBuilder.prototype.setTitle = function (title) {
+            this.obj['title'] = title;
+            return this;
+        }
+
+        /**
+         * set image url
+         * @param { string } url
+         * @returns { ContentBuilder }
+         */
+        ContentBuilder.prototype.setImageUrl = function (url) {
+            this.obj['image_url'] = url;
+            return this;
+        }
+
+        /**
+         * set image width
+         * @param { number } width
+         * @returns { ContentBuilder }
+         */
+        ContentBuilder.prototype.setImageWidth = function (width) {
+            this.obj['image_width'] = width;
+            return this;
+        }
+
+        /**
+         * set image height
+         * @param { number } height
+         * @returns { ContentBuilder }
+         */
+        ContentBuilder.prototype.setImageHeight = function (height) {
+            this.obj['image_height'] = height;
+            return this;
+        }
+
+        /**
+         * set description
+         * @param { string } description
+         * @returns { ContentBuilder }
+         */
+        ContentBuilder.prototype.setDescription = function (description) {
+            this.obj['description'] = description;
+            return this;
+        }
+
+        /**
+         * set link (using link builder)
+         * @param link
+         * @returns { ContentBuilder }
+         */
+        ContentBuilder.prototype.setLink = function (link) {
+            this.obj['link'] = link;
+            return this;
+        }
+
+        return ContentBuilder;
+
+    })();
+
+    const ItemInfo = function (name, value) {
+        this.item = name;
+        this.item_op = value;
+    }
+
+    const ItemContentBuilder = (function () {
+
+        function ItemContentBuilder() {
+            this.obj = {};
+        }
+
+        /**
+         * set profile text
+         * @param { string } text
+         * @returns { ItemContentBuilder }
+         */
+        ItemContentBuilder.prototype.setProfileText = function (text) {
+            this.obj['profile_text'] = text;
+            return this;
+        }
+
+        /**
+         * set profile image url
+         * @param { string } url
+         * @returns { ItemContentBuilder }
+         */
+        ItemContentBuilder.prototype.setProfileImageUrl = function (url) {
+            this.obj['profile_image_url'] = url;
+            return this;
+        }
+
+        /**
+         * set title image text
+         * @param { string } text
+         * @returns { ItemContentBuilder }
+         */
+        ItemContentBuilder.prototype.setTitleImageText = function (text) {
+            this.obj['title_image_text'] = text;
+            return this;
+        }
+
+        /**
+         * set title image url
+         * @param { string } url
+         * @returns { ItemContentBuilder }
+         */
+        ItemContentBuilder.prototype.setTitleImageUrl = function (url) {
+            this.obj['title_image_url'] = url;
+            return this;
+        }
+
+        /**
+         * set title image category
+         * @param { string } category
+         * @returns { ItemContentBuilder }
+         */
+        ItemContentBuilder.prototype.setTitleImageCategory = function (category) {
+            this.obj['title_image_category'] = category;
+            return this;
+        }
+
+        /**
+         * add item info
+         * @param { ItemInfo } itemInfo
+         * @returns { ItemContentBuilder }
+         */
+        ItemContentBuilder.prototype.addItemInfo = function (itemInfo) {
+            if (itemInfo instanceof ItemInfo) {
+                if (!this.obj['items']) this.obj['items'] = [];
+                this.obj['items'].push(
+                    JSON.parse(JSON.stringify(itemInfo))
+                )
+            } else throw new Error('itemInfo is not ItemInfo instance');
+
+            return this;
+        }
+
+        /**
+         * set summary
+         * @param { string } text
+         * @returns {ItemContentBuilder}
+         */
+        ItemContentBuilder.prototype.setSummary = function (text) {
+            this.obj['sum'] = text;
+            return this;
+        }
+
+        /**
+         * set summary op
+         * @param { string } text
+         * @returns { ItemContentBuilder }
+         */
+        ItemContentBuilder.prototype.setSummaryOp = function (text) {
+            this.obj['sum_op'] = text;
+            return this;
+        }
+
+        /**
+         * build
+         */
+        ItemContentBuilder.prototype.build = function () {
+            return this.obj;
+        }
+
+        return ItemContentBuilder;
+
+    })();
+
+    const LinkBuilder = (function () {
+
+        function LinkBuilder() {
+            this.obj = {};
+        }
+
+        /**
+         * set web url
+         * @param { string } url
+         * @returns { LinkBuilder }
+         */
+        LinkBuilder.prototype.setWebUrl = function (url) {
+            this.obj['web_url'] = url;
+            return this;
+        }
+
+        /**
+         * set mobile web url
+         * @param { string } url
+         * @returns { LinkBuilder }
+         */
+        LinkBuilder.prototype.setMobileWebUrl = function (url) {
+            this.obj['mobile_web_url'] = url;
+            return this;
+        }
+
+        /**
+         * set android execution params
+         * @param { string } param
+         * @returns { LinkBuilder }
+         */
+        LinkBuilder.prototype.setAndroidExecutionParams = function (param) {
+            this.obj['android_execution_params'] = param;
+            return this;
+        }
+
+        /**
+         * set ios execution params
+         * @param { string } param
+         * @returns { LinkBuilder }
+         */
+        LinkBuilder.prototype.setIosExecutionParams = function (param) {
+            this.obj['ios_execution_params'] = param;
+            return this;
+        }
+
+        /**
+         * build
+         * @returns {*|{}}
+         */
+        LinkBuilder.prototype.build = function () {
+            return this.obj;
+        }
+
+        return LinkBuilder;
+
+    })();
+
+    const SocialBuilder = (function () {
+
+        function SocialBuilder() {
+            this.obj = {};
+        }
+
+        /**
+         * set like count
+         * @param { number } count
+         * @returns { SocialBuilder }
+         */
+        SocialBuilder.prototype.setLikeCount = function (count) {
+            this.obj['like_count'] = count;
+            return this;
+        }
+
+        /**
+         * set comment count
+         * @param { number } count
+         * @returns { SocialBuilder }
+         */
+        SocialBuilder.prototype.setCommentCount = function (count) {
+            this.obj['comment_count'] = count;
+            return this;
+        }
+
+        /**
+         * set shared count
+         * @param { number } count
+         * @returns { SocialBuilder }
+         */
+        SocialBuilder.prototype.setSharedCount = function (count) {
+            this.obj['shared_count'] = count;
+            return this;
+        }
+
+        /**
+         * set view count
+         * @param { number } count
+         * @returns { SocialBuilder }
+         */
+        SocialBuilder.prototype.setViewCount = function (count) {
+            this.obj['view_count'] = count;
+            return this;
+        }
+
+        /**
+         * set subscriber count
+         * @param { number } count
+         * @returns { SocialBuilder }
+         */
+        SocialBuilder.prototype.setSubscriberCount = function (count) {
+            this.obj['subscriber_count'] = count;
+            return this;
+        }
+
+        /**
+         * build
+         * @returns {*|{}}
+         */
+        SocialBuilder.prototype.build = function () {
+            return this.obj;
+        }
+
+        return SocialBuilder;
+
+    })();
+
+    const DefaultTemplateBuilder = (function () {
+
+        function DefaultTemplateBuilder() {
+            this.linkVer = '4.0';
+            this.obj = {}; // template_object
+        }
+
+        /**
+         * set link version
+         * @param linkVer
+         *
+         * @returns { DefaultTemplateBuilder }
+         */
+        DefaultTemplateBuilder.prototype.setLinkVersion = function (linkVer) {
+            this.linkVer = linkVer;
+            return this;
+        }
+
+        /**
+         * set object type
+         * @param type
+         *
+         * @returns { DefaultTemplateBuilder }
+         */
+        DefaultTemplateBuilder.prototype.setType = function (type) {
+            this.obj['object_type'] = type;
+            return this;
+        }
+
+        /**
+         * set object type as feed
+         * @returns { DefaultTemplateBuilder }
+         */
+        DefaultTemplateBuilder.prototype.setTypeAsFeed = function () {
+            this.setType('feed');
+            return this;
+        }
+
+        /**
+         * set object type as text
+         * @returns { DefaultTemplateBuilder }
+         */
+        DefaultTemplateBuilder.prototype.setTypeAsText = function () {
+            this.setType('text');
+            return this;
+        }
+
+        /**
+         * set object type as list
+         * @returns { DefaultTemplateBuilder }
+         */
+        DefaultTemplateBuilder.prototype.setTypeAsList = function () {
+            this.setType('list');
+            return this;
+        }
+
+        /**
+         * set object type as location
+         * @returns { DefaultTemplateBuilder }
+         */
+        DefaultTemplateBuilder.prototype.setTypeAsLocation = function () {
+            this.setType('location');
+            return this;
+        }
+
+        /**
+         * set object type as commerce
+         * @returns { DefaultTemplateBuilder }
+         */
+        DefaultTemplateBuilder.prototype.setTypeAsCommerce = function () {
+            this.setType('commerce');
+            return this;
+        }
+
+        /**
+         * set item content
+         * @param item
+         *
+         * @returns { DefaultTemplateBuilder }
+         */
+        DefaultTemplateBuilder.prototype.setItemContent = function (item) {
+            this.obj['item_content'] = item;
+            return this;
+        }
+
+        /**
+         * set content
+         * @param content
+         *
+         * @returns { DefaultTemplateBuilder }
+         */
+        DefaultTemplateBuilder.prototype.setContent = function (content) {
+            this.obj['content'] = content;
+            return this;
+        }
+
+        /**
+         * set default button title
+         * @param { string } title
+         *
+         * @returns { DefaultTemplateBuilder }
+         */
+        DefaultTemplateBuilder.prototype.setButtonTitle = function (title) {
+            this.obj['button_title'] = title;
+            return this;
+        }
+
+        /**
+         * add button
+         * @param { Button } button
+         *
+         * @returns { DefaultTemplateBuilder }
+         */
+        DefaultTemplateBuilder.prototype.addButton = function (button) {
+            if (button instanceof Button) {
+                if (!this.obj['buttons']) this.obj['buttons'] = [];
+                this.obj['buttons'].push(
+                    JSON.parse(JSON.stringify(button))
+                )
+            } else throw new Error('button is not Button instance');
+
+            return this;
+        }
+
+        /**
+         * using link builder
+         * @param link
+         *
+         * @returns { DefaultTemplateBuilder }
+         */
+        DefaultTemplateBuilder.prototype.setLink = function (link) {
+            this.obj['link'] = link;
+            return this;
+        }
+
+        /**
+         * set text
+         * @param { string } text
+         *
+         * @returns { DefaultTemplateBuilder }
+         */
+        DefaultTemplateBuilder.prototype.setText = function (text) {
+            this.obj['text'] = text;
+            return this;
+        }
+
+        /**
+         * set header title
+         * @param { string } title
+         *
+         * @returns { DefaultTemplateBuilder }
+         */
+        DefaultTemplateBuilder.prototype.setHeaderTitle = function (title) {
+            this.obj['header_title'] = title;
+            return this;
+        }
+
+        /**
+         * using link builder
+         * @param link
+         *
+         * @returns { DefaultTemplateBuilder }
+         */
+        DefaultTemplateBuilder.prototype.setHeaderLink = function (link) {
+            this.obj['header_link'] = link;
+            return this;
+        }
+
+        /**
+         * set address
+         * @param { string } address
+         *
+         * @returns { DefaultTemplateBuilder }
+         */
+        DefaultTemplateBuilder.prototype.setAddress = function (address) {
+            this.obj['address'] = address;
+            return this;
+        }
+
+        /**
+         * set address title
+         * @param { string } title
+         *
+         * @returns { DefaultTemplateBuilder }
+         */
+        DefaultTemplateBuilder.prototype.setAddressTitle = function (title) {
+            this.obj['address_title'] = title;
+            return this;
+        }
+
+        /**
+         * build
+         * @returns {{template_object: (*|{}), link_ver: string}}
+         */
+        DefaultTemplateBuilder.prototype.build = function () {
+            return {
+                link_ver: this.linkVer,
+                template_object: this.obj
+            }
+        }
+
+        return DefaultTemplateBuilder;
+    })();
+
+    const CustomTemplateBuilder = (function () {
+        function CustomTemplateBuilder() {
+            this.templateId = 0;
+            this.linkVer = '4.0';
+            this.obj = {};
+        }
+
+        /**
+         * set link version
+         * @param {string} linkVer
+         * @returns {CustomTemplateBuilder}
+         */
+        CustomTemplateBuilder.prototype.setLinkVersion = function (linkVer) {
+            this.linkVer = linkVer;
+            return this;
+        }
+
+        /**
+         * set template id
+         * @param {number} templateId
+         * @returns {CustomTemplateBuilder}
+         */
+        CustomTemplateBuilder.prototype.setTemplateId = function (templateId) {
+            this.templateId = templateId;
+            return this;
+        }
+
+        /**
+         * add param
+         * @param {string} name
+         * @param {string} value
+         * @returns {CustomTemplateBuilder}
+         */
+        CustomTemplateBuilder.prototype.addParam = function (name, value) {
+            this.obj[name] = value;
+            return this;
+        }
+
+        /**
+         * build data
+         * @returns {BuildData}
+         */
+        CustomTemplateBuilder.prototype.build = function () {
+            return {
+                link_ver: this.linkVer,
+                template_id: this.templateId,
+                template_args: this.obj
+            };
+        }
+
+        CustomTemplateBuilder.newBuilder = function () {
+            return new CustomTemplateBuilder();
+        }
+        /**
+         * @typedef BuildData
+         * @property {number} template_id
+         * @property {string} link_ver
+         * @property {Record<string, *>} template_args
+         */
+        return CustomTemplateBuilder;
+    })();
+
+    const TemplateBuilder = (function () {
+
+        function TemplateBuilder() {
+
+        }
+
+        TemplateBuilder.newCustomBuilder = function () {
+            return new CustomTemplateBuilder();
+        }
+
+        TemplateBuilder.newDefaultBuilder = function () {
+            return new DefaultTemplateBuilder();
+        }
+
+        TemplateBuilder.newItemContentBuilder = function () {
+            return new ItemContentBuilder();
+        }
+
+        TemplateBuilder.newSocialBuilder = function () {
+            return new SocialBuilder();
+        }
+
+        TemplateBuilder.newLinkBuilder = function () {
+            return new LinkBuilder();
+        }
+
+        TemplateBuilder.newContentBuilder = function () {
+            return new ContentBuilder();
+        }
+
+        TemplateBuilder.newCommerceBuilder = function () {
+            return new CommerceBuilder();
+        }
+
+        return TemplateBuilder;
+
+    })();
+
     module.exports = {
         KakaoApiService: KakaoApiService,
         KakaoLinkClient: KakaoLinkClient,
         TiaraFactory: TiaraFactory,
-        KakaoDevClient: KakaoDevClient
+        KakaoDevClient: KakaoDevClient,
+        Button: Button,
+        ItemInfo: ItemInfo,
+        TemplateBuilder: TemplateBuilder
     };
 })(module, exports, require);

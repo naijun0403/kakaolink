@@ -27,3 +27,5 @@ exports.KakaoLinkClient = require('./src/api/kakao-link-client').KakaoLinkClient
 exports.TiaraFactory = require('./src/tiara/index').TiaraFactory;
 exports.KakaoDevClient = require('./src/api/kakao-dev-client').KakaoDevClient;
 exports.TemplateBuilder = require('./src/template').TemplateBuilder;
+exports.Button = require('./src/template/content/button').Button;
+exports.ItemInfo = require('./src/template/content/item-info').ItemInfo;
