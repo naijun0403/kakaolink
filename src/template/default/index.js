@@ -24,7 +24,62 @@
 
 exports.DefaultTemplateBuilder = (function () {
     function DefaultTemplateBuilder() {
+        this.linkVer = '4.0';
+        this.obj = {}; // template_object
+    }
 
+    /**
+     * set link version
+     * @param linkVer
+     *
+     * @returns { DefaultTemplateBuilder }
+     */
+    DefaultTemplateBuilder.prototype.setLinkVersion = function (linkVer) {
+        this.linkVer = linkVer;
+        return this;
+    }
+
+    /**
+     * set object type
+     * @param type
+     *
+     * @returns { DefaultTemplateBuilder }
+     */
+    DefaultTemplateBuilder.prototype.setType = function (type) {
+        this.obj['object_type'] = type;
+        return this;
+    }
+
+    /**
+     * set object type as feed
+     * @returns { DefaultTemplateBuilder }
+     */
+    DefaultTemplateBuilder.prototype.setTypeAsFeed = function () {
+        this.setType('feed');
+        return this;
+    }
+
+    /**
+     * set ItemContent
+     *
+     * @param item
+     *
+     * @returns { DefaultTemplateBuilder }
+     */
+    DefaultTemplateBuilder.prototype.setItemContent = function (item) {
+        this.obj['item_content'] = item;
+        return this;
+    }
+
+    /**
+     * build
+     * @returns {{template_object: (*|{}), link_ver: string}}
+     */
+    DefaultTemplateBuilder.prototype.build = function () {
+        return {
+            link_ver: this.linkVer,
+            template_object: this.obj
+        }
     }
 
     return DefaultTemplateBuilder;

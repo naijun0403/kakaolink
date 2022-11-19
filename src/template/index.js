@@ -25,6 +25,7 @@
 exports.TemplateBuilder = (function () {
     const { CustomTemplateBuilder } = require('./custom');
     const { DefaultTemplateBuilder } = require('./default');
+    const { ItemContentBuilder } = require("./content/item-content");
 
     function TemplateBuilder() {
 
@@ -36,6 +37,10 @@ exports.TemplateBuilder = (function () {
 
     TemplateBuilder.newDefaultBuilder = function () {
         return new DefaultTemplateBuilder();
+    }
+
+    TemplateBuilder.newItemContentBuilder = function () {
+        return new ItemContentBuilder();
     }
 
     return TemplateBuilder;
