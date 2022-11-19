@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-const {RequestClient} = require("../request/request-client");
-const {isExistsPromise} = require("../util/is-promise");
-const {isNullOrUndefined} = require("../util/is-null-or-undefined");
+const { RequestClient } = require("../request/request-client");
+const { isExistsPromise } = require("../util/is-promise");
+const { isNullOrUndefined } = require("../util/is-null-or-undefined");
 var { setTimeout } = require('../polyfill/timers');
 
 exports.KakaoDevClient = /** @class */ (function () {
@@ -111,7 +111,11 @@ exports.KakaoDevClient = /** @class */ (function () {
                 this.getAppList().then((e) => {
                     const obj = e[index];
 
-                    resolve({ appId: obj.app_id, appKey: obj.app.app_key.JAVASCRIPT_KEY, webUrl: obj.app.platform.web.web_site_url });
+                    resolve({
+                        appId: obj.app_id,
+                        appKey: obj.app.app_key.JAVASCRIPT_KEY,
+                        webUrl: obj.app.platform.web.web_site_url
+                    });
                 })
             }, 0)
         })
@@ -133,7 +137,7 @@ exports.KakaoDevClient = /** @class */ (function () {
                     '      }\n' +
                     '    }\n' +
                     '  }\n' +
-                    '}\n',  { appId: appId }).then(e => {
+                    '}\n', { appId: appId }).then(e => {
                     resolve(e['data']['member']);
                 }).catch(err => {
                     reject(err);
@@ -144,7 +148,7 @@ exports.KakaoDevClient = /** @class */ (function () {
 
     /**
      * Create App
-     * 
+     *
      * @param {{ name: string; company: string }} obj
      * @returns {Promise<Record<string, unknown>>}
      */
@@ -186,12 +190,12 @@ exports.KakaoDevClient = /** @class */ (function () {
 
     /**
      * update App platform web urls
-     * 
+     *
      * @param { number } appId
      * @param { string[] } urls
      * @returns { Promise<Record<string, unknown>> }
      */
-     KakaoDevClient.prototype.updateWebUrls = function (appId, urls) {
+    KakaoDevClient.prototype.updateWebUrls = function (appId, urls) {
         urls = urls || [];
 
         return new this.Promise((resolve, reject) => {
@@ -267,7 +271,7 @@ exports.KakaoDevClient = /** @class */ (function () {
 
     /**
      * Purge URL Cache
-     * 
+     *
      * @param { string } url
      * @returns { Promise<Record<string, unknown>> }
      */
@@ -298,7 +302,7 @@ exports.KakaoDevClient = /** @class */ (function () {
 
     /**
      * Debug Url
-     * 
+     *
      * @param { string } url
      * @returns { Promise<Record<string, unknown>> }
      */

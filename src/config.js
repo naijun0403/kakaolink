@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-const {TiaraFactory} = require("./tiara");
+const { TiaraFactory } = require("./tiara");
 
 module.exports = {
     constants: {
