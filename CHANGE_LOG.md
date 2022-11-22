@@ -1,4 +1,9 @@
 # CHANGE_LOG
+## 1.1.1
+1. `Kakao.prototype.send`부분의 버그를 해결하였습니다.
+
+2. 채자봇용 카링에서 require 부분이 들어간 부분을 삭제하였습니다.
+
 ## 1.1.0
 1. `TemplateBuilder`가 구현되었습니다. (`custom`, `default`)
 

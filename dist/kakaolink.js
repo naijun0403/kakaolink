@@ -8365,7 +8365,7 @@ code.google.com/p/crypto-js/wiki/License
          * @return { string }
          */
         KakaoApiService.getReleaseVersion = function () {
-            return "1.1.0";
+            return "1.1.1";
         }
 
         /**
