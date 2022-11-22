@@ -8536,7 +8536,7 @@ code.google.com/p/crypto-js/wiki/License
          * support other module method
          * @deprecated
          */
-        KakaoLinkClient.prototype.send = this.sendLink;
+        KakaoLinkClient.prototype.send = KakaoLinkClient.prototype.sendLink;
 
         /**
          * generate Kakao Agent
