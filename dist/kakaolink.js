@@ -24,16 +24,6 @@
 
 'use strict';
 
-const { ItemInfo } = require('../src/template/content/item-info');
-const { CustomTemplateBuilder } = require('../src/template/custom');
-const { DefaultTemplateBuilder } = require('../src/template/default');
-const { ItemContentBuilder } = require('../src/template/content/item-content');
-const { SocialBuilder } = require('../src/template/content/social');
-const { LinkBuilder } = require('../src/template/content/link');
-const { ContentBuilder } = require('../src/template/content/content');
-const { CommerceBuilder } = require('../src/template/content/commerce');
-const { Button } = require('../src/template/content/button');
-const { TiaraFactory } = require('../src/tiara');
 (function (module, exports, require) {
 
     /*
