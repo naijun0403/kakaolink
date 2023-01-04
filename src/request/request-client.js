@@ -25,6 +25,7 @@
 const qs = require('../modules/qs')
 const { isExistsPromise } = require("../util/is-promise");
 var { setTimeout } = require('../polyfill/timers');
+const { FileLogger } = require('../logger/file-logger');
 
 /**
  * HTTP Request Client
@@ -34,6 +35,8 @@ exports.RequestClient = /** @class */ (function () {
     function RequestClient(host) {
         this.cookies = new java.util.LinkedHashMap();
         this.host = host;
+
+        this.LOGGER = new FileLogger('request')
 
         if (!isExistsPromise()) {
             this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise');
@@ -78,17 +81,34 @@ exports.RequestClient = /** @class */ (function () {
                     let request = null;
                     let fis = null;
 
+                    const javaReplacer = (key, value) => {
+                        if (value instanceof java.lang.String) {
+                            return String(value);
+                        } else {
+                            return value;
+                        }
+                    };
+
+                    const baseURL = 'https://' + this.host + path;
+
                     if (method === org.jsoup.Connection.Method['GET']) {
                         if (Object.keys(data).length === 0) {
-                            request = org.jsoup.Jsoup.connect('https://' + this.host + path)
+                            request = org.jsoup.Jsoup.connect(baseURL);
+                            this.LOGGER.info('request: ' + method + ' ' + baseURL);
                         } else {
-                            request = org.jsoup.Jsoup.connect('https://' + this.host + path + '/?' + qs.stringify(data))
+                            request = org.jsoup.Jsoup.connect(baseURL + '/?' + qs.stringify(data));
+                            this.LOGGER.info('request: ' + method + ' ' + baseURL + '/?' + qs.stringify(data));
+                            this.LOGGER.info('params: ' + JSON.stringify(data, null, 2));
                         }
                     } else {
-                        request = org.jsoup.Jsoup.connect('https://' + this.host + path).method(method);
+                        request = org.jsoup.Jsoup.connect(baseURL).method(method);
+                        this.LOGGER.info('request: ' + method + ' ' + baseURL);
 
-                        if (typeof data === "string") request.requestBody(data);
-                        else {
+                        if (typeof data === "string") {
+                            request.requestBody(data);
+                            this.LOGGER.info('requestBody: ' + data);
+                        } else {
+                            this.LOGGER.info('data: ' + JSON.stringify(data, javaReplacer, 2));
                             Object.keys(data).forEach(e => {
                                 if (typeof data[e] !== "object") {
                                     request.data(e, data[e]);
@@ -107,7 +127,14 @@ exports.RequestClient = /** @class */ (function () {
                     Object.keys(headers).forEach(e => {
                         request.header(e, headers[e]);
                     }); // https://github.com/mozilla/rhino/issues/247
+
+                    this.LOGGER.info('request headers: ' + JSON.stringify(data, javaReplacer, 2));
+
                     request.cookies(this.cookies);
+
+                    this.LOGGER.info('request cookies: ' + this.cookies);
+
+                    this.LOGGER.info('followRedirect: ' + followRedirect);
 
                     const res = request
                         .ignoreContentType(true)
@@ -120,6 +147,11 @@ exports.RequestClient = /** @class */ (function () {
                     if (fis !== null) {
                         fis.close();
                     }
+
+                    this.LOGGER.info(baseURL + ' response statusCode: ' + res.statusCode());
+                    this.LOGGER.info(baseURL + ' responseText: ' + res.body());
+                    this.LOGGER.info(baseURL + ' response headers: ' + res.headers());
+                    this.LOGGER.info(baseURL + ' response cookies: ' + res.cookies());
 
                     resolve(res);
                 } catch (e) {

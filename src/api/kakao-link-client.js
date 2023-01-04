@@ -22,12 +22,13 @@
  * SOFTWARE.
  */
 
-const { RequestClient } = require('../request/request-client');
-const { isExistsPromise } = require('../util/is-promise');
-var { setTimeout } = require('../polyfill/timers');
-const { Base64Util } = require('../util/base64-util');
-
 exports.KakaoLinkClient = /** @class */ (function () {
+
+    const { RequestClient } = require('../request/request-client');
+    const { isExistsPromise } = require('../util/is-promise');
+    var { setTimeout } = require('../polyfill/timers');
+    const { Base64Util } = require('../util/base64-util');
+
     function KakaoLinkClient() {
         this.cookies = null;
         this.client = new RequestClient('sharer.kakao.com')
@@ -111,10 +112,10 @@ exports.KakaoLinkClient = /** @class */ (function () {
         return new this.Promise((resolve, reject) => {
             setTimeout(() => {
                 const dataString = JSON.stringify(data);
-
+                
                 this.client.request(
                     'POST',
-                    '/talk/friends/picker/link',
+                    '/picker/link',
                     {
                         app_key: this.apiKey,
                         validation_action: type || 'default',
@@ -167,6 +168,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
                         },
                         {
                             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0',
+                            Referer: String(e.url().toExternalForm())
                         },
                         true
                     ).then(r => {
@@ -194,8 +196,9 @@ exports.KakaoLinkClient = /** @class */ (function () {
      * @private
      */
     KakaoLinkClient.prototype.generateKakaoAgent = function (url) {
-        return 'sdk/2.0.1 os/javascript sdk_type/javascript lang/ko device/Win32 origin/' + decodeURIComponent(url || 'https://arthic.dev');
+        return 'sdk/2.0.1 os/javascript sdk_type/javascript lang/en-US device/Win32 origin/' + encodeURIComponent(url || 'https://arthic.dev');
     }
 
     return KakaoLinkClient;
+
 })();

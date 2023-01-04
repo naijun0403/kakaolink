@@ -22,15 +22,19 @@
  * SOFTWARE.
  */
 
-const { RequestClient } = require('../request/request-client');
-const { isExistsPromise } = require('../util/is-promise');
-const { constants } = require('../config');
-var { setTimeout } = require('../polyfill/timers');
-const { createAuthenticateRequestForm } = require('./authenticate-builder');
-
 exports.KakaoApiService = /** @class */ (function () {
+
+    const { FileLogger } = require('../logger/file-logger');
+    const { RequestClient } = require('../request/request-client');
+    const { isExistsPromise } = require('../util/is-promise');
+    const { constants } = require('../config');
+    var { setTimeout } = require('../polyfill/timers');
+    const { createAuthenticateRequestForm } = require('./authenticate-builder');
+
     function KakaoApiService() {
         this.client = new RequestClient('accounts.kakao.com');
+
+        this.LOGGER = new FileLogger('api-service');
     }
 
     /**
@@ -50,6 +54,8 @@ exports.KakaoApiService = /** @class */ (function () {
             this.Promise = /** @type PromiseConstructor */ Promise;
         }
 
+        this.LOGGER.debug('called login function');
+
         return new this.Promise((resolve, reject) => {
             setTimeout(() => {
                 this.client.request(
@@ -64,9 +70,13 @@ exports.KakaoApiService = /** @class */ (function () {
                         'Upgrade-Insecure-Requests': '1'
                     }
                 ).then(e => {
+                    this.LOGGER.debug('/login request finished: ' + e.statusCode());
+
                     if (e.statusCode() !== 200) reject('For an unknown reason, the information required to log in could not be retrieved with status: ' + e.statusCode());
 
                     let referer = e.url().toExternalForm();
+
+                    this.LOGGER.debug('referer: ' + String(referer));
 
                     this.client.changeHost('stat.tiara.kakao.com')
 
@@ -84,6 +94,9 @@ exports.KakaoApiService = /** @class */ (function () {
                         const dataElement = parsedData.getElementById('__NEXT_DATA__');
 
                         let isNextJS = !!dataElement;
+
+                        this.LOGGER.debug('isNextJS: ' + isNextJS);
+                        this.LOGGER.debug('NEXT_DATA: ' + dataElement.data());
 
                         let cryptoKey;
                         let csrfToken;
@@ -103,9 +116,13 @@ exports.KakaoApiService = /** @class */ (function () {
                         this.client.changeHost('accounts.kakao.com');
 
                         this.client.requestByObject(createAuthenticateRequestForm(isNextJS, data, referer, cryptoKey, csrfToken)).then(r => {
+                            this.LOGGER.debug('auth request finished: ' + r.statusCode());
+
                             if (r.statusCode() !== 200) reject('An error occurred while loading authenticate.json with status: ' + r.statusCode());
 
                             const loginRes = JSON.parse(r.body());
+
+                            this.LOGGER.debug('loginRes: ' + JSON.stringify(loginRes));
 
                             switch (loginRes['status']) {
                                 case 0:
@@ -153,4 +170,5 @@ exports.KakaoApiService = /** @class */ (function () {
     }
 
     return KakaoApiService;
+    
 })();
