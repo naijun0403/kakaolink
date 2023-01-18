@@ -88,6 +88,14 @@ exports.ContentBuilder = (function () {
         return this;
     }
 
+    /**
+     * build
+     * @return {*|{}}
+     */
+    ContentBuilder.prototype.build = function () {
+        return this.obj;
+    }
+
     return ContentBuilder;
 
 })();

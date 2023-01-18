@@ -121,6 +121,17 @@ exports.DefaultTemplateBuilder = (function () {
     }
 
     /**
+     * set contents
+     * @param contents
+     *
+     * @returns { DefaultTemplateBuilder }
+     */
+    DefaultTemplateBuilder.prototype.setContents = function (contents) {
+        this.obj['contents'] = contents;
+        return this;
+    }
+
+    /**
      * set default button title
      * @param { string } title
      *
