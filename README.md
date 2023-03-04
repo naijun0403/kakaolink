@@ -11,7 +11,7 @@
 - [x] [`SkyLine`](https://github.com/SkyLineLab/SkyLine)
 
 ### 채팅 자동응답 봇 지원
-[kakaolink.js](/dist/kakaolink.js)를 이용해주세요
+[building](#building) 항목 확인해주세요
 
 ## error
 [error.md](/doc/user/error.md)를 참고해주세요
