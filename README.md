@@ -19,3 +19,6 @@
 ## 오픈소스 라이선스
 - [bluebird](https://github.com/petkaantonov/bluebird/blob/master/LICENSE)
 - [querystring](https://github.com/Gozala/querystring/blob/master/LICENSE)
+
+## building
+`npm run build`
