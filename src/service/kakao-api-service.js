@@ -34,6 +34,13 @@ exports.KakaoApiService = /** @class */ (function () {
     function KakaoApiService() {
         this.client = new RequestClient('accounts.kakao.com');
 
+        if (!isExistsPromise()) {
+            this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise');
+        } else {
+            this.Promise = /** @type PromiseConstructor */ Promise;
+        }
+
+
         this.LOGGER = new FileLogger('api-service');
     }
 
@@ -47,12 +54,6 @@ exports.KakaoApiService = /** @class */ (function () {
         if (!data.hasOwnProperty('email') || !data.hasOwnProperty('password')) throw new Error('No email or password entered.');
 
         if (!data.hasOwnProperty('keepLogin')) data.keepLogin = true;
-
-        if (!isExistsPromise()) {
-            this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise');
-        } else {
-            this.Promise = /** @type PromiseConstructor */ Promise;
-        }
 
         this.LOGGER.debug('called login function');
 
@@ -152,12 +153,20 @@ exports.KakaoApiService = /** @class */ (function () {
     }
 
     /**
+     * 2FA
+     * @param {{ email: string; password: string; permanent: boolean; }} data
+     */
+    KakaoApiService.prototype.twoFA = function (data) {
+        
+    }
+
+    /**
      * get release version
      *
      * @return { string }
      */
     KakaoApiService.getReleaseVersion = function () {
-        return "1.1.1";
+        return "1.2.0-snapshot";
     }
 
     /**
