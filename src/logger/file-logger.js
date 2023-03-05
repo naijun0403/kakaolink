@@ -22,9 +22,10 @@
  * SOFTWARE.
  */
 
-const { ModuleDebugService } = require('./module-debug-service');
 exports.FileLogger = /** @class */ (function () {
 
+    const { FileUtil } = require('../util/file-util');
+    const { ModuleDebugService } = require('./module-debug-service');
     const { LogType } = require('./type');
 
     /**
@@ -98,7 +99,17 @@ exports.FileLogger = /** @class */ (function () {
      */
     FileLogger.prototype.appendLog = function (message) {
         if (ModuleDebugService.INSTANCE.isLogging) {
-            FileStream.append(ModuleDebugService.INSTANCE.option.logPath, message);
+            try {
+                const original = FileUtil.read(ModuleDebugService.INSTANCE.option.logPath);
+
+                FileUtil.write(
+                    ModuleDebugService.INSTANCE.option.logPath,
+                    original.concat(message + '\n')
+                );
+            } catch (e) {
+                FileUtil.write(ModuleDebugService.INSTANCE.option.logPath, '');
+                FileLogger.prototype.appendLog.call(this, message);
+            }
         }
     }
 
