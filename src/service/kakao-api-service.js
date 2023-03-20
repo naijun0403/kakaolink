@@ -24,13 +24,20 @@
 
 exports.KakaoApiService = /** @class */ (function () {
 
-    const { FileLogger } = require('../logger/file-logger');
-    const { RequestClient } = require('../request/request-client');
-    const { isExistsPromise } = require('../util/is-promise');
-    const { constants } = require('../config');
-    var { setTimeout } = require('../polyfill/timers');
-    const { createAuthenticateRequestForm } = require('./authenticate-builder');
-
+    const {FileLogger} = require('../logger/file-logger');
+    const {RequestClient} = require('../request/request-client');
+    const {isExistsPromise} = require('../util/is-promise');
+    const {constants} = require('../config');
+    var {setTimeout} = require('../polyfill/timers');
+    const {createAuthenticateRequestForm} = require('./authenticate-builder');
+    const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0'
+    const DEFAULT_HEADER = {
+        "User-Agent": USER_AGENT,
+        "Content-Type": "application/json",
+        "Referer": 'https://accounts.kakao.com/',
+        "Host": "accounts.kakao.com",
+        "Origin": "https://accounts.kakao.com/"
+    };
     function KakaoApiService() {
         this.client = new RequestClient('accounts.kakao.com');
 
@@ -137,6 +144,43 @@ exports.KakaoApiService = /** @class */ (function () {
                                 case -450:
                                     reject('Email or password is incorrect');
                                     break;
+                                case -451:
+                                    this.client.changeHost("accounts.kakao.com");
+                                    this.client.request("POST", "/api/v2/two_step_verification/send_tms_for_login.json", JSON.stringify({"_csrf": csrfToken}),
+                                        DEFAULT_HEADER, true
+                                    ).then((tmsResult) => {
+                                        let token = JSON.parse(tmsResult.body()).token;
+                                        setTimeout(() => {
+                                            this.client.request("POST", "/api/v2/two_step_verification/verify_tms_for_login.json", JSON.stringify({
+                                                "_csrf": csrfToken,
+                                                "token": token,
+                                                "isRememberBrowser": true
+                                            }), ).then((verifyTMS) => {
+                                                const finalResult = JSON.parse(verifyTMS.body());
+                                                if (finalResult.status !== undefined) {
+                                                    reject("2FA is not valid")
+                                                }
+                                                this.client.request("POST", "/api/v2/two_step_verification/expire_tms_for_login.json", JSON.stringify({
+                                                        "_csrf": csrfToken,
+                                                        "token": token
+                                                    }),
+                                                    DEFAULT_HEADER
+                                                ).then((afterRemoveRes) => {
+                                                    let finalDirect = org.jsoup.Jsoup.connect(finalResult.continueUrl).ignoreContentType(true).headers(DEFAULT_HEADER).cookies(this.client.getCookies()).followRedirects(true).get()
+                                                    resolve(this.client.getCookies())
+                                                });
+
+                                            })
+
+
+                                        }, 30000)
+
+
+                                    }).catch((e) => Log.d(e));
+                                    break;
+                                case -481:
+                                    reject("Captcha Detected")
+                                    break;
                                 default:
                                     reject('An unknown error occurred during login with status: ' + loginRes['status']);
                                     break;
@@ -157,7 +201,7 @@ exports.KakaoApiService = /** @class */ (function () {
      * @param {{ email: string; password: string; permanent: boolean; }} data
      */
     KakaoApiService.prototype.twoFA = function (data) {
-        
+
     }
 
     /**
@@ -179,5 +223,5 @@ exports.KakaoApiService = /** @class */ (function () {
     }
 
     return KakaoApiService;
-    
+
 })();
