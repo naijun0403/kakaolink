@@ -29,6 +29,10 @@ exports.KakaoApiService = /** @class */ (function () {
     const {isExistsPromise} = require('../util/is-promise');
     const {constants} = require('../config');
     var {setTimeout} = require('../polyfill/timers');
+    var Timer = require('../polyfill/interval');
+    var clearInterval = Timer.clearInterval;
+    var setInterval = Timer.setInterval;
+
     const {createAuthenticateRequestForm} = require('./authenticate-builder');
     const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0'
     const DEFAULT_HEADER = {
@@ -38,9 +42,11 @@ exports.KakaoApiService = /** @class */ (function () {
         "Host": "accounts.kakao.com",
         "Origin": "https://accounts.kakao.com/"
     };
-    function KakaoApiService() {
-        this.client = new RequestClient('accounts.kakao.com');
 
+    function KakaoApiService() {
+        this.is2FA = false;
+        this.client = new RequestClient('accounts.kakao.com');
+        this.timerID = null;
         if (!isExistsPromise()) {
             this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise');
         } else {
@@ -145,20 +151,34 @@ exports.KakaoApiService = /** @class */ (function () {
                                     reject('Email or password is incorrect');
                                     break;
                                 case -451:
+                                    this.is2FA = true;
                                     this.client.changeHost("accounts.kakao.com");
                                     this.client.request("POST", "/api/v2/two_step_verification/send_tms_for_login.json", JSON.stringify({"_csrf": csrfToken}),
                                         DEFAULT_HEADER, true
                                     ).then((tmsResult) => {
                                         let token = JSON.parse(tmsResult.body()).token;
-                                        setTimeout(() => {
+                                        let counter = 0;
+                                        if (this.timerID !== null) {
+                                            try {
+                                                clearInterval(this.timerID)
+                                            } catch (e) {
+                                            }
+                                        }
+                                        this.timerID = setInterval(() => {
+                                            if (counter === 40) {
+                                                clearInterval(this.timerID)
+                                                reject("2FA is not valid")
+                                                return;
+                                            }
+
                                             this.client.request("POST", "/api/v2/two_step_verification/verify_tms_for_login.json", JSON.stringify({
                                                 "_csrf": csrfToken,
                                                 "token": token,
                                                 "isRememberBrowser": true
-                                            }), ).then((verifyTMS) => {
+                                            }), DEFAULT_HEADER, true).then((verifyTMS) => {
                                                 const finalResult = JSON.parse(verifyTMS.body());
-                                                if (finalResult.status !== undefined) {
-                                                    reject("2FA is not valid")
+                                                if (finalResult.status !== 0) {
+                                                    return;
                                                 }
                                                 this.client.request("POST", "/api/v2/two_step_verification/expire_tms_for_login.json", JSON.stringify({
                                                         "_csrf": csrfToken,
@@ -166,17 +186,17 @@ exports.KakaoApiService = /** @class */ (function () {
                                                     }),
                                                     DEFAULT_HEADER
                                                 ).then((afterRemoveRes) => {
-                                                    let finalDirect = org.jsoup.Jsoup.connect(finalResult.continueUrl).ignoreContentType(true).headers(DEFAULT_HEADER).cookies(this.client.getCookies()).followRedirects(true).get()
+                                                    clearInterval(this.timerID);
                                                     resolve(this.client.getCookies())
                                                 });
 
-                                            })
+                                            }).catch((e) => Log.e(e))
 
 
-                                        }, 30000)
+                                        }, 2500)
 
 
-                                    }).catch((e) => Log.d(e));
+                                    }).catch((e) => Log.e(e));
                                     break;
                                 case -481:
                                     reject("Captcha Detected")
@@ -185,10 +205,10 @@ exports.KakaoApiService = /** @class */ (function () {
                                     reject('An unknown error occurred during login with status: ' + loginRes['status']);
                                     break;
                             }
-
-                            let cookies = this.client.getCookies();
-
-                            resolve(cookies);
+                            if (!this.is2FA) {
+                                let cookies = this.client.getCookies();
+                                resolve(cookies);
+                            }
                         }).catch(reject);
                     }).catch(reject)
                 }).catch(reject)
