@@ -72,18 +72,11 @@ exports.KakaoApiService = /** @class */ (function () {
 
         return new this.Promise((resolve, reject) => {
             setTimeout(() => {
-                this.client.request(
-                    'GET',
-                    '/login',
-                    {
-                        app_type: 'web',
-                        continue: 'https://accounts.kakao.com/weblogin/account/info'
-                    },
-                    {
-                        Referer: 'https://accounts.kakao.com/',
-                        'Upgrade-Insecure-Requests': '1'
-                    }
-                ).then(e => {
+                this.client.request('GET', '/login', {
+                    app_type: 'web', continue: 'https://accounts.kakao.com/weblogin/account/info'
+                }, {
+                    Referer: 'https://accounts.kakao.com/', 'Upgrade-Insecure-Requests': '1'
+                }).then(e => {
                     this.LOGGER.debug('/login request finished: ' + e.statusCode());
 
                     if (e.statusCode() !== 200) reject('For an unknown reason, the information required to log in could not be retrieved with status: ' + e.statusCode());
@@ -94,16 +87,11 @@ exports.KakaoApiService = /** @class */ (function () {
 
                     this.client.changeHost('stat.tiara.kakao.com')
 
-                    this.client.request(
-                        'GET',
-                        '/track',
-                        {
-                            d: JSON.stringify(constants.tiaraData)
-                        },
-                        {
-                            Referer: 'https://accounts.kakao.com/'
-                        }
-                    ).then(_ => {
+                    this.client.request('GET', '/track', {
+                        d: JSON.stringify(constants.tiaraData)
+                    }, {
+                        Referer: 'https://accounts.kakao.com/'
+                    }).then(_ => {
                         const parsedData = e.parse();
                         const dataElement = parsedData.getElementById('__NEXT_DATA__');
 
@@ -152,10 +140,7 @@ exports.KakaoApiService = /** @class */ (function () {
                                     break;
                                 case -451:
                                     this.is2FA = true;
-                                    this.client.changeHost("accounts.kakao.com");
-                                    this.client.request("POST", "/api/v2/two_step_verification/send_tms_for_login.json", JSON.stringify({"_csrf": csrfToken}),
-                                        DEFAULT_HEADER, true
-                                    ).then((tmsResult) => {
+                                    this.client.request("POST", "/api/v2/two_step_verification/send_tms_for_login.json", JSON.stringify({"_csrf": csrfToken}), DEFAULT_HEADER, true).then((tmsResult) => {
                                         let token = JSON.parse(tmsResult.body()).token;
                                         let counter = 0;
                                         if (this.timerID !== null) {
@@ -170,33 +155,31 @@ exports.KakaoApiService = /** @class */ (function () {
                                                 reject("2FA is not valid")
                                                 return;
                                             }
-
+                                            counter++;
                                             this.client.request("POST", "/api/v2/two_step_verification/verify_tms_for_login.json", JSON.stringify({
-                                                "_csrf": csrfToken,
-                                                "token": token,
-                                                "isRememberBrowser": true
-                                            }), DEFAULT_HEADER, true).then((verifyTMS) => {
-                                                const finalResult = JSON.parse(verifyTMS.body());
-                                                if (finalResult.status !== 0) {
-                                                    return;
-                                                }
-                                                this.client.request("POST", "/api/v2/two_step_verification/expire_tms_for_login.json", JSON.stringify({
-                                                        "_csrf": csrfToken,
-                                                        "token": token
-                                                    }),
-                                                    DEFAULT_HEADER
-                                                ).then((afterRemoveRes) => {
-                                                    clearInterval(this.timerID);
-                                                    resolve(this.client.getCookies())
-                                                });
+                                                "_csrf": csrfToken, "token": token, "isRememberBrowser": true
+                                            }), DEFAULT_HEADER, true)
+                                                .then((verifyTMS) => {
+                                                    const finalResult = JSON.parse(verifyTMS.body()).status;
+                                                    if (finalResult.status === -451) {
+                                                        return;
+                                                    } else if (finalResult.status !== 0) {
+                                                        reject("2FA is not valid. Please try it again");
+                                                    }
+                                                    this.client.request("POST", "/api/v2/two_step_verification/expire_tms_for_login.json", JSON.stringify({
+                                                        "_csrf": csrfToken, "token": token
+                                                    }), DEFAULT_HEADER)
+                                                        .then((afterRemoveRes) => {
+                                                            clearInterval(this.timerID);
+                                                            resolve(this.client.getCookies())
+                                                        });
 
-                                            }).catch((e) => Log.e(e))
-
+                                                }).catch(reject)
 
                                         }, 2500)
 
 
-                                    }).catch((e) => Log.e(e));
+                                    }).catch(reject);
                                     break;
                                 case -481:
                                     reject("Captcha Detected")
