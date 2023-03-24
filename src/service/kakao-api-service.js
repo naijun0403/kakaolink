@@ -24,16 +24,29 @@
 
 exports.KakaoApiService = /** @class */ (function () {
 
-    const { FileLogger } = require('../logger/file-logger');
-    const { RequestClient } = require('../request/request-client');
-    const { isExistsPromise } = require('../util/is-promise');
-    const { constants } = require('../config');
-    var { setTimeout } = require('../polyfill/timers');
-    const { createAuthenticateRequestForm } = require('./authenticate-builder');
+    const {FileLogger} = require('../logger/file-logger');
+    const {RequestClient} = require('../request/request-client');
+    const {isExistsPromise} = require('../util/is-promise');
+    const {constants} = require('../config');
+    var {setTimeout} = require('../polyfill/timers');
+    var Timer = require('../polyfill/interval');
+    var clearInterval = Timer.clearInterval;
+    var setInterval = Timer.setInterval;
+
+    const {createAuthenticateRequestForm} = require('./authenticate-builder');
+    const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0'
+    const DEFAULT_HEADER = {
+        "User-Agent": USER_AGENT,
+        "Content-Type": "application/json",
+        "Referer": 'https://accounts.kakao.com/',
+        "Host": "accounts.kakao.com",
+        "Origin": "https://accounts.kakao.com/"
+    };
 
     function KakaoApiService() {
+        this.is2FA = false;
         this.client = new RequestClient('accounts.kakao.com');
-
+        this.timerID = null;
         if (!isExistsPromise()) {
             this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise');
         } else {
@@ -59,18 +72,11 @@ exports.KakaoApiService = /** @class */ (function () {
 
         return new this.Promise((resolve, reject) => {
             setTimeout(() => {
-                this.client.request(
-                    'GET',
-                    '/login',
-                    {
-                        app_type: 'web',
-                        continue: 'https://accounts.kakao.com/weblogin/account/info'
-                    },
-                    {
-                        Referer: 'https://accounts.kakao.com/',
-                        'Upgrade-Insecure-Requests': '1'
-                    }
-                ).then(e => {
+                this.client.request('GET', '/login', {
+                    app_type: 'web', continue: 'https://accounts.kakao.com/weblogin/account/info'
+                }, {
+                    Referer: 'https://accounts.kakao.com/', 'Upgrade-Insecure-Requests': '1'
+                }).then(e => {
                     this.LOGGER.debug('/login request finished: ' + e.statusCode());
 
                     if (e.statusCode() !== 200) reject('For an unknown reason, the information required to log in could not be retrieved with status: ' + e.statusCode());
@@ -81,16 +87,11 @@ exports.KakaoApiService = /** @class */ (function () {
 
                     this.client.changeHost('stat.tiara.kakao.com')
 
-                    this.client.request(
-                        'GET',
-                        '/track',
-                        {
-                            d: JSON.stringify(constants.tiaraData)
-                        },
-                        {
-                            Referer: 'https://accounts.kakao.com/'
-                        }
-                    ).then(_ => {
+                    this.client.request('GET', '/track', {
+                        d: JSON.stringify(constants.tiaraData)
+                    }, {
+                        Referer: 'https://accounts.kakao.com/'
+                    }).then(_ => {
                         const parsedData = e.parse();
                         const dataElement = parsedData.getElementById('__NEXT_DATA__');
 
@@ -137,14 +138,60 @@ exports.KakaoApiService = /** @class */ (function () {
                                 case -450:
                                     reject('Email or password is incorrect');
                                     break;
+                                case -451:
+                                    this.is2FA = true;
+                                    this.client.request("POST", "/api/v2/two_step_verification/send_tms_for_login.json", JSON.stringify({"_csrf": csrfToken}), DEFAULT_HEADER, true).then((tmsResult) => {
+                                        let token = JSON.parse(tmsResult.body()).token;
+                                        let counter = 0;
+                                        if (this.timerID !== null) {
+                                            try {
+                                                clearInterval(this.timerID)
+                                            } catch (e) {
+                                            }
+                                        }
+                                        this.timerID = setInterval(() => {
+                                            if (counter === 40) {
+                                                clearInterval(this.timerID)
+                                                reject("2FA is not valid")
+                                                return;
+                                            }
+                                            counter++;
+                                            this.client.request("POST", "/api/v2/two_step_verification/verify_tms_for_login.json", JSON.stringify({
+                                                "_csrf": csrfToken, "token": token, "isRememberBrowser": true
+                                            }), DEFAULT_HEADER, true)
+                                                .then((verifyTMS) => {
+                                                    const finalResult = JSON.parse(verifyTMS.body()).status;
+                                                    if (finalResult.status === -451) {
+                                                        return;
+                                                    } else if (finalResult.status !== 0) {
+                                                        reject("2FA is not valid. Please try it again");
+                                                    }
+                                                    this.client.request("POST", "/api/v2/two_step_verification/expire_tms_for_login.json", JSON.stringify({
+                                                        "_csrf": csrfToken, "token": token
+                                                    }), DEFAULT_HEADER)
+                                                        .then((afterRemoveRes) => {
+                                                            clearInterval(this.timerID);
+                                                            resolve(this.client.getCookies())
+                                                        });
+
+                                                }).catch(reject)
+
+                                        }, 2500)
+
+
+                                    }).catch(reject);
+                                    break;
+                                case -481:
+                                    reject("Captcha Detected")
+                                    break;
                                 default:
                                     reject('An unknown error occurred during login with status: ' + loginRes['status']);
                                     break;
                             }
-
-                            let cookies = this.client.getCookies();
-
-                            resolve(cookies);
+                            if (!this.is2FA) {
+                                let cookies = this.client.getCookies();
+                                resolve(cookies);
+                            }
                         }).catch(reject);
                     }).catch(reject)
                 }).catch(reject)
@@ -157,7 +204,7 @@ exports.KakaoApiService = /** @class */ (function () {
      * @param {{ email: string; password: string; permanent: boolean; }} data
      */
     KakaoApiService.prototype.twoFA = function (data) {
-        
+
     }
 
     /**
@@ -179,5 +226,5 @@ exports.KakaoApiService = /** @class */ (function () {
     }
 
     return KakaoApiService;
-    
+
 })();
