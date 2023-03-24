@@ -27,4 +27,4 @@ exports.LogType = Object.freeze({
     ERROR: 1,
     INFO: 2,
     WARN: 3
-})
+});

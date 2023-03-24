@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-const qs = require('../modules/qs')
-const { isExistsPromise } = require("../util/is-promise");
+const qs = require('../modules/qs');
+const { isExistsPromise } = require('../util/is-promise');
 var { setTimeout } = require('../polyfill/timers');
 const { FileLogger } = require('../logger/file-logger');
 
@@ -36,7 +36,7 @@ exports.RequestClient = /** @class */ (function () {
         this.cookies = new java.util.LinkedHashMap();
         this.host = host;
 
-        this.LOGGER = new FileLogger('request')
+        this.LOGGER = new FileLogger('request');
 
         if (!isExistsPromise()) {
             this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise');
@@ -47,7 +47,7 @@ exports.RequestClient = /** @class */ (function () {
 
     RequestClient.prototype.changeHost = function (host) {
         this.host = host;
-    }
+    };
 
     /**
      * request
@@ -74,7 +74,7 @@ exports.RequestClient = /** @class */ (function () {
                     path = path || '/';
                     data = data || {};
                     headers = headers || {};
-                    followRedirect = followRedirect || false
+                    followRedirect = followRedirect || false;
 
                     method = org.jsoup.Connection.Method[method.toUpperCase()];
 
@@ -104,13 +104,13 @@ exports.RequestClient = /** @class */ (function () {
                         request = org.jsoup.Jsoup.connect(baseURL).method(method);
                         this.LOGGER.info('request: ' + method + ' ' + baseURL);
 
-                        if (typeof data === "string") {
+                        if (typeof data === 'string') {
                             request.requestBody(data);
                             this.LOGGER.info('requestBody: ' + data);
                         } else {
                             this.LOGGER.info('data: ' + JSON.stringify(data, javaReplacer, 2));
                             Object.keys(data).forEach(e => {
-                                if (typeof data[e] !== "object") {
+                                if (typeof data[e] !== 'object') {
                                     request.data(e, data[e]);
                                 } else {
                                     if (data[e] instanceof java.io.File) {
@@ -158,8 +158,8 @@ exports.RequestClient = /** @class */ (function () {
                     reject(e);
                 }
             }, 0);
-        })
-    }
+        });
+    };
 
     /**
      * request by object
@@ -168,15 +168,15 @@ exports.RequestClient = /** @class */ (function () {
      */
     RequestClient.prototype.requestByObject = function (obj) {
         return this.request(obj.method, obj.path, obj.data, obj.headers);
-    }
+    };
 
     RequestClient.prototype.getCookies = function () {
         return this.cookies;
-    }
+    };
 
     RequestClient.prototype.setCookies = function (cookies) {
         this.cookies.putAll(cookies);
-    }
+    };
 
     return RequestClient;
 })();

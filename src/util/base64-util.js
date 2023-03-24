@@ -31,7 +31,7 @@ exports.Base64Util = {
     },
 
     decode(encoded) {
-        return Buffer.from(encoded, 'base64').toString()
+        return Buffer.from(encoded, 'base64').toString();
     }
 
-}
+};

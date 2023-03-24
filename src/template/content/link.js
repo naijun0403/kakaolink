@@ -36,7 +36,7 @@ exports.LinkBuilder = (function () {
     LinkBuilder.prototype.setWebUrl = function (url) {
         this.obj['web_url'] = url;
         return this;
-    }
+    };
 
     /**
      * set mobile web url
@@ -46,7 +46,7 @@ exports.LinkBuilder = (function () {
     LinkBuilder.prototype.setMobileWebUrl = function (url) {
         this.obj['mobile_web_url'] = url;
         return this;
-    }
+    };
 
     /**
      * set android execution params
@@ -56,7 +56,7 @@ exports.LinkBuilder = (function () {
     LinkBuilder.prototype.setAndroidExecutionParams = function (param) {
         this.obj['android_execution_params'] = param;
         return this;
-    }
+    };
 
     /**
      * set ios execution params
@@ -66,7 +66,7 @@ exports.LinkBuilder = (function () {
     LinkBuilder.prototype.setIosExecutionParams = function (param) {
         this.obj['ios_execution_params'] = param;
         return this;
-    }
+    };
 
     /**
      * build
@@ -74,7 +74,7 @@ exports.LinkBuilder = (function () {
      */
     LinkBuilder.prototype.build = function () {
         return this.obj;
-    }
+    };
 
     return LinkBuilder;
 

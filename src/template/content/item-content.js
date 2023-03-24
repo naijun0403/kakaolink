@@ -24,7 +24,7 @@
 
 exports.ItemContentBuilder = (function () {
 
-    const { ItemInfo } = require("./item-info");
+    const { ItemInfo } = require('./item-info');
 
     function ItemContentBuilder() {
         this.obj = {};
@@ -38,7 +38,7 @@ exports.ItemContentBuilder = (function () {
     ItemContentBuilder.prototype.setProfileText = function (text) {
         this.obj['profile_text'] = text;
         return this;
-    }
+    };
 
     /**
      * set profile image url
@@ -48,7 +48,7 @@ exports.ItemContentBuilder = (function () {
     ItemContentBuilder.prototype.setProfileImageUrl = function (url) {
         this.obj['profile_image_url'] = url;
         return this;
-    }
+    };
 
     /**
      * set title image text
@@ -58,7 +58,7 @@ exports.ItemContentBuilder = (function () {
     ItemContentBuilder.prototype.setTitleImageText = function (text) {
         this.obj['title_image_text'] = text;
         return this;
-    }
+    };
 
     /**
      * set title image url
@@ -68,7 +68,7 @@ exports.ItemContentBuilder = (function () {
     ItemContentBuilder.prototype.setTitleImageUrl = function (url) {
         this.obj['title_image_url'] = url;
         return this;
-    }
+    };
 
     /**
      * set title image category
@@ -78,7 +78,7 @@ exports.ItemContentBuilder = (function () {
     ItemContentBuilder.prototype.setTitleImageCategory = function (category) {
         this.obj['title_image_category'] = category;
         return this;
-    }
+    };
 
     /**
      * add item info
@@ -90,11 +90,11 @@ exports.ItemContentBuilder = (function () {
             if (!this.obj['items']) this.obj['items'] = [];
             this.obj['items'].push(
                 JSON.parse(JSON.stringify(itemInfo))
-            )
+            );
         } else throw new Error('itemInfo is not ItemInfo instance');
 
         return this;
-    }
+    };
 
     /**
      * set summary
@@ -104,7 +104,7 @@ exports.ItemContentBuilder = (function () {
     ItemContentBuilder.prototype.setSummary = function (text) {
         this.obj['sum'] = text;
         return this;
-    }
+    };
 
     /**
      * set summary op
@@ -114,14 +114,14 @@ exports.ItemContentBuilder = (function () {
     ItemContentBuilder.prototype.setSummaryOp = function (text) {
         this.obj['sum_op'] = text;
         return this;
-    }
+    };
 
     /**
      * build
      */
     ItemContentBuilder.prototype.build = function () {
         return this.obj;
-    }
+    };
 
     return ItemContentBuilder;
 

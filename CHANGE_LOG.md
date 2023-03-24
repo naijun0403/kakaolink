@@ -1,4 +1,8 @@
 # CHANGE_LOG
+## 1.2.0
+1. `KakaoServiceApi`에 `2FA`가 구현되었습니다.
+2. `채팅 자동응답봇` 전용 모듈 빌드에 이제 `rollup`을 사용합니다.
+
 ## 1.1.1
 1. `KakaoLinkClient.prototype.send`부분의 버그를 해결하였습니다.
 

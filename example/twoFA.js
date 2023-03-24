@@ -1,4 +1,4 @@
-/*
+/**
  * MIT License
  *
  * Copyright (c) 2021 naijun0403
@@ -22,51 +22,20 @@
  * SOFTWARE.
  */
 
-exports.ModuleDebugService = (function () {
+const { KakaoApiService, KakaoLinkClient } = require('../index')
 
-    function ModuleDebugService() {
-        this.isLogging = false;
-        /** @type { LogOption } */ this.option = {};
-    }
+const Kakao = new KakaoLinkClient();
 
-    ModuleDebugService.INSTANCE = new ModuleDebugService();
+const service = KakaoApiService.createService();
 
-    /**
-     * register logger
-     * @param { LogOption } option
-     */
-    ModuleDebugService.registerLogger = function (option) {
-        this.INSTANCE.isLogging = true;
+service.login({
 
-        if (!option) {
-            this.INSTANCE.option = {
-                logPath: '../../log',
-                option: {
-                    apiService: true,
-                    linkClient: true,
-                    devClient: true
-                }
-            };
-        } else {
-            this.INSTANCE.option = option;
-        }
-    };
+})
 
-    return ModuleDebugService;
-
-})();
-
-/**
- * @typedef { Record<string, boolean> } OptionLogOn
- *
- * @property { boolean } apiService
- * @property { boolean } linkClient
- * @property { boolean } devClient
- */
-
-/**
- * @typedef { Record<string, unknown> } LogOption
- *
- * @property { string } logPath
- * @property { OptionLogOn } option
- */
+service.twoFA({
+    email: 'email',
+    password: 'password',
+    permanent: true
+}).then(e => {
+    service
+}).catch(Log.e);

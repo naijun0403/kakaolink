@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-const { RequestClient } = require("../request/request-client");
-const { isExistsPromise } = require("../util/is-promise");
-const { isNullOrUndefined } = require("../util/is-null-or-undefined");
+const { RequestClient } = require('../request/request-client');
+const { isExistsPromise } = require('../util/is-promise');
+const { isNullOrUndefined } = require('../util/is-null-or-undefined');
 var { setTimeout } = require('../polyfill/timers');
 
 exports.KakaoDevClient = /** @class */ (function () {
@@ -58,9 +58,9 @@ exports.KakaoDevClient = /** @class */ (function () {
                         resolve();
                     }).catch(reject);
                 }).catch(reject);
-            }, 0)
-        })
-    }
+            }, 0);
+        });
+    };
 
     /**
      * get AppList
@@ -91,10 +91,10 @@ exports.KakaoDevClient = /** @class */ (function () {
                     resolve(e['data']['members']);
                 }).catch(err => {
                     reject(err);
-                })
+                });
             }, 0);
-        })
-    }
+        });
+    };
 
     /**
      * get AppList (simple struct)
@@ -116,10 +116,10 @@ exports.KakaoDevClient = /** @class */ (function () {
                         appKey: obj.app.app_key.JAVASCRIPT_KEY,
                         webUrl: obj.app.platform.web.web_site_url
                     });
-                })
-            }, 0)
-        })
-    }
+                });
+            }, 0);
+        });
+    };
 
     KakaoDevClient.prototype.getAuthKey = function (appId) {
         if (this.devToken === undefined || !this.isLogin) throw new Error('You cannot access the KakaoDev API before logging in.');
@@ -141,10 +141,10 @@ exports.KakaoDevClient = /** @class */ (function () {
                     resolve(e['data']['member']);
                 }).catch(err => {
                     reject(err);
-                })
-            }, 0)
-        })
-    }
+                });
+            }, 0);
+        });
+    };
 
     /**
      * Create App
@@ -183,10 +183,10 @@ exports.KakaoDevClient = /** @class */ (function () {
                     resolve(JSON.parse(e.body()));
                 }).catch(err => {
                     reject(err);
-                })
-            }, 0)
-        })
-    }
+                });
+            }, 0);
+        });
+    };
 
     /**
      * update App platform web urls
@@ -221,10 +221,10 @@ exports.KakaoDevClient = /** @class */ (function () {
                     resolve(JSON.parse(e.body()));
                 }).catch(err => {
                     reject(err);
-                })
-            }, 0)
-        })
-    }
+                });
+            }, 0);
+        });
+    };
 
     /**
      * Update App Information
@@ -264,10 +264,10 @@ exports.KakaoDevClient = /** @class */ (function () {
                     resolve(JSON.parse(e.body()));
                 }).catch(err => {
                     reject(err);
-                })
-            }, 0)
-        })
-    }
+                });
+            }, 0);
+        });
+    };
 
     /**
      * Purge URL Cache
@@ -298,7 +298,7 @@ exports.KakaoDevClient = /** @class */ (function () {
                 });
             }, 0);
         });
-    }
+    };
 
     /**
      * Debug Url
@@ -329,7 +329,7 @@ exports.KakaoDevClient = /** @class */ (function () {
                 });
             }, 0);
         });
-    }
+    };
 
     /**
      * request Data with query (graphql)
@@ -359,14 +359,14 @@ exports.KakaoDevClient = /** @class */ (function () {
                         'x-requested-with': 'XMLHttpRequest'
                     }
                 ).then(e => {
-                    if (e.statusCode() === 500) reject(JSON.parse(e.body())['message'])
+                    if (e.statusCode() === 500) reject(JSON.parse(e.body())['message']);
                     if (e.statusCode() !== 200) reject('The request to graphql failed for an unknown reason with status: ' + e.statusCode());
 
                     resolve(JSON.parse(e.body()));
-                }).catch(reject)
+                }).catch(reject);
             }, 0);
-        })
-    }
+        });
+    };
 
     /**
      * get Developer Data (personal)
@@ -397,10 +397,10 @@ exports.KakaoDevClient = /** @class */ (function () {
                     }
 
                     resolve({ devToken: devToken, devId: devId });
-                }).catch(reject)
-            }, 0)
+                }).catch(reject);
+            }, 0);
         });
-    }
+    };
 
     /**
      * get KDT Cookie
@@ -423,10 +423,10 @@ exports.KakaoDevClient = /** @class */ (function () {
                     if (r.statusCode() !== 200) reject('Failed to get kakao developer token: ' + r.statusCode());
 
                     resolve(r);
-                }).catch(reject)
-            }, 0)
-        })
-    }
+                }).catch(reject);
+            }, 0);
+        });
+    };
 
     return KakaoDevClient;
 })();

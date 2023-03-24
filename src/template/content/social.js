@@ -36,7 +36,7 @@ exports.SocialBuilder = (function () {
     SocialBuilder.prototype.setLikeCount = function (count) {
         this.obj['like_count'] = count;
         return this;
-    }
+    };
 
     /**
      * set comment count
@@ -46,7 +46,7 @@ exports.SocialBuilder = (function () {
     SocialBuilder.prototype.setCommentCount = function (count) {
         this.obj['comment_count'] = count;
         return this;
-    }
+    };
 
     /**
      * set shared count
@@ -56,7 +56,7 @@ exports.SocialBuilder = (function () {
     SocialBuilder.prototype.setSharedCount = function (count) {
         this.obj['shared_count'] = count;
         return this;
-    }
+    };
 
     /**
      * set view count
@@ -66,7 +66,7 @@ exports.SocialBuilder = (function () {
     SocialBuilder.prototype.setViewCount = function (count) {
         this.obj['view_count'] = count;
         return this;
-    }
+    };
 
     /**
      * set subscriber count
@@ -76,7 +76,7 @@ exports.SocialBuilder = (function () {
     SocialBuilder.prototype.setSubscriberCount = function (count) {
         this.obj['subscriber_count'] = count;
         return this;
-    }
+    };
 
     /**
      * build
@@ -84,7 +84,7 @@ exports.SocialBuilder = (function () {
      */
     SocialBuilder.prototype.build = function () {
         return this.obj;
-    }
+    };
 
     return SocialBuilder;
 

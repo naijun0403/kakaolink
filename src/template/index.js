@@ -26,7 +26,7 @@ exports.TemplateBuilder = (function () {
 
     const { CustomTemplateBuilder } = require('./custom');
     const { DefaultTemplateBuilder } = require('./default');
-    const { ItemContentBuilder } = require("./content/item-content");
+    const { ItemContentBuilder } = require('./content/item-content');
     const { SocialBuilder } = require('./content/social');
     const { LinkBuilder } = require('./content/link');
     const { ContentBuilder } = require('./content/content');
@@ -38,31 +38,31 @@ exports.TemplateBuilder = (function () {
 
     TemplateBuilder.newCustomBuilder = function () {
         return new CustomTemplateBuilder();
-    }
+    };
 
     TemplateBuilder.newDefaultBuilder = function () {
         return new DefaultTemplateBuilder();
-    }
+    };
 
     TemplateBuilder.newItemContentBuilder = function () {
         return new ItemContentBuilder();
-    }
+    };
 
     TemplateBuilder.newSocialBuilder = function () {
         return new SocialBuilder();
-    }
+    };
 
     TemplateBuilder.newLinkBuilder = function () {
         return new LinkBuilder();
-    }
+    };
 
     TemplateBuilder.newContentBuilder = function () {
         return new ContentBuilder();
-    }
+    };
 
     TemplateBuilder.newCommerceBuilder = function () {
         return new CommerceBuilder();
-    }
+    };
 
     return TemplateBuilder;
 

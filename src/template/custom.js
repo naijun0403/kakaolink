@@ -37,7 +37,7 @@ exports.CustomTemplateBuilder = (function () {
     CustomTemplateBuilder.prototype.setLinkVersion = function (linkVer) {
         this.linkVer = linkVer;
         return this;
-    }
+    };
 
     /**
      * set template id
@@ -47,7 +47,7 @@ exports.CustomTemplateBuilder = (function () {
     CustomTemplateBuilder.prototype.setTemplateId = function (templateId) {
         this.templateId = templateId;
         return this;
-    }
+    };
 
     /**
      * add param
@@ -58,7 +58,7 @@ exports.CustomTemplateBuilder = (function () {
     CustomTemplateBuilder.prototype.addParam = function (name, value) {
         this.obj[name] = value;
         return this;
-    }
+    };
 
     /**
      * build data
@@ -70,11 +70,11 @@ exports.CustomTemplateBuilder = (function () {
             template_id: this.templateId,
             template_args: this.obj
         };
-    }
+    };
 
     CustomTemplateBuilder.newBuilder = function () {
         return new CustomTemplateBuilder();
-    }
+    };
     /**
      * @typedef BuildData
      * @property {number} template_id

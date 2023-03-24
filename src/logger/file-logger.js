@@ -39,19 +39,19 @@ exports.FileLogger = /** @class */ (function () {
 
     FileLogger.prototype.debug = function (message) {
         this.log(message, LogType.DEBUG);
-    }
+    };
 
     FileLogger.prototype.error = function (message) {
         this.log(message, LogType.ERROR);
-    }
+    };
 
     FileLogger.prototype.info = function (message) {
         this.log(message, LogType.INFO);
-    }
+    };
 
     FileLogger.prototype.warn = function (message) {
         this.log(message, LogType.WARN);
-    }
+    };
 
     /**
      * log
@@ -90,7 +90,7 @@ exports.FileLogger = /** @class */ (function () {
         const str = '<' + time.getFullYear() + '/' + time.getMonth() + 1 + '/' + time.getDate() + 1 + '> [' + this.processName + '] [' + logType + '] ' + message;
 
         this.appendLog(str);
-    }
+    };
 
     /**
      * append log in file
@@ -111,7 +111,7 @@ exports.FileLogger = /** @class */ (function () {
                 FileLogger.prototype.appendLog.call(this, message);
             }
         }
-    }
+    };
 
     return FileLogger;
 

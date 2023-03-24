@@ -22,29 +22,17 @@
  * SOFTWARE.
  */
 
+const { clearInterval } = require('../polyfill/timers');
 exports.KakaoApiService = /** @class */ (function () {
 
-    const {FileLogger} = require('../logger/file-logger');
-    const {RequestClient} = require('../request/request-client');
-    const {isExistsPromise} = require('../util/is-promise');
-    const {constants} = require('../config');
-    var {setTimeout} = require('../polyfill/timers');
-    var Timer = require('../polyfill/interval');
-    var clearInterval = Timer.clearInterval;
-    var setInterval = Timer.setInterval;
-
-    const {createAuthenticateRequestForm} = require('./authenticate-builder');
-    const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0'
-    const DEFAULT_HEADER = {
-        "User-Agent": USER_AGENT,
-        "Content-Type": "application/json",
-        "Referer": 'https://accounts.kakao.com/',
-        "Host": "accounts.kakao.com",
-        "Origin": "https://accounts.kakao.com/"
-    };
+    const { FileLogger } = require('../logger/file-logger');
+    const { RequestClient } = require('../request/request-client');
+    const { isExistsPromise } = require('../util/is-promise');
+    const { constants } = require('../config');
+    var { setTimeout, setInterval, clearInterval } = require('../polyfill/timers');
+    const { createAuthenticateRequestForm } = require('./authenticate-builder');
 
     function KakaoApiService() {
-        this.is2FA = false;
         this.client = new RequestClient('accounts.kakao.com');
         this.timerID = null;
         if (!isExistsPromise()) {
@@ -53,14 +41,13 @@ exports.KakaoApiService = /** @class */ (function () {
             this.Promise = /** @type PromiseConstructor */ Promise;
         }
 
-
         this.LOGGER = new FileLogger('api-service');
     }
 
     /**
      * login
      *
-     * @param data {{ email: string; password: string; keepLogin: boolean; }}
+     * @param data {{ email: string; password: string; keepLogin: boolean; twoFA: boolean; }}
      * @return {Promise<Object>}
      */
     KakaoApiService.prototype.login = function (data) {
@@ -72,11 +59,18 @@ exports.KakaoApiService = /** @class */ (function () {
 
         return new this.Promise((resolve, reject) => {
             setTimeout(() => {
-                this.client.request('GET', '/login', {
-                    app_type: 'web', continue: 'https://accounts.kakao.com/weblogin/account/info'
-                }, {
-                    Referer: 'https://accounts.kakao.com/', 'Upgrade-Insecure-Requests': '1'
-                }).then(e => {
+                this.client.request(
+                    'GET',
+                    '/login',
+                    {
+                        app_type: 'web',
+                        continue: 'https://accounts.kakao.com/weblogin/account/info'
+                    },
+                    {
+                        Referer: 'https://accounts.kakao.com/',
+                        'Upgrade-Insecure-Requests': '1'
+                    }
+                ).then(e => {
                     this.LOGGER.debug('/login request finished: ' + e.statusCode());
 
                     if (e.statusCode() !== 200) reject('For an unknown reason, the information required to log in could not be retrieved with status: ' + e.statusCode());
@@ -85,13 +79,18 @@ exports.KakaoApiService = /** @class */ (function () {
 
                     this.LOGGER.debug('referer: ' + String(referer));
 
-                    this.client.changeHost('stat.tiara.kakao.com')
+                    this.client.changeHost('stat.tiara.kakao.com');
 
-                    this.client.request('GET', '/track', {
-                        d: JSON.stringify(constants.tiaraData)
-                    }, {
-                        Referer: 'https://accounts.kakao.com/'
-                    }).then(_ => {
+                    this.client.request(
+                        'GET',
+                        '/track',
+                        {
+                            d: JSON.stringify(constants.tiaraData)
+                        },
+                        {
+                            Referer: 'https://accounts.kakao.com/'
+                        }
+                    ).then(_ => {
                         const parsedData = e.parse();
                         const dataElement = parsedData.getElementById('__NEXT_DATA__');
 
@@ -107,7 +106,7 @@ exports.KakaoApiService = /** @class */ (function () {
                             const nextData = JSON.parse(dataElement.data()).props.pageProps.pageContext.commonContext;
 
                             cryptoKey = nextData.p;
-                            csrfToken = String(nextData._csrf)
+                            csrfToken = String(nextData._csrf);
                         } else {
                             cryptoKey = parsedData.select('input[name=p]').attr('value');
                             if (cryptoKey === '') reject('Cannot Get CryptoKey');
@@ -117,7 +116,9 @@ exports.KakaoApiService = /** @class */ (function () {
 
                         this.client.changeHost('accounts.kakao.com');
 
-                        this.client.requestByObject(createAuthenticateRequestForm(isNextJS, data, referer, cryptoKey, csrfToken)).then(r => {
+                        this.client.requestByObject(
+                            createAuthenticateRequestForm(isNextJS, data, referer, cryptoKey, csrfToken)
+                        ).then(r => {
                             this.LOGGER.debug('auth request finished: ' + r.statusCode());
 
                             if (r.statusCode() !== 200) reject('An error occurred while loading authenticate.json with status: ' + r.statusCode());
@@ -139,73 +140,98 @@ exports.KakaoApiService = /** @class */ (function () {
                                     reject('Email or password is incorrect');
                                     break;
                                 case -451:
-                                    this.is2FA = true;
-                                    this.client.request("POST", "/api/v2/two_step_verification/send_tms_for_login.json", JSON.stringify({"_csrf": csrfToken}), DEFAULT_HEADER, true).then((tmsResult) => {
+                                    if (data.twoFA) reject('2FA is need');
+
+                                    this.client.request(
+                                        'POST',
+                                        '/api/v2/two_step_verification/send_tms_for_login.json',
+                                        JSON.stringify({ _csrf: csrfToken }),
+                                        constants.defaultHeaders,
+                                        true
+                                    ).then(tmsResult => {
                                         let token = JSON.parse(tmsResult.body()).token;
                                         let counter = 0;
+
                                         if (this.timerID !== null) {
                                             try {
-                                                clearInterval(this.timerID)
+                                                clearInterval(this.timerID);
                                             } catch (e) {
+                                                // no-op
                                             }
                                         }
+
                                         this.timerID = setInterval(() => {
                                             if (counter === 40) {
-                                                clearInterval(this.timerID)
-                                                reject("2FA is not valid")
+                                                clearInterval(this.timerID);
+                                                reject('2FA is not valid');
                                                 return;
                                             }
+
                                             counter++;
-                                            this.client.request("POST", "/api/v2/two_step_verification/verify_tms_for_login.json", JSON.stringify({
-                                                "_csrf": csrfToken, "token": token, "isRememberBrowser": true
-                                            }), DEFAULT_HEADER, true)
-                                                .then((verifyTMS) => {
-                                                    const finalResult = JSON.parse(verifyTMS.body()).status;
-                                                    if (finalResult.status === -451) {
-                                                        return;
-                                                    } else if (finalResult.status !== 0) {
-                                                        reject("2FA is not valid. Please try it again");
-                                                    }
-                                                    this.client.request("POST", "/api/v2/two_step_verification/expire_tms_for_login.json", JSON.stringify({
-                                                        "_csrf": csrfToken, "token": token
-                                                    }), DEFAULT_HEADER)
-                                                        .then((afterRemoveRes) => {
-                                                            clearInterval(this.timerID);
-                                                            resolve(this.client.getCookies())
-                                                        });
 
-                                                }).catch(reject)
+                                            this.client.request(
+                                                'POST',
+                                                '/api/v2/two_step_verification/verify_tms_for_login.json',
+                                                JSON.stringify({
+                                                    _csrf: csrfToken,
+                                                    token: token,
+                                                    isRememberBrowser: true
+                                                }),
+                                                constants.defaultHeaders,
+                                                true
+                                            ).then(verifyTMS => {
+                                                const finalResult = JSON.parse(verifyTMS.body()).status;
 
-                                        }, 2500)
+                                                if (finalResult.status === -451) return;
+                                                else if (finalResult.status !== 0) reject('2FA is not valid. Please try it again');
 
+                                                this.client.request(
+                                                    'POST',
+                                                    '/api/v2/two_step_verification/expire_tms_for_login.json',
+                                                    JSON.stringify({
+                                                        _csrf: csrfToken,
+                                                        token: token,
+                                                    }),
+                                                    constants.defaultHeaders,
+                                                ).then(_ => {
+                                                    clearInterval(this.timerID);
+                                                    resolve(this.client.getCookies());
+                                                })
+                                            })
+
+                                        }, 2500);
 
                                     }).catch(reject);
                                     break;
                                 case -481:
-                                    reject("Captcha Detected")
+                                    reject('Captcha Detected');
                                     break;
                                 default:
                                     reject('An unknown error occurred during login with status: ' + loginRes['status']);
                                     break;
                             }
-                            if (!this.is2FA) {
+
+                            if (!data.twoFA) {
                                 let cookies = this.client.getCookies();
                                 resolve(cookies);
                             }
                         }).catch(reject);
-                    }).catch(reject)
-                }).catch(reject)
+                    }).catch(reject);
+                }).catch(reject);
             }, 0);
         });
-    }
+    };
 
     /**
      * 2FA
-     * @param {{ email: string; password: string; permanent: boolean; }} data
+     * @param {{ email: string; password: string; keepLogin: boolean; }} data
+     * @return { Promise<void> }
      */
     KakaoApiService.prototype.twoFA = function (data) {
+        const req = Object.assign(data, { twoFA: true })
 
-    }
+        return this.login(req);
+    };
 
     /**
      * get release version
@@ -213,8 +239,8 @@ exports.KakaoApiService = /** @class */ (function () {
      * @return { string }
      */
     KakaoApiService.getReleaseVersion = function () {
-        return "1.2.0-snapshot";
-    }
+        return '1.2.0-snapshot';
+    };
 
     /**
      * create Service
@@ -223,7 +249,7 @@ exports.KakaoApiService = /** @class */ (function () {
      */
     KakaoApiService.createService = function () {
         return new KakaoApiService();
-    }
+    };
 
     return KakaoApiService;
 

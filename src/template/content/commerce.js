@@ -36,7 +36,7 @@ exports.CommerceBuilder = (function () {
     CommerceBuilder.prototype.setProductName = function (name) {
         this.obj['product_name'] = name;
         return this;
-    }
+    };
 
     /**
      * set regular price
@@ -46,7 +46,7 @@ exports.CommerceBuilder = (function () {
     CommerceBuilder.prototype.setRegularPrice = function (price) {
         this.obj['price'] = price;
         return this;
-    }
+    };
 
     /**
      * set discount price
@@ -56,7 +56,7 @@ exports.CommerceBuilder = (function () {
     CommerceBuilder.prototype.setDiscountPrice = function (price) {
         this.obj['discount_price'] = price;
         return this;
-    }
+    };
 
     /**
      * set discount rate
@@ -66,7 +66,7 @@ exports.CommerceBuilder = (function () {
     CommerceBuilder.prototype.setDiscountRate = function (rate) {
         this.obj['discount_rate'] = rate;
         return this;
-    }
+    };
 
     /**
      * set currency unit
@@ -76,7 +76,7 @@ exports.CommerceBuilder = (function () {
     CommerceBuilder.prototype.setCurrencyUnit = function (unit) {
         this.obj['currency_unit'] = unit;
         return this;
-    }
+    };
 
     /**
      * set currency unit position
@@ -86,7 +86,7 @@ exports.CommerceBuilder = (function () {
     CommerceBuilder.prototype.setCurrencyUnitPosition = function (position) {
         this.obj['currency_unit_position'] = position;
         return this;
-    }
+    };
 
     /**
      * build
@@ -94,7 +94,7 @@ exports.CommerceBuilder = (function () {
      */
     CommerceBuilder.prototype.build = function () {
         return this.obj;
-    }
+    };
 
     return CommerceBuilder;
 

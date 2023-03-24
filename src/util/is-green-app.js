@@ -24,7 +24,7 @@
 
 exports.isGreenApp = function () {
     const clazz = java.lang.Class.forName('android.app.ActivityThread');
-    const method = clazz.getDeclaredMethod("currentPackageName", null);
+    const method = clazz.getDeclaredMethod('currentPackageName', null);
     const packageName = String(method.invoke(clazz, null));
     return packageName === 'com.darktornado.chatbot';
-}
+};

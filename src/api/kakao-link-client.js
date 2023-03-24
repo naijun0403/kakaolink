@@ -31,7 +31,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
 
     function KakaoLinkClient() {
         this.cookies = null;
-        this.client = new RequestClient('sharer.kakao.com')
+        this.client = new RequestClient('sharer.kakao.com');
         this.isLogin = false;
         this.kakaoAgent = null;
         if (arguments.length === 2) {
@@ -52,7 +52,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
      * @param { string } password
      */
     KakaoLinkClient.prototype.loginLegacy = function (email, password) {
-        const { KakaoApiService } = require("../service/kakao-api-service");
+        const { KakaoApiService } = require('../service/kakao-api-service');
         KakaoApiService.createService().login({
             email: email,
             password: password,
@@ -61,11 +61,11 @@ exports.KakaoLinkClient = /** @class */ (function () {
             this.login(e, {
                 apiKey: this.apiKey,
                 url: this.url,
-            })
+            });
         }).catch(e => {
             throw e;
-        })
-    }
+        });
+    };
 
     /**
      * Login (set Cookies)
@@ -74,14 +74,14 @@ exports.KakaoLinkClient = /** @class */ (function () {
      * @param {{apiKey: string; url: string;} | string} info
      */
     KakaoLinkClient.prototype.login = function (cookies, info) {
-        if (typeof cookies === "string" && typeof info === 'string') {
+        if (typeof cookies === 'string' && typeof info === 'string') {
             // deprecated way
             this.loginLegacy(cookies, info);
         } else {
             if (info === undefined) throw new Error('No AccountInfo Entered');
             if (!info.hasOwnProperty('apiKey') || !info.hasOwnProperty('url')) throw new Error('No apiKey or url entered');
 
-            if (!/^http(s)?:\/\/.+/.test(info.url)) throw new TypeError("The url does not match the web url format");
+            if (!/^http(s)?:\/\/.+/.test(info.url)) throw new TypeError('The url does not match the web url format');
 
             this.cookies = cookies;
             this.isLogin = true;
@@ -90,7 +90,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
             this.kakaoAgent = this.generateKakaoAgent(this.url);
             this.client.setCookies(cookies);
         }
-    }
+    };
 
     /**
      * Kakao Link Send
@@ -100,7 +100,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
      * @param { 'custom' | 'default' } [type] send Type
      */
     KakaoLinkClient.prototype.sendLink = function (room, data, type) {
-        if (!this.isLogin) throw new Error('You cannot access the KakaoLink API before logging in.')
+        if (!this.isLogin) throw new Error('You cannot access the KakaoLink API before logging in.');
         if (!data.hasOwnProperty('link_ver')) data['link_ver'] = '4.0';
 
         if (!isExistsPromise()) {
@@ -112,7 +112,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
         return new this.Promise((resolve, reject) => {
             setTimeout(() => {
                 const dataString = JSON.stringify(data);
-                
+
                 this.client.request(
                     'POST',
                     '/picker/link',
@@ -148,13 +148,13 @@ exports.KakaoLinkClient = /** @class */ (function () {
                             channelData = value;
                             return true;
                         }
-                    })
+                    });
 
                     if (channelData === null) reject('There is no room called "' + room + '", please check again');
 
                     const receiver = Base64Util.encode(
                         JSON.stringify(channelData)
-                    )
+                    );
 
                     this.client.request(
                         'POST',
@@ -174,13 +174,13 @@ exports.KakaoLinkClient = /** @class */ (function () {
                     ).then(r => {
                         if (r.statusCode() !== 200) reject('KakaoShareMessage sending failed with status: ' + r.statusCode());
 
-                        resolve({ success: true, status: r.statusCode() })
-                    }).catch(reject)
+                        resolve({ success: true, status: r.statusCode() });
+                    }).catch(reject);
 
-                }).catch(reject)
-            }, 0)
+                }).catch(reject);
+            }, 0);
         });
-    }
+    };
 
     /**
      * support other module method
@@ -197,7 +197,7 @@ exports.KakaoLinkClient = /** @class */ (function () {
      */
     KakaoLinkClient.prototype.generateKakaoAgent = function (url) {
         return 'sdk/2.0.1 os/javascript sdk_type/javascript lang/en-US device/Win32 origin/' + encodeURIComponent(url || 'https://arthic.dev');
-    }
+    };
 
     return KakaoLinkClient;
 

@@ -36,7 +36,7 @@ exports.ContentBuilder = (function () {
     ContentBuilder.prototype.setTitle = function (title) {
         this.obj['title'] = title;
         return this;
-    }
+    };
 
     /**
      * set image url
@@ -46,7 +46,7 @@ exports.ContentBuilder = (function () {
     ContentBuilder.prototype.setImageUrl = function (url) {
         this.obj['image_url'] = url;
         return this;
-    }
+    };
 
     /**
      * set image width
@@ -56,7 +56,7 @@ exports.ContentBuilder = (function () {
     ContentBuilder.prototype.setImageWidth = function (width) {
         this.obj['image_width'] = width;
         return this;
-    }
+    };
 
     /**
      * set image height
@@ -66,7 +66,7 @@ exports.ContentBuilder = (function () {
     ContentBuilder.prototype.setImageHeight = function (height) {
         this.obj['image_height'] = height;
         return this;
-    }
+    };
 
     /**
      * set description
@@ -76,7 +76,7 @@ exports.ContentBuilder = (function () {
     ContentBuilder.prototype.setDescription = function (description) {
         this.obj['description'] = description;
         return this;
-    }
+    };
 
     /**
      * set link (using link builder)
@@ -86,7 +86,7 @@ exports.ContentBuilder = (function () {
     ContentBuilder.prototype.setLink = function (link) {
         this.obj['link'] = link;
         return this;
-    }
+    };
 
     /**
      * build
@@ -94,7 +94,7 @@ exports.ContentBuilder = (function () {
      */
     ContentBuilder.prototype.build = function () {
         return this.obj;
-    }
+    };
 
     return ContentBuilder;
 

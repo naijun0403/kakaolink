@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-const { TiaraFactory } = require("./tiara");
+const { TiaraFactory } = require('./tiara');
 
 module.exports = {
     constants: {
@@ -60,6 +60,14 @@ module.exports = {
                 name: 'pageManage',
                 kind: ''
             }
+        },
+        defaultUserAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0',
+        defaultHeaders: {
+            'User-Agent': this.defaultUserAgent,
+            'Content-Type': 'application/json',
+            Referer: 'https://accounts.kakao.com/',
+            Host: 'accounts.kakao.com',
+            Origin: 'https://accounts.kakao.com/'
         }
     }
-}
+};

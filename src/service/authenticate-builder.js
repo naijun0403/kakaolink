@@ -36,7 +36,7 @@ const { CryptoJS } = require('../crypto');
  * @return {{ method: string; path: string; data: Record<string, unknown> | string; headers: Record<string, string> }}
  */
 function createAuthenticateRequestForm(isNextJS, form, referer, cryptoKey, csrfToken) {
-    const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0'
+    const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0';
     if (isNextJS) {
         return {
             method: 'POST',
@@ -51,10 +51,10 @@ function createAuthenticateRequestForm(isNextJS, form, referer, cryptoKey, csrfT
             }),
             headers: {
                 Referer: referer,
-                "User-Agent" : USER_AGENT,
+                'User-Agent': USER_AGENT,
                 'Content-Type': 'application/json'
             }
-        }
+        };
     } else {
         return {
             method: 'POST',
@@ -72,10 +72,10 @@ function createAuthenticateRequestForm(isNextJS, form, referer, cryptoKey, csrfT
                 authenticity_token: csrfToken
             },
             headers: {
-                "User-Agent" : USER_AGENT,
+                'User-Agent': USER_AGENT,
                 Referer: referer
             }
-        }
+        };
     }
 }
 

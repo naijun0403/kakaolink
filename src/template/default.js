@@ -40,7 +40,7 @@ exports.DefaultTemplateBuilder = (function () {
     DefaultTemplateBuilder.prototype.setLinkVersion = function (linkVer) {
         this.linkVer = linkVer;
         return this;
-    }
+    };
 
     /**
      * set object type
@@ -51,7 +51,7 @@ exports.DefaultTemplateBuilder = (function () {
     DefaultTemplateBuilder.prototype.setType = function (type) {
         this.obj['object_type'] = type;
         return this;
-    }
+    };
 
     /**
      * set object type as feed
@@ -60,7 +60,7 @@ exports.DefaultTemplateBuilder = (function () {
     DefaultTemplateBuilder.prototype.setTypeAsFeed = function () {
         this.setType('feed');
         return this;
-    }
+    };
 
     /**
      * set object type as text
@@ -69,7 +69,7 @@ exports.DefaultTemplateBuilder = (function () {
     DefaultTemplateBuilder.prototype.setTypeAsText = function () {
         this.setType('text');
         return this;
-    }
+    };
 
     /**
      * set object type as list
@@ -78,7 +78,7 @@ exports.DefaultTemplateBuilder = (function () {
     DefaultTemplateBuilder.prototype.setTypeAsList = function () {
         this.setType('list');
         return this;
-    }
+    };
 
     /**
      * set object type as location
@@ -87,7 +87,7 @@ exports.DefaultTemplateBuilder = (function () {
     DefaultTemplateBuilder.prototype.setTypeAsLocation = function () {
         this.setType('location');
         return this;
-    }
+    };
 
     /**
      * set object type as commerce
@@ -96,7 +96,7 @@ exports.DefaultTemplateBuilder = (function () {
     DefaultTemplateBuilder.prototype.setTypeAsCommerce = function () {
         this.setType('commerce');
         return this;
-    }
+    };
 
     /**
      * set item content
@@ -107,7 +107,7 @@ exports.DefaultTemplateBuilder = (function () {
     DefaultTemplateBuilder.prototype.setItemContent = function (item) {
         this.obj['item_content'] = item;
         return this;
-    }
+    };
 
     /**
      * set content
@@ -118,7 +118,7 @@ exports.DefaultTemplateBuilder = (function () {
     DefaultTemplateBuilder.prototype.setContent = function (content) {
         this.obj['content'] = content;
         return this;
-    }
+    };
 
     /**
      * set contents
@@ -129,7 +129,7 @@ exports.DefaultTemplateBuilder = (function () {
     DefaultTemplateBuilder.prototype.setContents = function (contents) {
         this.obj['contents'] = contents;
         return this;
-    }
+    };
 
     /**
      * set default button title
@@ -140,7 +140,7 @@ exports.DefaultTemplateBuilder = (function () {
     DefaultTemplateBuilder.prototype.setButtonTitle = function (title) {
         this.obj['button_title'] = title;
         return this;
-    }
+    };
 
     /**
      * add button
@@ -153,11 +153,11 @@ exports.DefaultTemplateBuilder = (function () {
             if (!this.obj['buttons']) this.obj['buttons'] = [];
             this.obj['buttons'].push(
                 JSON.parse(JSON.stringify(button))
-            )
+            );
         } else throw new Error('button is not Button instance');
 
         return this;
-    }
+    };
 
     /**
      * using link builder
@@ -168,7 +168,7 @@ exports.DefaultTemplateBuilder = (function () {
     DefaultTemplateBuilder.prototype.setLink = function (link) {
         this.obj['link'] = link;
         return this;
-    }
+    };
 
     /**
      * set text
@@ -179,7 +179,7 @@ exports.DefaultTemplateBuilder = (function () {
     DefaultTemplateBuilder.prototype.setText = function (text) {
         this.obj['text'] = text;
         return this;
-    }
+    };
 
     /**
      * set header title
@@ -190,7 +190,7 @@ exports.DefaultTemplateBuilder = (function () {
     DefaultTemplateBuilder.prototype.setHeaderTitle = function (title) {
         this.obj['header_title'] = title;
         return this;
-    }
+    };
 
     /**
      * using link builder
@@ -201,7 +201,7 @@ exports.DefaultTemplateBuilder = (function () {
     DefaultTemplateBuilder.prototype.setHeaderLink = function (link) {
         this.obj['header_link'] = link;
         return this;
-    }
+    };
 
     /**
      * set address
@@ -212,7 +212,7 @@ exports.DefaultTemplateBuilder = (function () {
     DefaultTemplateBuilder.prototype.setAddress = function (address) {
         this.obj['address'] = address;
         return this;
-    }
+    };
 
     /**
      * set address title
@@ -223,7 +223,7 @@ exports.DefaultTemplateBuilder = (function () {
     DefaultTemplateBuilder.prototype.setAddressTitle = function (title) {
         this.obj['address_title'] = title;
         return this;
-    }
+    };
 
     /**
      * build
@@ -233,8 +233,8 @@ exports.DefaultTemplateBuilder = (function () {
         return {
             link_ver: this.linkVer,
             template_object: this.obj
-        }
-    }
+        };
+    };
 
     return DefaultTemplateBuilder;
 })();

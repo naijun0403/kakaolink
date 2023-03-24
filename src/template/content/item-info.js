@@ -25,4 +25,4 @@
 exports.ItemInfo = function (name, value) {
     this.item = name;
     this.item_op = value;
-}
+};

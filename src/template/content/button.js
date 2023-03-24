@@ -31,4 +31,4 @@
 exports.Button = function (title, link) {
     this.title = title;
     this.link = link;
-}
+};

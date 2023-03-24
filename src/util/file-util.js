@@ -4,8 +4,8 @@
 
         /**
          * write file
-         * @param {string} path 
-         * @param {string} value 
+         * @param {string} path
+         * @param {string} value
          */
         write(path, value) {
             const file = new java.io.File(path);
@@ -24,7 +24,7 @@
 
         /**
          * read file
-         * @param {string} path 
+         * @param {string} path
          */
         read(path) {
             const file = new java.io.File(path);
@@ -45,6 +45,6 @@
             return arr.join('\n');
         }
 
-    }
+    };
 
 })(module, exports, require);
