@@ -69,7 +69,7 @@
     let counter = 1;
     const ids = {};
 
-    function clearInterval(id) {
+    function clearInterval_support(id) {
         if (ids[id] !== undefined) {
             ids[id].cancel();
             timer.purge();
@@ -77,7 +77,7 @@
         }
     }
 
-    function setInterval(fn, delay) {
+    function setInterval_support(fn, delay) {
         let id = counter;
         counter += 1;
         const arg = Array.from(arguments).slice(2);
@@ -89,7 +89,7 @@
     module.exports = {
         setTimeout: setTimeout_support,
         clearTimeout: clearTimeout_support,
-        setInterval: setInterval,
-        clearInterval: clearInterval
+        setInterval: setInterval_support,
+        clearInterval: clearInterval_support
     };
 })(module, exports, require);
