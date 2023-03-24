@@ -29,13 +29,10 @@ const Kakao = new KakaoLinkClient();
 const service = KakaoApiService.createService();
 
 service.login({
-
-})
-
-service.twoFA({
     email: 'email',
     password: 'password',
-    permanent: true
+    keepLogin: true,
+    twoFA: true
 }).then(e => {
-    service
+
 }).catch(Log.e);
