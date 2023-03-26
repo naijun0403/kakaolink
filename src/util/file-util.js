@@ -43,6 +43,22 @@
             }
 
             return arr.join('\n');
+        },
+
+        /**
+         * delete file
+         * @param path
+         * @returns {boolean}
+         */
+        delete(path) {
+            const file = new java.io.File(path);
+
+            if (!file.exists()) {
+                return false;
+            } else {
+                file.delete();
+                return true;
+            }
         }
 
     };

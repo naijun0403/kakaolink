@@ -29,3 +29,4 @@ exports.KakaoDevClient = require('./src/api/kakao-dev-client').KakaoDevClient;
 exports.TemplateBuilder = require('./src/template').TemplateBuilder;
 exports.Button = require('./src/template/content/button').Button;
 exports.ItemInfo = require('./src/template/content/item-info').ItemInfo;
+exports.CookieStore = require('./src/store/cookie-store').CookieStore;
