@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-const { clearInterval } = require('../polyfill/timers');
 exports.KakaoApiService = /** @class */ (function () {
 
+    const { clearInterval } = require('../polyfill/timers');
     const { FileLogger } = require('../logger/file-logger');
     const { RequestClient } = require('../request/request-client');
     const { isExistsPromise } = require('../util/is-promise');
