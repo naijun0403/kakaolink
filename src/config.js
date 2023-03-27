@@ -23,6 +23,7 @@
  */
 
 const { TiaraFactory } = require('./tiara');
+const {generateAndroidUserAgent} = require("./util/user-agent");
 
 module.exports = {
     constants: {
@@ -61,7 +62,7 @@ module.exports = {
                 kind: ''
             }
         },
-        defaultUserAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0',
+        defaultUserAgent: generateAndroidUserAgent(),
         defaultHeaders: {
             'User-Agent': this.defaultUserAgent,
             'Content-Type': 'application/json',
