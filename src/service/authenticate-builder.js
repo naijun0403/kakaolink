@@ -22,61 +22,63 @@
  * SOFTWARE.
  */
 
-const { CryptoJS } = require('../crypto');
+(function (module, exports, require) {
+    const { CryptoJS } = require('../crypto');
+    const { constants } = require('../config');
 
-/**
- * NextJS로 추후 이동시 삭제될 함수
- * @forRemoval
- * @param isNextJS { boolean }
- * @param form {{ email: string; password: string; keepLogin: boolean; }}
- * @param referer { string }
- * @param cryptoKey { string }
- * @param csrfToken { string }
- *
- * @return {{ method: string; path: string; data: Record<string, unknown> | string; headers: Record<string, string> }}
- */
-function createAuthenticateRequestForm(isNextJS, form, referer, cryptoKey, csrfToken) {
-    const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0';
-    if (isNextJS) {
-        return {
-            method: 'POST',
-            path: '/api/v2/login/authenticate.json',
-            data: JSON.stringify({
-                _csrf: csrfToken,
-                activeSso: true,
-                loginKey: form.email,
-                loginUrl: String(referer),
-                password: CryptoJS.AES.encrypt(String(form.password), String(cryptoKey)).toString(),
-                staySignedIn: form.keepLogin
-            }),
-            headers: {
-                Referer: referer,
-                'User-Agent': USER_AGENT,
-                'Content-Type': 'application/json'
-            }
-        };
-    } else {
-        return {
-            method: 'POST',
-            path: '/weblogin/authenticate.json',
-            data: {
-                os: 'web',
-                webview_v: '2',
-                email: CryptoJS.AES.encrypt(String(form.email), String(cryptoKey)).toString(),
-                password: CryptoJS.AES.encrypt(String(form.password), String(cryptoKey)).toString(),
-                stay_signed_in: form.keepLogin.toString(),
-                continue: decodeURIComponent(referer.split('continue=')[1]),
-                third: 'false',
-                sdk: 'false',
-                k: 'true',
-                authenticity_token: csrfToken
-            },
-            headers: {
-                'User-Agent': USER_AGENT,
-                Referer: referer
-            }
-        };
+    /**
+     * NextJS로 추후 이동시 삭제될 함수
+     * @forRemoval
+     * @param isNextJS { boolean }
+     * @param form {{ email: string; password: string; keepLogin: boolean; }}
+     * @param referer { string }
+     * @param cryptoKey { string }
+     * @param csrfToken { string }
+     *
+     * @return {{ method: string; path: string; data: Record<string, unknown> | string; headers: Record<string, string> }}
+     */
+    function createAuthenticateRequestForm(isNextJS, form, referer, cryptoKey, csrfToken) {
+        if (isNextJS) {
+            return {
+                method: 'POST',
+                path: '/api/v2/login/authenticate.json',
+                data: JSON.stringify({
+                    _csrf: csrfToken,
+                    activeSso: true,
+                    loginKey: form.email,
+                    loginUrl: String(referer),
+                    password: CryptoJS.AES.encrypt(String(form.password), String(cryptoKey)).toString(),
+                    staySignedIn: form.keepLogin
+                }),
+                headers: {
+                    Referer: referer,
+                    'User-Agent': constants.defaultUserAgent,
+                    'Content-Type': 'application/json'
+                }
+            };
+        } else {
+            return {
+                method: 'POST',
+                path: '/weblogin/authenticate.json',
+                data: {
+                    os: 'web',
+                    webview_v: '2',
+                    email: CryptoJS.AES.encrypt(String(form.email), String(cryptoKey)).toString(),
+                    password: CryptoJS.AES.encrypt(String(form.password), String(cryptoKey)).toString(),
+                    stay_signed_in: form.keepLogin.toString(),
+                    continue: decodeURIComponent(referer.split('continue=')[1]),
+                    third: 'false',
+                    sdk: 'false',
+                    k: 'true',
+                    authenticity_token: csrfToken
+                },
+                headers: {
+                    'User-Agent': constants.defaultUserAgent,
+                    Referer: referer
+                }
+            };
+        }
     }
-}
 
-exports.createAuthenticateRequestForm = createAuthenticateRequestForm;
+    exports.createAuthenticateRequestForm = createAuthenticateRequestForm;
+})(module, exports, require)
