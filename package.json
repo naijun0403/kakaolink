@@ -4,5 +4,6 @@
   },
   "scripts": {
     "build": "rollup -c"
-  }
+  },
+  "main": "./index.js"
 }
