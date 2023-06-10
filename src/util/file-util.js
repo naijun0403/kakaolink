@@ -59,6 +59,14 @@
                 file.delete();
                 return true;
             }
+        },
+
+        /**
+         * exists file
+         */
+        exists(path) {
+            const file = new java.io.File(path);
+            return file.exists();
         }
 
     };

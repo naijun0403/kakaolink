@@ -38,7 +38,7 @@ exports.CookieStore = (function () {
 
         this.path = path;
 
-        this.content = FileUtil.read(path);
+        this.content = FileUtil.exists(path) ? FileUtil.read(path) : null;
     }
 
     CookieStore.prototype.encrypt = function (message) {
