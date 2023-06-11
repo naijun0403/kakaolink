@@ -65,26 +65,45 @@
         timer.cancel();
     };
 
-    const timer = new java.util.Timer();
-    let counter = 1;
-    const ids = {};
+    const stackInterval = [];
 
-    function clearInterval_support(id) {
-        if (ids[id] !== undefined) {
-            ids[id].cancel();
-            timer.purge();
-            delete ids[id];
+    const setInterval_support = function (callback, timeout) {
+        const args = Array.from(arguments);
+
+        // function arguments
+        args.pop();
+        args.pop();
+
+        if (isGreenApp()) {
+            return setTimeout(callback, timeout, args);
         }
-    }
 
-    function setInterval_support(fn, delay) {
-        let id = counter;
-        counter += 1;
-        const arg = Array.from(arguments).slice(2);
-        ids[id] = new JavaAdapter(java.util.TimerTask, { run: fn.apply.bind(fn, this, arg) });
-        timer.schedule(ids[id], delay, delay);
+        const timer = new java.util.Timer();
+        const task = new java.util.TimerTask({
+            run: function () {
+                callback.call(this, args);
+            }
+        });
+        timer.schedule(task, timeout, timeout);
+
+        const id = ++stackInterval.size;
+        stackInterval[id] = timer;
+
         return id;
-    }
+    };
+
+    const clearInterval_support = (id) => {
+        if (isGreenApp()) {
+            return clearTimeout(id);
+        }
+
+        const timer = stackInterval[id];
+        if (timer === undefined) {
+            return undefined;
+        }
+
+        timer.cancel();
+    };
 
     module.exports = {
         setTimeout: setTimeout_support,

@@ -38,11 +38,7 @@ exports.RequestClient = /** @class */ (function () {
 
         this.LOGGER = new FileLogger('request');
 
-        if (!isExistsPromise()) {
-            this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise');
-        } else {
-            this.Promise = /** @type PromiseConstructor */ Promise;
-        }
+        this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise');
     }
 
     RequestClient.prototype.changeHost = function (host) {
@@ -152,6 +148,8 @@ exports.RequestClient = /** @class */ (function () {
                     this.LOGGER.info(baseURL + ' responseText: ' + res.body());
                     this.LOGGER.info(baseURL + ' response headers: ' + res.headers());
                     this.LOGGER.info(baseURL + ' response cookies: ' + res.cookies());
+
+                    Log.d('finish request')
 
                     resolve(res);
                 } catch (e) {

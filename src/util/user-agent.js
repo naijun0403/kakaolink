@@ -23,13 +23,5 @@
  */
 
 exports.generateAndroidUserAgent = function () {
-    const builder = [];
-
-    const sdkVersion = android.os.Build.VERSION.SDK_INT
-
-    builder.push('Mozilla/5.0');
-    builder.push('(Linux; Android ' + sdkVersion + '; sdk Build/KL);');
-    builder.push(android.os.Build.MODEL);
-
-    return builder.join(' ');
+    return 'Mozilla/5.0 (Linux; Android 7.0; ' + android.os.Build.MODEL + ' Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/60.0.3112.107 Mobile Safari/537.36'
 }

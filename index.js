@@ -30,3 +30,4 @@ exports.TemplateBuilder = require('./src/template').TemplateBuilder;
 exports.Button = require('./src/template/content/button').Button;
 exports.ItemInfo = require('./src/template/content/item-info').ItemInfo;
 exports.CookieStore = require('./src/store/cookie-store').CookieStore;
+exports.ModuleDebugService = require('./src/logger/module-debug-service').ModuleDebugService;

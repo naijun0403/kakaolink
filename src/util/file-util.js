@@ -11,6 +11,7 @@
             const file = new java.io.File(path);
 
             if (!file.exists()) {
+                file.parentFile.mkdirs();
                 file.createNewFile();
             }
 

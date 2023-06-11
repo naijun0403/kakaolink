@@ -40,7 +40,7 @@ exports.ModuleDebugService = (function () {
 
         if (!option) {
             this.INSTANCE.option = {
-                logPath: '../../log',
+                logPath: '../../log.txt',
                 option: {
                     apiService: true,
                     linkClient: true,

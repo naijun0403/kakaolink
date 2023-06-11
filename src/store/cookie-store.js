@@ -46,7 +46,7 @@ exports.CookieStore = (function () {
     }
 
     CookieStore.prototype.decrypt = function (message) {
-        return CryptoJS.AES.decrypt(message, this.key).toString();
+        return CryptoJS.AES.decrypt(message, this.key).toString(CryptoJS.enc.Utf8);
     }
 
     CookieStore.prototype.hasCookie = function () {

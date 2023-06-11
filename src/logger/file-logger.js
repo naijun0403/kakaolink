@@ -98,6 +98,7 @@ exports.FileLogger = /** @class */ (function () {
      * @param { string } message
      */
     FileLogger.prototype.appendLog = function (message) {
+        Log.d(message)
         if (ModuleDebugService.INSTANCE.isLogging) {
             try {
                 const original = FileUtil.read(ModuleDebugService.INSTANCE.option.logPath);

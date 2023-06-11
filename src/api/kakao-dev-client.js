@@ -33,11 +33,7 @@ exports.KakaoDevClient = /** @class */ (function () {
         this.cookies = null;
         this.client = new RequestClient('developers.kakao.com');
 
-        if (!isExistsPromise()) {
-            this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise');
-        } else {
-            this.Promise = /** @type PromiseConstructor */ Promise;
-        }
+        this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise');
     }
 
     /**

@@ -34,11 +34,7 @@ exports.KakaoApiService = /** @class */ (function () {
     function KakaoApiService() {
         this.client = new RequestClient('accounts.kakao.com');
         this.timerID = null;
-        if (!isExistsPromise()) {
-            this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise');
-        } else {
-            this.Promise = /** @type PromiseConstructor */ Promise;
-        }
+        this.Promise = /** @type PromiseConstructor */ require('../polyfill/promise');
 
         this.LOGGER = new FileLogger('api-service');
     }
@@ -70,6 +66,7 @@ exports.KakaoApiService = /** @class */ (function () {
                         'Upgrade-Insecure-Requests': '1'
                     }
                 ).then(e => {
+                    Log.d(e)
                     this.LOGGER.debug('/login request finished: ' + e.statusCode());
 
                     if (e.statusCode() !== 200) reject('For an unknown reason, the information required to log in could not be retrieved with status: ' + e.statusCode());
@@ -139,7 +136,9 @@ exports.KakaoApiService = /** @class */ (function () {
                                     reject('Email or password is incorrect');
                                     break;
                                 case -451:
-                                    if (data.twoFA) reject('2FA is need');
+                                    if (!data.twoFA) reject('2FA is need');
+
+                                    this.LOGGER.debug('required 2FA and processing 2FA');
 
                                     this.client.request(
                                         'POST',
@@ -150,6 +149,8 @@ exports.KakaoApiService = /** @class */ (function () {
                                     ).then(tmsResult => {
                                         let token = JSON.parse(tmsResult.body()).token;
                                         let counter = 0;
+
+                                        this.LOGGER.debug('send 2fa message: ' + String(tmsResult.body()));
 
                                         if (this.timerID !== null) {
                                             try {
@@ -168,6 +169,21 @@ exports.KakaoApiService = /** @class */ (function () {
 
                                             counter++;
 
+                                            const expire = () => {
+                                                this.client.request(
+                                                    'POST',
+                                                    '/api/v2/two_step_verification/expire_tms_for_login.json',
+                                                    JSON.stringify({
+                                                        _csrf: csrfToken,
+                                                        token: token,
+                                                    }),
+                                                    constants.defaultHeaders,
+                                                ).then(_ => {
+                                                        clearInterval(this.timerID);
+                                                        resolve(this.client.getCookies());
+                                                })
+                                            }
+
                                             this.client.request(
                                                 'POST',
                                                 '/api/v2/two_step_verification/verify_tms_for_login.json',
@@ -181,21 +197,16 @@ exports.KakaoApiService = /** @class */ (function () {
                                             ).then(verifyTMS => {
                                                 const finalResult = JSON.parse(verifyTMS.body()).status;
 
-                                                if (finalResult.status === -451) return;
-                                                else if (finalResult.status !== 0) reject('2FA is not valid. Please try it again');
+                                                this.LOGGER.info('verify 2fa: ' + String(verifyTMS.body()));
 
-                                                this.client.request(
-                                                    'POST',
-                                                    '/api/v2/two_step_verification/expire_tms_for_login.json',
-                                                    JSON.stringify({
-                                                        _csrf: csrfToken,
-                                                        token: token,
-                                                    }),
-                                                    constants.defaultHeaders,
-                                                ).then(_ => {
+                                                if (finalResult.status === -451) return;
+                                                else if (finalResult.status !== 0) {
                                                     clearInterval(this.timerID);
-                                                    resolve(this.client.getCookies());
-                                                })
+                                                    expire();
+                                                    reject('2FA is not valid. Please try it again');
+                                                }
+
+                                                expire();
                                             })
 
                                         }, 2500);
@@ -216,7 +227,10 @@ exports.KakaoApiService = /** @class */ (function () {
                             }
                         }).catch(reject);
                     }).catch(reject);
-                }).catch(reject);
+                }).catch(e => {
+                    Log.e(e);
+                    reject(e);
+                });
             }, 0);
         });
     };
