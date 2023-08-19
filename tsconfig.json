@@ -3,9 +3,8 @@
     "target": "ES5",
     "module": "CommonJS",
     "outDir": "./dist",
-    "rootDir": "./src",
     "strict": true,
-    "lib": ["ES6"],
+    "lib": ["es6", "dom"],
     "esModuleInterop": true
   },
   "include": ["src/**/*.ts"],
