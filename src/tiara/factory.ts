@@ -82,7 +82,7 @@ export namespace TiaraFactory {
                 client_info: {
                     tuid,
                     tsid: tuid,
-                    uuid: uuid,
+                    uuid,
                     suid: uuid,
                     isuid: generateRandomUUIDWithDateNumber(),
                     client_timestamp: Date.now()
