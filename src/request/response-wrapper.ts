@@ -9,6 +9,10 @@ export class ResponseWrapper {
         return this.response.body();
     }
 
+    json<T>(): T {
+        return JSON.parse(this.body) as T;
+    }
+
     get statusCode(): number {
         return this.response.statusCode();
     }

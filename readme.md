@@ -1,6 +1,9 @@
 # kakaolink
 KakaoTalkShare API for kakaobot
 
+## 사용된 라이브러리
+- [crypto-js](https://github.com/brix/crypto-js)
+
 ## v1
 v1이랑 v2는 라이선스가 다릅니다.
 
