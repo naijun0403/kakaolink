@@ -9,7 +9,11 @@ export class KakaoApiService {
     private accountClient = new RequestClient('https://accounts.kakao.com');
     private tiaraClient = new RequestClient('https://stat.tiara.kakao.com');
 
-    async login(form: LoginForm) {
+    /**
+     * login and give cookies
+     * @param form
+     */
+    async login(form: LoginForm): Promise<Record<string, string>> {
         const loginPage = await this.accountClient.request({
             method: 'GET',
             path: '/login',
@@ -78,6 +82,8 @@ export class KakaoApiService {
             default:
                 throw new Error(`login error: ${loginResultParsed.status}`);
         }
+
+        return loginResult.cookies;
     }
 
     static async createService(): Promise<KakaoApiService> {
