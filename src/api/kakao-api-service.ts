@@ -5,7 +5,6 @@ import CryptoJS from '../modules/crypto-js';
 
 export class KakaoApiService {
 
-    private sharerClient = new RequestClient('https://sharer.kakao.com');
     private accountClient = new RequestClient('https://accounts.kakao.com');
     private tiaraClient = new RequestClient('https://stat.tiara.kakao.com');
 
