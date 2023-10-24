@@ -5,13 +5,14 @@
     "outDir": "./dist",
     "strict": true,
     "lib": ["es6", "dom"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "isolatedModules": true
   },
   "include": [
     "src/**/*",
     "src/**/*.js"
   ],
   "exclude": [
-    "node_modules",
+    "node_modules"
   ]
 }
