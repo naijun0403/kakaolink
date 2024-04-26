@@ -26,8 +26,11 @@ import { RequestClient } from '../request';
 import { NextData } from '../next';
 import { TiaraFactory } from '../tiara';
 import CryptoJS from '../modules/crypto-js';
+import { Configuration, DefaultConfiguration } from '../config';
 
 export class KakaoApiService {
+
+    private constructor(private configuration: Configuration) {}
 
     private accountClient = new RequestClient('https://accounts.kakao.com');
     private tiaraClient = new RequestClient('https://stat.tiara.kakao.com');
@@ -109,8 +112,12 @@ export class KakaoApiService {
         return loginResult.cookies;
     }
 
-    static async createService(): Promise<KakaoApiService> {
-        return new KakaoApiService();
+    static async createService(
+        configuration: Partial<Configuration> = {}
+    ): Promise<KakaoApiService> {
+        return new KakaoApiService(
+            Object.assign(DefaultConfiguration, configuration)
+        );
     }
 
 }
