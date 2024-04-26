@@ -36,10 +36,33 @@ export class KakaoApiService {
     private tiaraClient = new RequestClient('https://stat.tiara.kakao.com');
 
     /**
+     * **WARNING**: This method is not recommended to use.
+     * please use `loginWithKakaotalk` instead.
+     *
      * login and give cookies
      * @param form
      */
-    async login(form: LoginForm): Promise<Record<string, string>> {
+    async login(form: LoginForm | LoginWithKakaotalkForm | LoginWithAccountForm): Promise<Record<string, string>> {
+        throw new Error('Not implemented yet');
+    }
+
+    /**
+     * login with kakaotalk
+     * @param form
+     */
+    private async loginWithKakaotalk(form: LoginWithKakaotalkForm): Promise<Record<string, string>> {
+        throw new Error('Not implemented yet');
+    }
+
+    /**
+     * login with kakaotalk
+     *
+     * **WARNING**: This method is not recommended to use.
+     * please use `loginWithKakaotalk` instead.
+     * @param form
+     * @private
+     */
+    private async loginWithAccoint(form: LoginWithAccountForm): Promise<Record<string, string>> {
         const loginPage = await this.accountClient.request({
             method: 'GET',
             path: '/login',
@@ -123,6 +146,19 @@ export class KakaoApiService {
 }
 
 export interface LoginForm {
+    signInWithKakaoTalk?: boolean; // default: true
+}
+
+export interface LoginWithKakaotalkForm extends LoginForm {
+    signInWithKakaoTalk: true;
+
+    pollingInterval?: number; // default: 1000
+    pollingCount?: number; // default: 10
+}
+
+export interface LoginWithAccountForm extends LoginForm {
+    signInWithKakaoTalk: false;
+
     email: string;
     password: string;
     staySignedIn?: boolean;
