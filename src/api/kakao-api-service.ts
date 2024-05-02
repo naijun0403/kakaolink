@@ -43,7 +43,11 @@ export class KakaoApiService {
      * @param form
      */
     async login(form: LoginForm | LoginWithKakaotalkForm | LoginWithAccountForm): Promise<Record<string, string>> {
-        throw new Error('Not implemented yet');
+        if (form.signInWithKakaoTalk) {
+            return this.loginWithKakaotalk(form as LoginWithKakaotalkForm);
+        } else {
+            return this.loginWithAccoint(form as LoginWithAccountForm);
+        }
     }
 
     /**

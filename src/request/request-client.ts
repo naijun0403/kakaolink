@@ -27,7 +27,7 @@ import { ResponseWrapper } from './response-wrapper';
 
 export class RequestClient {
 
-    public cookies: Record<string, string> = {};
+    public cookies: java.util.LinkedHashMap<string, string> = new java.util.LinkedHashMap<string, string>();
 
     constructor(
         private readonly baseUrl: string,
@@ -41,6 +41,9 @@ export class RequestClient {
     async request(option: RequestOption): Promise<ResponseWrapper> {
         const connection = this.toJsoupConnection(option);
         const response = connection.execute();
+        const cookies = response.cookies();
+        this.cookies.putAll(cookies);
+
         return new ResponseWrapper(response);
     }
 
