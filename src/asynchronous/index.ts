@@ -71,7 +71,7 @@ export class PromiseLike<T> {
         return this;
     }
 
-    async awaitResult(): Promise<T> {
+    awaitResult(): T {
         try {
             return this.completionHandler.get();
         } catch (error) {

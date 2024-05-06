@@ -22,31 +22,14 @@
  * SOFTWARE.
  */
 
-import { RequestClient } from "../request";
-import { PromiseLike } from '../asynchronous';
-import { Template } from '../template';
+declare const App: any;
+declare const Api: any;
+declare const global: () => any;
 
-export class KakaoShareClient {
-
-    private sharerClient = new RequestClient('https://sharer.kakao.com');
-
-    private isInited = false;
-
-    init(cookies: Record<string, string>, domain: string) {
-        this.isInited = true;
-        this.sharerClient.setCookies(cookies);
+export function getAndroidContext(): android.content.ContextWrapper {
+    if (global().Api !== undefined) {
+        return Api.getContext();
+    } else {
+        return App.getContext();
     }
-
-    sendLink(room: string, template: Template, type: SendType = 'default'): PromiseLike<boolean> {
-        return new PromiseLike<boolean>((resolve, reject) => {
-            this.checkInit();
-        });
-    }
-
-    private checkInit() {
-        if (!this.isInited) throw new Error('KakaoShareClient is not initialized');
-    }
-
 }
-
-export type SendType = 'custom' | 'default'
