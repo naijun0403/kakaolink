@@ -61,13 +61,11 @@ export class KakaoApiService {
         return new PromiseLike<Record<string, string>>((resolve, reject) => {
             const loginPage = this.accountClient.request({
                 method: 'GET',
-                path: '/login',
-                data: {
-                    continue: 'https://accounts.kakao.com/weblogin/account/info'
-                },
+                path: '/weblogin/account/info',
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (Linux; Android 13; SM-S908B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36'
-                }
+                },
+                followRedirects: true
             }).awaitResult();
 
             const loginPageParsed = loginPage.parse();
@@ -86,6 +84,9 @@ export class KakaoApiService {
 
             const csrf = nextData.props.pageProps.pageContext.commonContext._csrf;
 
+            // @ts-ignore
+            Log.d("csrf: " + csrf)
+            
             const createTokenRes = this.accountClient.request({
                 method: 'POST',
                 path: '/api/v2/login/web_talk/create_token.json',
@@ -104,6 +105,7 @@ export class KakaoApiService {
 
             if (createTokenData.status !== 0) {
                 reject(`create token error: ${createTokenData.status}`);
+                return;
             }
 
             //@ts-ignore
@@ -121,16 +123,19 @@ export class KakaoApiService {
 
             let pollingCount = 0;
 
-            const id = setInterval(() => {
+            const scope = this;
+
+            // @ts-ignore
+            const id = scope.setInterval(() => {
                 const pollTokenRes = this.accountClient.request({
                     method: 'POST',
                     path: '/api/v2/login/web_talk/poll.json',
-                    body: JSON.stringify({
+                    body: {
                         _csrf: csrf,
                         token: createTokenData.token,
                         loginUrl: loginPage.url.split('accounts.kakao.com')[1],
                         activeSso: true,
-                    }),
+                    },
                     headers: {
                         Referer: loginPage.url,
                         'Content-Type': 'application/json',
@@ -147,17 +152,20 @@ export class KakaoApiService {
                         //@ts-ignore
                         Log.d(pollTokenRes.cookies)
                         resolve(pollTokenRes.cookies);
-                        clearInterval(id);
+                        // @ts-ignore
+                        scope.clearInterval(id);
                         break;
                     case -420:
                         if (++pollingCount === maxPollingCount) {
                             reject(`poll token error: ${pollTokenData.status}`);
-                            clearInterval(id);
+                            //@ts-ignore
+                            scope.clearInterval(id);
                         }
                         break;
                     default: {
                         reject(`poll token error: ${pollTokenData.status}`);
-                        clearInterval(id);
+                        // @ts-ignore
+                        scope.clearInterval(id);
                         break;
                     }
                 }

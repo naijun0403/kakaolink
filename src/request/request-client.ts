@@ -50,6 +50,8 @@ export class RequestClient {
             const response = connection.execute();
             const responseWrapper = new ResponseWrapper(response);
 
+            this.cookies.putAll(response.cookies())
+
             resolve(responseWrapper);
         });
     }
