@@ -89,9 +89,9 @@ export class KakaoApiService {
             const createTokenRes = this.accountClient.request({
                 method: 'POST',
                 path: '/api/v2/login/web_talk/create_token.json',
-                body: JSON.stringify({
+                body: {
                     _csrf: csrf,
-                }),
+                },
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (Linux; Android 13; SM-S908B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36',
                     Referer: loginPage.url,
