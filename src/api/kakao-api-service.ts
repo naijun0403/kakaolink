@@ -62,14 +62,22 @@ export class KakaoApiService {
             const loginPage = this.accountClient.request({
                 method: 'GET',
                 path: '/login',
+                data: {
+                    continue: 'https://accounts.kakao.com/weblogin/account/info'
+                },
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Linux; Android 13; SM-S908B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36'
+                }
             }).awaitResult();
 
             const loginPageParsed = loginPage.parse();
 
             let nextData: NextData | null = null;
             for (const element of loginPageParsed.select('script').toArray() as org.jsoup.nodes.Element[]) {
-                if (element.html().includes('__NEXT_DATA__')) {
-                    nextData = JSON.parse(element.html().split('__NEXT_DATA__ = ')[1].split(';')[0]);
+                if (String(element.toString()).includes('__NEXT_DATA__')) {
+                    //@ts-ignore
+                    Log.d(element.data())
+                    nextData = JSON.parse(element.data());
                     break;
                 }
             }
@@ -85,6 +93,7 @@ export class KakaoApiService {
                     _csrf: csrf,
                 }),
                 headers: {
+                    'User-Agent': 'Mozilla/5.0 (Linux; Android 13; SM-S908B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36',
                     Referer: loginPage.url,
                     'Content-Type': 'application/json',
                     Origin: 'https://accounts.kakao.com',
@@ -97,11 +106,20 @@ export class KakaoApiService {
                 reject(`create token error: ${createTokenData.status}`);
             }
 
+            //@ts-ignore
+            Log.d(JSON.stringify(createTokenData))
+
             const userUri = `https://m.search.daum.net/sl/sm/rck/m?ru=${encodeURI(createTokenData.talkLoginScheme)}`;
+
+            // @ts-ignore
+            Log.d(userUri)
 
             openUri(userUri);
 
+            const maxPollingCount = form.pollingCount ?? 5;
             const pollingInterval = form.pollingInterval ?? 1000;
+
+            let pollingCount = 0;
 
             const id = setInterval(() => {
                 const pollTokenRes = this.accountClient.request({
@@ -124,10 +142,18 @@ export class KakaoApiService {
 
                 switch (pollTokenData.status) {
                     case 0:
+                        // @ts-ignore
+                        Log.d('success')
+                        //@ts-ignore
+                        Log.d(pollTokenRes.cookies)
                         resolve(pollTokenRes.cookies);
                         clearInterval(id);
                         break;
                     case -420:
+                        if (++pollingCount === maxPollingCount) {
+                            reject(`poll token error: ${pollTokenData.status}`);
+                            clearInterval(id);
+                        }
                         break;
                     default: {
                         reject(`poll token error: ${pollTokenData.status}`);
@@ -158,6 +184,8 @@ export class KakaoApiService {
 
             let nextData: NextData | null = null;
             for (const element of loginPageParsed.select('script').toArray() as org.jsoup.nodes.Element[]) {
+                // @ts-ignore
+                Log.d(element)
                 if (element.html().includes('__NEXT_DATA__')) {
                     nextData = JSON.parse(element.html().split('__NEXT_DATA__ = ')[1].split(';')[0]);
                     break;
@@ -225,9 +253,9 @@ export class KakaoApiService {
         });
     }
 
-    static async createService(
+    static createService(
         configuration: Partial<Configuration> = {}
-    ): Promise<KakaoApiService> {
+    ): KakaoApiService {
         return new KakaoApiService(
             Object.assign(DefaultConfiguration, configuration)
         );
