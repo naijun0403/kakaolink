@@ -29,6 +29,7 @@ import { PromiseLike } from '../asynchronous';
 import { CreateTokenResponse, PollTokenResponse } from './type';
 import { openUri } from '../util/uri';
 import { Timers } from '../util/timers';
+import { TiaraFactory } from '../tiara';
 
 export class KakaoApiService {
 
@@ -80,6 +81,24 @@ export class KakaoApiService {
             if (nextData === null) throw new Error('Cannot find __NEXT_DATA__ in login page');
 
             const csrf = nextData.props.pageProps.pageContext.commonContext._csrf;
+
+            this.tiaraClient.cookies.putAll(this.accountClient.cookies)
+
+            const tiaraRes = this.tiaraClient.request({
+                method: 'GET',
+                path: 'track',
+                data: {
+                    d: encodeURIComponent(
+                        JSON.stringify(TiaraFactory.createTrackObject())
+                    )
+                },
+                headers: {
+                    'User-Agent': this.configuration.defaultUserAgent,
+                    Referer: 'https://accounts.kakao.com/'
+                }
+            }).awaitResult()
+
+            this.accountClient.cookies.putAll(tiaraRes.javaCookies)
 
             const createTokenRes = this.accountClient.request({
                 method: 'POST',

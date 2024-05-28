@@ -49,6 +49,10 @@ export class ResponseWrapper {
         return this.response.headers() as unknown as Record<string, string>;
     }
 
+    get javaCookies(): java.util.Map<string, string> {
+        return this.response.cookies();
+    }
+
     get cookies(): Record<string, string> {
         return this.response.cookies() as unknown as Record<string, string>;
     }

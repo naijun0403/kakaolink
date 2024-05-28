@@ -88,19 +88,27 @@ export namespace TiaraFactory {
         return {
             sdk: {
                 type: 'WEB',
-                version: '1.1.28'
+                version: '1.1.31'
             },
             env: {
                 screen: '2560X1440',
                 tz: '+9',
-                cke: 'Y'
+                cke: 'Y',
+                uadata: {
+                    fullVersionList: [],
+                    mobile: true,
+                    model: 'SM-S908B',
+                    platform: 'Android',
+                    platformVersion: '13'
+                }
             },
             common: {
                 svcdomain: 'accounts.kakao.com',
                 deployment: 'production',
                 url: 'https://accounts.kakao.com/login/',
+                referrer: 'https://accounts.kakao.com/',
                 section: 'login',
-                page: 'page-login'
+                page: 'page-web-talk-login'
             },
             etc: {
                 client_info: {
@@ -114,7 +122,7 @@ export namespace TiaraFactory {
             },
             action: {
                 type: 'Pageview',
-                name: 'page-login',
+                name: 'page-web-talk-login',
                 kind: ''
             }
         }

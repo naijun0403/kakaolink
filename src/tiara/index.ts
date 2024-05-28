@@ -53,6 +53,7 @@ export interface Common {
     svcdomain: string;
     deployment: string;
     url: string;
+    referrer: string;
     section: string;
     page: string;
 }
@@ -61,6 +62,15 @@ export interface Env {
     screen: string;
     tz: string;
     cke: string;
+    uadata: UserAgentData;
+}
+
+export interface UserAgentData {
+    fullVersionList: unknown[];
+    mobile: boolean;
+    model: string;
+    platform: string;
+    platformVersion: string;
 }
 
 export interface Sdk {
