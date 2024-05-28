@@ -152,7 +152,12 @@ export class KakaoApiService {
 
                 switch (pollTokenData.status) {
                     case 0:
-                        resolve(pollTokenRes.cookies);
+                        const resultCookies = new java.util.LinkedHashMap<string, string>();
+                        
+                        resultCookies.putAll(this.accountClient.cookies)
+                        resultCookies.putAll(pollTokenRes.javaCookies);
+
+                        resolve(resultCookies as unknown as Record<string, string>);
                         
                         Timers.clearInterval(id);
                         break;

@@ -23,3 +23,5 @@
  */
 
 export * from './kakao-api-service';
+export * from './kakao-share-client';
+export * from './type';

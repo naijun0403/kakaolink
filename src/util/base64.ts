@@ -22,23 +22,14 @@
  * SOFTWARE.
  */
 
-export type Template = CustomTemplate;
+export namespace Base64 {
 
-export interface CustomTemplate {
-    templateId: string | number;
-    templateArgs: Record<string, string>;
+    export function encode(str: string): string {
+        return String(android.util.Base64.encodeToString(new java.lang.String(str).getBytes(), android.util.Base64.NO_WRAP));
+    }
+
+    export function decode(base64: string): string {
+        return String(new java.lang.String(android.util.Base64.decode(base64, android.util.Base64.URL_SAFE)));
+    }
+
 }
-
-export type RawTemplate = RawCustomTemple;
-
-export interface RawTemplateRoot {
-    link_ver: string;
-}
-
-export interface RawCustomTemple extends RawTemplateRoot {
-    template_id: number;
-    template_args: Record<string, string>
-}
-
-export * from './send';
-export * from './transformer';

@@ -25,28 +25,122 @@
 import { RequestClient } from "../request";
 import { PromiseLike } from '../asynchronous';
 import { Template } from '../template';
+import { Configuration, DefaultConfiguration } from "../config";
+import { generateKakaoAgent } from "../agent/kakao-agent";
+import { SendType } from "../template/send";
+import { transformToRawTemplate } from "../template/transformer";
+import { Base64 } from "../util/base64";
+import { ServerData, ServerDataChat } from "../model/server-data";
 
 export class KakaoShareClient {
+
+    private constructor(private configuration: Configuration) {}
 
     private sharerClient = new RequestClient('https://sharer.kakao.com');
 
     private isInited = false;
 
-    init(cookies: Record<string, string>, domain: string) {
+    private appKey: string | null = null;
+
+    private domain: string | null = null;
+
+    /**
+     * init KakaoShareClient
+     * @param appKey js key
+     * @param domain web platform registered domain
+     * @param cookies login cookies
+     */
+    init(appKey: string, domain: string, cookies: Record<string, string>) {
         this.isInited = true;
+        this.appKey = appKey;
+        this.domain = domain;
         this.sharerClient.setCookies(cookies);
     }
 
     sendLink(room: string, template: Template, type: SendType = 'default'): PromiseLike<boolean> {
         return new PromiseLike<boolean>((resolve, reject) => {
-            this.checkInit();
+            if (!this.isInited) {
+                reject('KakaoShareClient is not initialized');
+                return;
+            }
+
+            const linkRes = this.sharerClient.request({
+                method: 'POST',
+                path: '/picker/link',
+                data: {
+                    app_key: this.appKey,
+                    ka: generateKakaoAgent(this.configuration, this.domain!),
+                    validation_action: type,
+                    validation_params: JSON.stringify(transformToRawTemplate(type, template))
+                },
+                headers: {
+                    'User-Agent': this.configuration.defaultUserAgent
+                },
+                followRedirects: true
+            }).awaitResult();
+
+            if (linkRes.statusCode === 401) {
+                reject('please check app key again');
+                return;
+            }
+
+            if (linkRes.statusCode !== 200) {
+                reject(`An unknown error occurred while sending the message; error code: ${linkRes.statusCode}`);
+                return;
+            }
+
+            const serverDataMatched = linkRes.body.match(/serverData = "(.*)"/);
+
+            if (serverDataMatched === null) {
+                reject('Expected to have serverData, but didn\'t.');
+                return;
+            }
+
+            const serverData = JSON.parse(Base64.decode(serverDataMatched[1])) as ServerData;
+
+            let channelData = serverData.data.chats.find(e => e.title === room);
+
+            if (!channelData) {
+                reject(`Room "${room}" doesn't exist, please check again`);
+                return;
+            }
+
+            const receiver = Base64.encode(
+                JSON.stringify(channelData)
+            );
+
+            const sendRes = this.sharerClient.request({
+                method: 'POST',
+                path: '/picker/send',
+                data: {
+                    app_key: this.appKey,
+                    short_key: serverData.data.shortKey,
+                    _csrf: serverData.data.csrfToken,
+                    checksum: serverData.data.checksum,
+                    receiver: receiver
+                },
+                headers: {
+                    'User-Agent': this.configuration.defaultUserAgent,
+                },
+                followRedirects: true
+            }).awaitResult();
+
+            // @ts-ignore
+            Log.d(sendRes.statusCode)
         });
     }
 
-    private checkInit() {
-        if (!this.isInited) throw new Error('KakaoShareClient is not initialized');
+    clear() {
+        this.isInited = false;
+        this.sharerClient.cookies = new java.util.LinkedHashMap<string, string>();
+    }
+
+    static createClient(
+        configuration: Partial<Configuration> = {}
+    ): KakaoShareClient {
+        return new KakaoShareClient(
+            Object.assign(DefaultConfiguration, configuration)
+        )
     }
 
 }
-
-export type SendType = 'custom' | 'default'

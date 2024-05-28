@@ -24,8 +24,12 @@
 
 export interface Configuration {
     defaultUserAgent: string;
+
+    sdkVersion: string;
 }
 
 export const DefaultConfiguration: Configuration = {
     defaultUserAgent: 'Mozilla/5.0 (Linux; Android 13; SM-S908B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36',
+
+    sdkVersion: '2.7.2'
 };

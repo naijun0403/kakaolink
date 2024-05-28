@@ -22,23 +22,21 @@
  * SOFTWARE.
  */
 
-export type Template = CustomTemplate;
+import { RawCustomTemple, RawTemplate, Template } from ".";
+import { SendType } from "./send";
 
-export interface CustomTemplate {
-    templateId: string | number;
-    templateArgs: Record<string, string>;
+export function transformToRawTemplate(type: SendType, template: Template): RawTemplate {
+    switch (type) {
+        case 'custom': {
+            return {
+                link_ver: '4.0',
+                template_id: parseInt(template.templateId.toString()),
+                template_args: template.templateArgs
+            } as RawCustomTemple
+        }
+
+        case "default": {
+            throw new Error('not implemented yet');
+        }
+    }
 }
-
-export type RawTemplate = RawCustomTemple;
-
-export interface RawTemplateRoot {
-    link_ver: string;
-}
-
-export interface RawCustomTemple extends RawTemplateRoot {
-    template_id: number;
-    template_args: Record<string, string>
-}
-
-export * from './send';
-export * from './transformer';

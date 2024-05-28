@@ -22,23 +22,48 @@
  * SOFTWARE.
  */
 
-export type Template = CustomTemplate;
-
-export interface CustomTemplate {
-    templateId: string | number;
-    templateArgs: Record<string, string>;
+export interface ServerData {
+    type: string;
+    lang: string;
+    isMobileBrowser: boolean;
+    data: ServerDataInfo;
 }
 
-export type RawTemplate = RawCustomTemple;
-
-export interface RawTemplateRoot {
-    link_ver: string;
+export interface ServerDataInfo {
+    appKey: string;
+    shortKey: string;
+    csrfToken: string;
+    checksum: string;
+    preview: ServerDataInfoPreview;
+    me: ServerDataMe;
+    friends: ServerDataFriend[];
+    chats: ServerDataChat[];
 }
 
-export interface RawCustomTemple extends RawTemplateRoot {
-    template_id: number;
-    template_args: Record<string, string>
+export interface ServerDataInfoPreview {
+    title: string;
+    did: string;
+    service_name: string;
+    service_icon: string;
+    image_url: string;
 }
 
-export * from './send';
-export * from './transformer';
+export interface ServerDataUser {
+    id: string;
+    profile_nickname: string;
+    profile_thumbnail_image: string;
+}
+
+export interface ServerDataMe extends ServerDataUser {}
+
+export interface ServerDataFriend extends ServerDataUser {
+    favorite: boolean;
+}
+
+export interface ServerDataChat {
+    id: string;
+    title: string;
+    member_count: number;
+    display_member_images: string[];
+    chat_room_type: string;
+}

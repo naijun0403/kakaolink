@@ -23,7 +23,12 @@
  */
 
 export * from './api';
+export * from './agent';
+export * from './asynchronous';
+export * from './model';
 export * from './next';
 export * from './request';
+export * from './template';
 export * from './tiara';
 export * as utils from './util';
+export * from './config';

@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
-export function generateKakaoAgent(): string {
-    return ``
+import { Configuration } from "../config";
+
+export function generateKakaoAgent(configuration: Configuration, domain: string): string {
+    return `sdk/${configuration.sdkVersion} os/javascript sdk_type/javascript lang/en-US device/Linux_x86_64 origin/${encodeURI(domain)}`
 }

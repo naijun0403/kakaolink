@@ -22,23 +22,4 @@
  * SOFTWARE.
  */
 
-export type Template = CustomTemplate;
-
-export interface CustomTemplate {
-    templateId: string | number;
-    templateArgs: Record<string, string>;
-}
-
-export type RawTemplate = RawCustomTemple;
-
-export interface RawTemplateRoot {
-    link_ver: string;
-}
-
-export interface RawCustomTemple extends RawTemplateRoot {
-    template_id: number;
-    template_args: Record<string, string>
-}
-
-export * from './send';
-export * from './transformer';
+export * from './server-data';
