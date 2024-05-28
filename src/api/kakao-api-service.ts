@@ -86,7 +86,7 @@ export class KakaoApiService {
 
             const tiaraRes = this.tiaraClient.request({
                 method: 'GET',
-                path: 'track',
+                path: '/track',
                 data: {
                     d: encodeURIComponent(
                         JSON.stringify(TiaraFactory.createTrackObject())
