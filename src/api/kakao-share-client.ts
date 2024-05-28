@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { RequestClient } from '../request';
+import { RequestClient, ResponseWrapper } from '../request';
 import { PromiseLike } from '../asynchronous';
 import { SendType, Template, transformToRawTemplate } from '../template';
 import { Configuration, DefaultConfiguration } from '../config';
@@ -61,8 +61,8 @@ export class KakaoShareClient {
         this.sharerClient.setCookies(cookies);
     }
 
-    sendLink(room: string, template: Template, type: SendType = 'default'): PromiseLike<boolean> {
-        return new PromiseLike<boolean>((resolve, reject) => {
+    sendLink(room: string, template: Template, type: SendType = 'default'): PromiseLike<ResponseWrapper> {
+        return new PromiseLike<ResponseWrapper>((resolve, reject) => {
             if (!this.isInited) {
                 reject('KakaoShareClient is not initialized');
                 return;
@@ -113,7 +113,7 @@ export class KakaoShareClient {
                 JSON.stringify(channelData)
             );
 
-            const sendRes = this.sharerClient.request({
+            return this.sharerClient.request({
                 method: 'POST',
                 path: '/picker/send',
                 data: {
@@ -127,10 +127,7 @@ export class KakaoShareClient {
                     'User-Agent': this.configuration.defaultUserAgent,
                 },
                 followRedirects: true
-            }).awaitResult();
-
-            // @ts-ignore
-            Log.d(sendRes.statusCode)
+            }).awaitResult()
         });
     }
 
