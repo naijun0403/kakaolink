@@ -24,12 +24,11 @@
 
 import { RequestClient } from '../request';
 import { NextData } from '../next';
-import { TiaraFactory } from '../tiara';
-import CryptoJS from '../modules/crypto-js';
 import { Configuration, DefaultConfiguration } from '../config';
 import { PromiseLike } from '../asynchronous';
 import { CreateTokenResponse, PollTokenResponse } from './type';
 import { openUri } from '../util/uri';
+import { Timers } from '../util/timers';
 
 export class KakaoApiService {
 
@@ -63,7 +62,7 @@ export class KakaoApiService {
                 method: 'GET',
                 path: '/weblogin/account/info',
                 headers: {
-                    'User-Agent': 'Mozilla/5.0 (Linux; Android 13; SM-S908B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36'
+                    'User-Agent': this.configuration.defaultUserAgent
                 },
                 followRedirects: true
             }).awaitResult();
@@ -73,8 +72,6 @@ export class KakaoApiService {
             let nextData: NextData | null = null;
             for (const element of loginPageParsed.select('script').toArray() as org.jsoup.nodes.Element[]) {
                 if (String(element.toString()).includes('__NEXT_DATA__')) {
-                    //@ts-ignore
-                    Log.d(element.data())
                     nextData = JSON.parse(element.data());
                     break;
                 }
@@ -84,9 +81,6 @@ export class KakaoApiService {
 
             const csrf = nextData.props.pageProps.pageContext.commonContext._csrf;
 
-            // @ts-ignore
-            Log.d("csrf: " + csrf)
-            
             const createTokenRes = this.accountClient.request({
                 method: 'POST',
                 path: '/api/v2/login/web_talk/create_token.json',
@@ -94,7 +88,7 @@ export class KakaoApiService {
                     _csrf: csrf,
                 },
                 headers: {
-                    'User-Agent': 'Mozilla/5.0 (Linux; Android 13; SM-S908B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36',
+                    'User-Agent': this.configuration.defaultUserAgent,
                     Referer: loginPage.url,
                     'Content-Type': 'application/json',
                     Origin: 'https://accounts.kakao.com',
@@ -108,13 +102,7 @@ export class KakaoApiService {
                 return;
             }
 
-            //@ts-ignore
-            Log.d(JSON.stringify(createTokenData))
-
             const userUri = `https://m.search.daum.net/sl/sm/rck/m?ru=${encodeURI(createTokenData.talkLoginScheme)}`;
-
-            // @ts-ignore
-            Log.d(userUri)
 
             openUri(userUri);
 
@@ -123,21 +111,19 @@ export class KakaoApiService {
 
             let pollingCount = 0;
 
-            const scope = this;
-
-            // @ts-ignore
-            const id = scope.setInterval(() => {
+            const id = Timers.setInterval(() => {
                 const pollTokenRes = this.accountClient.request({
                     method: 'POST',
                     path: '/api/v2/login/web_talk/poll.json',
                     body: {
                         _csrf: csrf,
                         token: createTokenData.token,
-                        loginUrl: loginPage.url.split('accounts.kakao.com')[1],
+                        loginUrl: '/login?continue=https%3A%2F%2Faccounts.kakao.com%2Fweblogin%2Faccount%2Finfo',
                         activeSso: true,
                     },
                     headers: {
                         Referer: loginPage.url,
+                        'User-Agent': this.configuration.defaultUserAgent,
                         'Content-Type': 'application/json',
                         Origin: 'https://accounts.kakao.com',
                     }
@@ -147,25 +133,21 @@ export class KakaoApiService {
 
                 switch (pollTokenData.status) {
                     case 0:
-                        // @ts-ignore
-                        Log.d('success')
-                        //@ts-ignore
-                        Log.d(pollTokenRes.cookies)
                         resolve(pollTokenRes.cookies);
-                        // @ts-ignore
-                        scope.clearInterval(id);
+                        
+                        Timers.clearInterval(id);
                         break;
                     case -420:
                         if (++pollingCount === maxPollingCount) {
                             reject(`poll token error: ${pollTokenData.status}`);
-                            //@ts-ignore
-                            scope.clearInterval(id);
+
+                            Timers.clearInterval(id);
                         }
                         break;
                     default: {
                         reject(`poll token error: ${pollTokenData.status}`);
-                        // @ts-ignore
-                        scope.clearInterval(id);
+
+                        Timers.clearInterval(id);
                         break;
                     }
                 }
@@ -182,83 +164,7 @@ export class KakaoApiService {
      * @private
      */
     private loginWithAccount(form: LoginWithAccountForm): PromiseLike<Record<string, string>> {
-        return new PromiseLike<Record<string, string>>((resolve, reject) => {
-            const loginPage = this.accountClient.request({
-                method: 'GET',
-                path: '/login',
-            }).awaitResult();
-
-            const loginPageParsed = loginPage.parse();
-
-            let nextData: NextData | null = null;
-            for (const element of loginPageParsed.select('script').toArray() as org.jsoup.nodes.Element[]) {
-                // @ts-ignore
-                Log.d(element)
-                if (element.html().includes('__NEXT_DATA__')) {
-                    nextData = JSON.parse(element.html().split('__NEXT_DATA__ = ')[1].split(';')[0]);
-                    break;
-                }
-            }
-
-            if (nextData === null) throw new Error('Cannot find __NEXT_DATA__ in login page');
-
-            const csrf = nextData.props.pageProps.pageContext.commonContext._csrf;
-            const pValue = nextData.props.pageProps.pageContext.commonContext.p; // using crypto-js
-
-            this.tiaraClient.request({
-                method: 'GET',
-                path: '/track',
-                data: {
-                    d: TiaraFactory.createTrackObject()
-                }
-            }).awaitResult(); // get tiara cookie
-
-            const encryptedPassword = CryptoJS.lib.PasswordBasedCipher.encrypt(
-                CryptoJS.algo.AES,
-                CryptoJS.enc.Utf8.parse(form.password),
-                pValue,
-            )
-
-            const loginResult = this.accountClient.request({
-                method: 'POST',
-                path: '/api/v2/login/authenticate.json',
-                data: {
-                    _csrf: csrf,
-                    loginId: form.email,
-                    password: encryptedPassword,
-                    staySignedIn: form.staySignedIn ?? false,
-                    saveSignedIn: form.saveSignedIn ?? false,
-                    loginKey: form.email,
-                    activeSso: true,
-                    loginUrl: loginPage.url.split('accounts.kakao.com')[1],
-                    k: true
-                },
-                headers: {
-                    Referer: loginPage.url,
-                }
-            }).awaitResult();
-
-            const loginResultParsed = loginResult.json<LoginResult>();
-
-            switch (loginResultParsed.status) {
-                case 0:
-                    break;
-
-                case -451:
-                    reject('need to 2fa, but not supported yet');
-                    break;
-
-                case -450:
-                    reject('invalid password');
-                    break;
-
-                default:
-                    reject(`login error: ${loginResultParsed.status}`);
-                    break;
-            }
-
-            return loginResult.cookies;
-        });
+        throw new Error('Sorry, this feature not implemented yet');
     }
 
     static createService(

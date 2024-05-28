@@ -26,6 +26,7 @@ import { getAndroidContext } from './context';
 
 export function openUri(uri: string): void {
     const intent = new android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(uri));
+    intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NO_HISTORY);
     intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
     getAndroidContext().startActivity(intent);
 }
