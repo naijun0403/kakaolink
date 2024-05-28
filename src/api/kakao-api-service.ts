@@ -27,16 +27,24 @@ import { NextData } from '../next';
 import { Configuration, DefaultConfiguration } from '../config';
 import { PromiseLike } from '../asynchronous';
 import { CreateTokenResponse, PollTokenResponse } from './type';
-import { openUri } from '../util/uri';
-import { Timers } from '../util/timers';
+import { openUri, Timers } from '../util';
 import { TiaraFactory } from '../tiara';
 
 export class KakaoApiService {
 
-    private constructor(private configuration: Configuration) {}
-
     private accountClient = new RequestClient('https://accounts.kakao.com');
     private tiaraClient = new RequestClient('https://stat.tiara.kakao.com');
+
+    private constructor(private configuration: Configuration) {
+    }
+
+    static createService(
+        configuration: Partial<Configuration> = {}
+    ): KakaoApiService {
+        return new KakaoApiService(
+            Object.assign(DefaultConfiguration, configuration)
+        );
+    }
 
     /**
      * **WARNING**: This method is not recommended to use.
@@ -153,12 +161,12 @@ export class KakaoApiService {
                 switch (pollTokenData.status) {
                     case 0:
                         const resultCookies = new java.util.LinkedHashMap<string, string>();
-                        
+
                         resultCookies.putAll(this.accountClient.cookies)
                         resultCookies.putAll(pollTokenRes.javaCookies);
 
                         resolve(resultCookies as unknown as Record<string, string>);
-                        
+
                         Timers.clearInterval(id);
                         break;
                     case -420:
@@ -189,14 +197,6 @@ export class KakaoApiService {
      */
     private loginWithAccount(form: LoginWithAccountForm): PromiseLike<Record<string, string>> {
         throw new Error('Sorry, this feature not implemented yet');
-    }
-
-    static createService(
-        configuration: Partial<Configuration> = {}
-    ): KakaoApiService {
-        return new KakaoApiService(
-            Object.assign(DefaultConfiguration, configuration)
-        );
     }
 
 }

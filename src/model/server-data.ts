@@ -54,7 +54,8 @@ export interface ServerDataUser {
     profile_thumbnail_image: string;
 }
 
-export interface ServerDataMe extends ServerDataUser {}
+export interface ServerDataMe extends ServerDataUser {
+}
 
 export interface ServerDataFriend extends ServerDataUser {
     favorite: boolean;

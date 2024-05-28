@@ -22,27 +22,31 @@
  * SOFTWARE.
  */
 
-import { RequestClient } from "../request";
+import { RequestClient } from '../request';
 import { PromiseLike } from '../asynchronous';
-import { Template } from '../template';
-import { Configuration, DefaultConfiguration } from "../config";
-import { generateKakaoAgent } from "../agent/kakao-agent";
-import { SendType } from "../template/send";
-import { transformToRawTemplate } from "../template/transformer";
-import { Base64 } from "../util/base64";
-import { ServerData, ServerDataChat } from "../model/server-data";
+import { SendType, Template, transformToRawTemplate } from '../template';
+import { Configuration, DefaultConfiguration } from '../config';
+import { generateKakaoAgent } from '../agent';
+import { Base64 } from '../util';
+import { ServerData } from '../model';
 
 export class KakaoShareClient {
 
-    private constructor(private configuration: Configuration) {}
-
     private sharerClient = new RequestClient('https://sharer.kakao.com');
-
     private isInited = false;
-
     private appKey: string | null = null;
-
     private domain: string | null = null;
+
+    private constructor(private configuration: Configuration) {
+    }
+
+    static createClient(
+        configuration: Partial<Configuration> = {}
+    ): KakaoShareClient {
+        return new KakaoShareClient(
+            Object.assign(DefaultConfiguration, configuration)
+        )
+    }
 
     /**
      * init KakaoShareClient
@@ -133,14 +137,6 @@ export class KakaoShareClient {
     clear() {
         this.isInited = false;
         this.sharerClient.cookies = new java.util.LinkedHashMap<string, string>();
-    }
-
-    static createClient(
-        configuration: Partial<Configuration> = {}
-    ): KakaoShareClient {
-        return new KakaoShareClient(
-            Object.assign(DefaultConfiguration, configuration)
-        )
     }
 
 }

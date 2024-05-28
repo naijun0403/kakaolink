@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import { RawCustomTemple, RawTemplate, Template } from ".";
-import { SendType } from "./send";
+import { RawCustomTemple, RawTemplate, Template } from '.';
+import { SendType } from './send';
 
 export function transformToRawTemplate(type: SendType, template: Template): RawTemplate {
     switch (type) {
@@ -35,7 +35,7 @@ export function transformToRawTemplate(type: SendType, template: Template): RawT
             } as RawCustomTemple
         }
 
-        case "default": {
+        case 'default': {
             throw new Error('not implemented yet');
         }
     }

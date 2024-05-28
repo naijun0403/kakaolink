@@ -37,7 +37,7 @@ export const TiaraSeeds = [
 export namespace TiaraFactory {
 
     export function generateRandomUUIDWithDateTime(): string {
-        const builder = [ 'w-' ];
+        const builder = ['w-'];
 
         builder.push(shortenID(12));
         builder.push('_');
@@ -47,7 +47,7 @@ export namespace TiaraFactory {
     }
 
     export function generateRandomUUIDWithDateNumber(): string {
-        const builder = [ 'w-' ];
+        const builder = ['w-'];
 
         builder.push(shortenID(12));
         builder.push('_');
@@ -60,7 +60,7 @@ export namespace TiaraFactory {
     export function currentTimeStamp(): string {
         const time = new Date();
         time.setHours(time.getHours() + 9);
-        return time.toISOString().replace(/[TZ\-:.]/g, "").substring(2)
+        return time.toISOString().replace(/[TZ\-:.]/g, '').substring(2)
     }
 
     export function randomNumericString(length: number): string {

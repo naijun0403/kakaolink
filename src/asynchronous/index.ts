@@ -36,24 +36,12 @@ export class PromiseLike<T> {
         executor(value => this.resolve(value), reason => this.reject(reason));
     }
 
-    private resolve(value: T): void {
-        const promiseScope = this;
-
-        this.executorService.submit(new Runnable({
-            run() {
-                promiseScope.completionHandler.complete(value);
-            }
-        }))
+    static resolve<T>(value: T): PromiseLike<T> {
+        return new PromiseLike<T>((resolve, _reject) => resolve(value));
     }
 
-    private reject(reason: any): void {
-        const promiseScope = this;
-
-        this.executorService.submit(new Runnable({
-            run() {
-                promiseScope.completionHandler.completeExceptionally(new RuntimeException(reason));
-            }
-        }))
+    static reject<T>(reason: any): PromiseLike<T> {
+        return new PromiseLike<T>((_resolve, reject) => reject(reason));
     }
 
     then(onFulfilled: (value: T) => void): PromiseLike<T> {
@@ -84,11 +72,23 @@ export class PromiseLike<T> {
         return this;
     }
 
-    static resolve<T>(value: T): PromiseLike<T> {
-        return new PromiseLike<T>((resolve, _reject) => resolve(value));
+    private resolve(value: T): void {
+        const promiseScope = this;
+
+        this.executorService.submit(new Runnable({
+            run() {
+                promiseScope.completionHandler.complete(value);
+            }
+        }))
     }
 
-    static reject<T>(reason: any): PromiseLike<T> {
-        return new PromiseLike<T>((_resolve, reject) => reject(reason));
+    private reject(reason: any): void {
+        const promiseScope = this;
+
+        this.executorService.submit(new Runnable({
+            run() {
+                promiseScope.completionHandler.completeExceptionally(new RuntimeException(reason));
+            }
+        }))
     }
 }

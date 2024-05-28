@@ -25,7 +25,7 @@
 export namespace Timers {
 
     const stackTimeout: java.util.Timer[] = [];
-    
+
     export function setTimeout(callback: (args: unknown[]) => void, timeout: number): number {
         const args = Array.from(arguments);
 
