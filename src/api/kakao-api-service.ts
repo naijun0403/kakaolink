@@ -46,14 +46,7 @@ export class KakaoApiService {
         );
     }
 
-    /**
-     * **WARNING**: This method is not recommended to use.
-     * please use `loginWithKakaotalk` instead.
-     *
-     * login and give cookies
-     * @param form
-     */
-    login(form: LoginForm | LoginWithKakaotalkForm | LoginWithAccountForm): PromiseLike<Record<string, string>> {
+    login(form: LoginForm): PromiseLike<Record<string, string>> {
         if (form.signInWithKakaoTalk) {
             return this.loginWithKakaotalk(form as LoginWithKakaotalkForm);
         } else {
@@ -201,18 +194,20 @@ export class KakaoApiService {
 
 }
 
-export interface LoginForm {
+export type LoginForm = LoginWithKakaotalkForm | LoginWithAccountForm;
+
+export interface LoginFormRoot {
     signInWithKakaoTalk?: boolean; // default: true
 }
 
-export interface LoginWithKakaotalkForm extends LoginForm {
+export interface LoginWithKakaotalkForm extends LoginFormRoot {
     signInWithKakaoTalk: true;
 
     pollingInterval?: number; // default: 1000
     pollingCount?: number; // default: 10
 }
 
-export interface LoginWithAccountForm extends LoginForm {
+export interface LoginWithAccountForm extends LoginFormRoot {
     signInWithKakaoTalk: false;
 
     email: string;
