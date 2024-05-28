@@ -1,6 +1,4 @@
 # kakaolink
-
-## refactoring...
 KakaoTalkShare API for kakaobot
 
 ## 사용된 라이브러리
@@ -13,3 +11,8 @@ KakaoTalkShare API for kakaobot
 v1과 v2는 서로 호환되지 않습니다.
 
 이 점 유의해주시고 사용해주세요.
+
+## 확인된 봇 앱
+- 메신저봇
+
+> 다른 봇 앱에서도 사용 가능할 수 있지만, 작동을 보장 받을 순 없습니다.
