@@ -126,7 +126,7 @@ export class KakaoApiService {
 
             openUri(userUri);
 
-            const maxPollingCount = form.pollingCount ?? 5;
+            const maxPollingCount = form.pollingCount ?? 10;
             const pollingInterval = form.pollingInterval ?? 1000;
 
             let pollingCount = 0;
