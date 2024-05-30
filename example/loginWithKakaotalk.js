@@ -1,7 +1,7 @@
 var { KakaoApiService, KakaoShareClient } = require('kakaolink');
 
-const service = new KakaoApiService.createService();
-const client = new KakaoShareClient.createClient();
+const service = KakaoApiService.createService();
+const client = KakaoShareClient.createClient();
 
 /**
  * 알아서 카카오톡으로 접속해 로그인 세션을 불러옴
