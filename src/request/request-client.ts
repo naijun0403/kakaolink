@@ -63,7 +63,8 @@ export class RequestClient {
             .followRedirects(option.followRedirects ?? true)
             .ignoreContentType(true)
             .ignoreHttpErrors(true)
-            .cookies(this.cookies);
+            .cookies(this.cookies)
+            .maxBodySize(0);
 
         if (option.data) {
             connection.data(option.data);
