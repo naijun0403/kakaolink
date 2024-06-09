@@ -96,7 +96,7 @@ export class KakaoShareClient {
             const serverDataMatched = linkRes.body.match(/serverData = "(.*)"/);
 
             if (serverDataMatched === null) {
-                reject('Expected to have serverData, but didn\'t.');
+                reject(`Expected to have serverData, but didn't.\n\nstatus: ${linkRes.statusCode}\n${linkRes.body}`);
                 return;
             }
 
