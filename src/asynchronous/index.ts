@@ -64,6 +64,8 @@ export class PromiseLike<T> {
             return this.completionHandler.get();
         } catch (error) {
             throw new Error(`Error during async operation: ${error}`);
+        } finally {
+            this.executorService.shutdown();
         }
     }
 
