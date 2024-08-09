@@ -2,7 +2,7 @@
   "name": "kakaolink",
   "version": "2.0.0-beta04",
   "description": "kakaolink (KakaoTalkShare) for messengerbot ",
-  "main": "index.js",
+  "main": "dist/src/index.js",
   "directories": {
     "doc": "docs",
     "example": "example"
