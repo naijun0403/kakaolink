@@ -3,7 +3,7 @@ name: Build Artifacts
 on:
   push:
     branches: [ main ]
-
+    
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,10 +11,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Build and push
-        uses: alexthemaster/action-build-typescript@v1.3.1
-
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm ci
+      - name: Install SWC
+        run: npm install -D @swc/cli @swc/core
+      - name: Build with SWC
+        run: npx swc src -d dist
       - name: Save bundle artifact
         uses: actions/upload-artifact@v4
         with:
