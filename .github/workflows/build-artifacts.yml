@@ -3,7 +3,7 @@ name: Build Artifacts
 on:
   push:
     branches: [ main ]
-    
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,6 +21,9 @@ jobs:
         run: npm install -D @swc/cli @swc/core
       - name: Build with SWC
         run: npx swc src -d dist
+      - name: Remove unnecessary files
+        run: |
+          rm -rf .git examples docs .github src build.sh index.js
       - name: Save bundle artifact
         uses: actions/upload-artifact@v4
         with:
