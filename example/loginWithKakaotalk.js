@@ -7,7 +7,8 @@ const client = KakaoShareClient.createClient();
  * 알아서 카카오톡으로 접속해 로그인 세션을 불러옴
  */
 const cookies = service.login({
-    signInWithKakaoTalk: true
+    signInWithKakaoTalk: true,
+    context: App.getContext(), // 레거시: Api.getContext()
 }).awaitResult();
 
 client.init('js app key', 'web platform domain', cookies);

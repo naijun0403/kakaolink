@@ -124,7 +124,7 @@ export class KakaoApiService {
 
             const userUri = `https://m.search.daum.net/sl/sm/rck/m?ru=${encodeURI(createTokenData.talkLoginScheme)}`;
 
-            openUri(userUri);
+            openUri(form.context, userUri);
 
             const maxPollingCount = form.pollingCount ?? 10;
             const pollingInterval = form.pollingInterval ?? 1000;
@@ -198,6 +198,7 @@ export type LoginForm = LoginWithKakaotalkForm | LoginWithAccountForm;
 
 export interface LoginFormRoot {
     signInWithKakaoTalk?: boolean; // default: true
+    context: android.content.Context;
 }
 
 export interface LoginWithKakaotalkForm extends LoginFormRoot {
