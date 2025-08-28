@@ -1,4 +1,4 @@
-tsc
+npx tsc
 
 cp -R ./src/modules ./dist/
 
