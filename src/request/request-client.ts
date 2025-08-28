@@ -24,7 +24,6 @@
 
 import Jsoup = org.jsoup.Jsoup;
 import { ResponseWrapper } from './response-wrapper';
-import { PromiseLike } from '../asynchronous';
 
 export class RequestClient {
 
@@ -43,17 +42,15 @@ export class RequestClient {
         return this.baseUrl + path;
     }
 
-    request(option: RequestOption): PromiseLike<ResponseWrapper> {
-        return new PromiseLike<ResponseWrapper>((resolve, reject) => {
-            const connection = this.toJsoupConnection(option);
+    async request(option: RequestOption): Promise<ResponseWrapper> {
+        const connection = this.toJsoupConnection(option);
 
-            const response = connection.execute();
-            const responseWrapper = new ResponseWrapper(response);
+        const response = await connection.execute();
+        const responseWrapper = new ResponseWrapper(response);
 
-            this.cookies.putAll(response.cookies())
+        this.cookies.putAll(response.cookies());
 
-            resolve(responseWrapper);
-        });
+        return responseWrapper;
     }
 
     toJsoupConnection(option: RequestOption): org.jsoup.Connection {

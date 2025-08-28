@@ -22,13 +22,12 @@
  * SOFTWARE.
  */
 
-import { RequestClient, ResponseWrapper } from '../request';
-import { PromiseLike } from '../asynchronous';
-import { SendType, Template, transformToRawTemplate } from '../template';
+import { RequestClient, ResponseWrapper } from '../request/index';
+import { SendType, Template, transformToRawTemplate } from '../template/index';
 import { Configuration, DefaultConfiguration } from '../config';
-import { generateKakaoAgent } from '../agent';
-import { Base64 } from '../util';
-import { ServerData } from '../model';
+import { generateKakaoAgent } from '../agent/index';
+import { Base64 } from '../util/index';
+import { ServerData } from '../model/index';
 
 export class KakaoShareClient {
 
@@ -61,73 +60,66 @@ export class KakaoShareClient {
         this.sharerClient.setCookies(cookies);
     }
 
-    sendLink(room: string, template: Template, type: SendType = 'default'): PromiseLike<ResponseWrapper> {
-        return new PromiseLike<ResponseWrapper>((resolve, reject) => {
-            if (!this.isInited) {
-                reject('KakaoShareClient is not initialized');
-                return;
-            }
+    async sendLink(room: string, template: Template, type: SendType = 'default'): Promise<ResponseWrapper> {
+        if (!this.isInited) {
+            throw new Error('KakaoShareClient is not initialized');
+        }
 
-            const linkRes = this.sharerClient.request({
-                method: 'POST',
-                path: '/picker/link',
-                data: {
-                    app_key: this.appKey,
-                    ka: generateKakaoAgent(this.configuration, this.domain!),
-                    validation_action: type,
-                    validation_params: JSON.stringify(transformToRawTemplate(type, template))
-                },
-                headers: {
-                    'User-Agent': this.configuration.defaultUserAgent
-                },
-                followRedirects: true
-            }).awaitResult();
+        const linkRes = await this.sharerClient.request({
+            method: 'POST',
+            path: '/picker/link',
+            data: {
+                app_key: this.appKey,
+                ka: generateKakaoAgent(this.configuration, this.domain!),
+                validation_action: type,
+                validation_params: JSON.stringify(transformToRawTemplate(type, template))
+            },
+            headers: {
+                'User-Agent': this.configuration.defaultUserAgent
+            },
+            followRedirects: true
+        });
 
-            if (linkRes.statusCode === 401) {
-                reject('please check app key again');
-                return;
-            }
+        if (linkRes.statusCode === 401) {
+            throw new Error('please check app key again');
+        }
 
-            if (linkRes.statusCode !== 200) {
-                reject(`An unknown error occurred while sending the message; error code: ${linkRes.statusCode}`);
-                return;
-            }
+        if (linkRes.statusCode !== 200) {
+            throw new Error(`An unknown error occurred while sending the message; error code: ${linkRes.statusCode}`);
+        }
 
-            const serverDataMatched = linkRes.body.match(/serverData = "(.*)"/);
+        const serverDataMatched = linkRes.body.match(/serverData = "(.*)"/);
 
-            if (serverDataMatched === null) {
-                reject(`Expected to have serverData, but didn't.\n\nstatus: ${linkRes.statusCode}\n${linkRes.body}`);
-                return;
-            }
+        if (serverDataMatched === null) {
+            throw new Error(`Expected to have serverData, but didn't.\n\nstatus: ${linkRes.statusCode}\n${linkRes.body}`);
+        }
 
-            const serverData = JSON.parse(Base64.decode(serverDataMatched[1])) as ServerData;
+        const serverData = JSON.parse(Base64.decode(serverDataMatched[1])) as ServerData;
 
-            let channelData = serverData.data.chats.find(e => e.title === room);
+        let channelData = serverData.data.chats.find(e => e.title === room);
 
-            if (!channelData) {
-                reject(`Room "${room}" doesn't exist, please check again`);
-                return;
-            }
+        if (!channelData) {
+            throw new Error(`Room "${room}" doesn't exist, please check again`);
+        }
 
-            const receiver = Base64.encode(
-                JSON.stringify(channelData)
-            );
+        const receiver = Base64.encode(
+            JSON.stringify(channelData)
+        );
 
-            return this.sharerClient.request({
-                method: 'POST',
-                path: '/picker/send',
-                data: {
-                    app_key: this.appKey,
-                    short_key: serverData.data.shortKey,
-                    _csrf: serverData.data.csrfToken,
-                    checksum: serverData.data.checksum,
-                    receiver: receiver
-                },
-                headers: {
-                    'User-Agent': this.configuration.defaultUserAgent,
-                },
-                followRedirects: true
-            }).awaitResult()
+        return await this.sharerClient.request({
+            method: 'POST',
+            path: '/picker/send',
+            data: {
+                app_key: this.appKey,
+                short_key: serverData.data.shortKey,
+                _csrf: serverData.data.csrfToken,
+                checksum: serverData.data.checksum,
+                receiver: receiver
+            },
+            headers: {
+                'User-Agent': this.configuration.defaultUserAgent,
+            },
+            followRedirects: true
         });
     }
 

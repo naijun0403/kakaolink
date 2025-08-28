@@ -22,13 +22,12 @@
  * SOFTWARE.
  */
 
-import { RequestClient } from '../request';
-import { NextData } from '../next';
+import { RequestClient } from '../request/index';
+import { NextData } from '../next/index';
 import { Configuration, DefaultConfiguration } from '../config';
-import { PromiseLike } from '../asynchronous';
 import { CreateTokenResponse, PollTokenResponse } from './type';
-import { openUri, Timers } from '../util';
-import { TiaraFactory } from '../tiara';
+import { openUri, Timers } from '../util/index';
+import { TiaraFactory } from '../tiara/index';
 
 export class KakaoApiService {
 
@@ -46,11 +45,11 @@ export class KakaoApiService {
         );
     }
 
-    login(form: LoginForm): PromiseLike<Record<string, string>> {
+    async login(form: LoginForm): Promise<Record<string, string>> {
         if (form.signInWithKakaoTalk) {
-            return this.loginWithKakaotalk(form as LoginWithKakaotalkForm);
+            return await this.loginWithKakaotalk(form as LoginWithKakaotalkForm);
         } else {
-            return this.loginWithAccount(form as LoginWithAccountForm);
+            return await this.loginWithAccount(form as LoginWithAccountForm);
         }
     }
 
@@ -58,123 +57,125 @@ export class KakaoApiService {
      * login with kakaotalk
      * @param form
      */
-    private loginWithKakaotalk(form: LoginWithKakaotalkForm): PromiseLike<Record<string, string>> {
-        return new PromiseLike<Record<string, string>>((resolve, reject) => {
-            const loginPage = this.accountClient.request({
-                method: 'GET',
-                path: '/weblogin/account/info',
-                headers: {
-                    'User-Agent': this.configuration.defaultUserAgent
-                },
-                followRedirects: true
-            }).awaitResult();
+    private async loginWithKakaotalk(form: LoginWithKakaotalkForm): Promise<Record<string, string>> {
+        const loginPage = await this.accountClient.request({
+            method: 'GET',
+            path: '/weblogin/account/info',
+            headers: {
+                'User-Agent': this.configuration.defaultUserAgent
+            },
+            followRedirects: true
+        });
 
-            const loginPageParsed = loginPage.parse();
+        const loginPageParsed = loginPage.parse();
 
-            let nextData: NextData | null = null;
-            for (const element of loginPageParsed.select('script').toArray() as org.jsoup.nodes.Element[]) {
-                if (String(element.toString()).includes('__NEXT_DATA__')) {
-                    nextData = JSON.parse(element.data());
-                    break;
-                }
+        let nextData: NextData | null = null;
+        for (const element of loginPageParsed.select('script').toArray() as org.jsoup.nodes.Element[]) {
+            if (String(element.toString()).includes('__NEXT_DATA__')) {
+                nextData = JSON.parse(element.data());
+                break;
             }
+        }
 
-            if (nextData === null) throw new Error('Cannot find __NEXT_DATA__ in login page');
+        if (nextData === null) throw new Error('Cannot find __NEXT_DATA__ in login page');
 
-            const csrf = nextData.props.pageProps.pageContext.commonContext._csrf;
+        const csrf = nextData.props.pageProps.pageContext.commonContext._csrf;
 
-            this.tiaraClient.cookies.putAll(this.accountClient.cookies)
+        this.tiaraClient.cookies.putAll(this.accountClient.cookies)
 
-            const tiaraRes = this.tiaraClient.request({
-                method: 'GET',
-                path: '/track',
-                data: {
-                    d: encodeURIComponent(
-                        JSON.stringify(TiaraFactory.createTrackObject())
-                    )
-                },
-                headers: {
-                    'User-Agent': this.configuration.defaultUserAgent,
-                    Referer: 'https://accounts.kakao.com/'
-                }
-            }).awaitResult()
-
-            this.accountClient.cookies.putAll(tiaraRes.javaCookies)
-
-            const createTokenRes = this.accountClient.request({
-                method: 'POST',
-                path: '/api/v2/login/web_talk/create_token.json',
-                body: {
-                    _csrf: csrf,
-                },
-                headers: {
-                    'User-Agent': this.configuration.defaultUserAgent,
-                    Referer: loginPage.url,
-                    'Content-Type': 'application/json',
-                    Origin: 'https://accounts.kakao.com',
-                }
-            }).awaitResult();
-
-            const createTokenData = createTokenRes.json<CreateTokenResponse>();
-
-            if (createTokenData.status !== 0) {
-                reject(`create token error: ${createTokenData.status}`);
-                return;
+        const tiaraRes = await this.tiaraClient.request({
+            method: 'GET',
+            path: '/track',
+            data: {
+                d: encodeURIComponent(
+                    JSON.stringify(TiaraFactory.createTrackObject())
+                )
+            },
+            headers: {
+                'User-Agent': this.configuration.defaultUserAgent,
+                Referer: 'https://accounts.kakao.com/'
             }
+        });
 
-            const userUri = `https://m.search.daum.net/sl/sm/rck/m?ru=${encodeURI(createTokenData.talkLoginScheme)}`;
+        this.accountClient.cookies.putAll(tiaraRes.javaCookies)
 
-            openUri(form.context, userUri);
+        const createTokenRes = await this.accountClient.request({
+            method: 'POST',
+            path: '/api/v2/login/web_talk/create_token.json',
+            body: {
+                _csrf: csrf,
+            },
+            headers: {
+                'User-Agent': this.configuration.defaultUserAgent,
+                Referer: loginPage.url,
+                'Content-Type': 'application/json',
+                Origin: 'https://accounts.kakao.com',
+            }
+        });
 
-            const maxPollingCount = form.pollingCount ?? 10;
-            const pollingInterval = form.pollingInterval ?? 1000;
+        const createTokenData = createTokenRes.json<CreateTokenResponse>();
 
-            let pollingCount = 0;
+        if (createTokenData.status !== 0) {
+            throw new Error(`create token error: ${createTokenData.status}`);
+        }
 
-            const id = Timers.setInterval(() => {
-                const pollTokenRes = this.accountClient.request({
-                    method: 'POST',
-                    path: '/api/v2/login/web_talk/poll.json',
-                    body: {
-                        _csrf: csrf,
-                        token: createTokenData.token,
-                        loginUrl: '/login?continue=https%3A%2F%2Faccounts.kakao.com%2Fweblogin%2Faccount%2Finfo',
-                        activeSso: true,
-                    },
-                    headers: {
-                        Referer: loginPage.url,
-                        'User-Agent': this.configuration.defaultUserAgent,
-                        'Content-Type': 'application/json',
-                        Origin: 'https://accounts.kakao.com',
-                    }
-                }).awaitResult();
+        const userUri = `https://m.search.daum.net/sl/sm/rck/m?ru=${encodeURI(createTokenData.talkLoginScheme)}`;
 
-                const pollTokenData = pollTokenRes.json<PollTokenResponse>();
+        openUri(form.context, userUri);
 
-                switch (pollTokenData.status) {
-                    case 0:
-                        const resultCookies = new java.util.LinkedHashMap<string, string>();
+        const maxPollingCount = form.pollingCount ?? 10;
+        const pollingInterval = form.pollingInterval ?? 1000;
 
-                        resultCookies.putAll(this.accountClient.cookies)
-                        resultCookies.putAll(pollTokenRes.javaCookies);
+        let pollingCount = 0;
 
-                        resolve(resultCookies as unknown as Record<string, string>);
+        return await new Promise<Record<string, string>>((resolve, reject) => {
+            const id = Timers.setInterval(async () => {
+                try {
+                    const pollTokenRes = await this.accountClient.request({
+                        method: 'POST',
+                        path: '/api/v2/login/web_talk/poll.json',
+                        body: {
+                            _csrf: csrf,
+                            token: createTokenData.token,
+                            loginUrl: '/login?continue=https%3A%2F%2Faccounts.kakao.com%2Fweblogin%2Faccount%2Finfo',
+                            activeSso: true,
+                        },
+                        headers: {
+                            Referer: loginPage.url,
+                            'User-Agent': this.configuration.defaultUserAgent,
+                            'Content-Type': 'application/json',
+                            Origin: 'https://accounts.kakao.com',
+                        }
+                    });
 
-                        Timers.clearInterval(id);
-                        break;
-                    case -420:
-                        if (++pollingCount === maxPollingCount) {
-                            reject(`poll token error: ${pollTokenData.status}`);
+                    const pollTokenData = pollTokenRes.json<PollTokenResponse>();
+
+                    switch (pollTokenData.status) {
+                        case 0:
+                            const resultCookies = new java.util.LinkedHashMap<string, string>();
+
+                            resultCookies.putAll(this.accountClient.cookies)
+                            resultCookies.putAll(pollTokenRes.javaCookies);
+
+                            resolve(resultCookies as unknown as Record<string, string>);
 
                             Timers.clearInterval(id);
+                            break;
+                        case -420:
+                            if (++pollingCount === maxPollingCount) {
+                                reject(`poll token error: ${pollTokenData.status}`);
+                                Timers.clearInterval(id);
+                            }
+                            break;
+                        default: {
+                            reject(`poll token error: ${pollTokenData.status}`);
+                            Timers.clearInterval(id);
+                            break;
                         }
-                        break;
-                    default: {
-                        reject(`poll token error: ${pollTokenData.status}`);
-
-                        Timers.clearInterval(id);
-                        break;
                     }
+                } catch (err) {
+                    reject(err);
+                    Timers.clearInterval(id);
                 }
             }, pollingInterval);
         });
@@ -188,7 +189,7 @@ export class KakaoApiService {
      * @param form
      * @private
      */
-    private loginWithAccount(form: LoginWithAccountForm): PromiseLike<Record<string, string>> {
+    private async loginWithAccount(form: LoginWithAccountForm): Promise<Record<string, string>> {
         throw new Error('Sorry, this feature not implemented yet');
     }
 

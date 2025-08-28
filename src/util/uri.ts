@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-export function openUri(context: android.content.Context, uri: string): void {
-    const intent = new android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(uri));
-    intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NO_HISTORY);
-    intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+export function openUri(context: Packages.android.content.Context, uri: string): void {
+    const intent = new Packages.android.content.Intent(Packages.android.content.Intent.ACTION_VIEW, Packages.android.net.Uri.parse(uri));
+    intent.addFlags(Packages.android.content.Intent.FLAG_ACTIVITY_NO_HISTORY);
+    intent.addFlags(Packages.android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
     context.startActivity(intent);
 }

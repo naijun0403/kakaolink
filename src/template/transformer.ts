@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { RawCustomTemple, RawTemplate, Template } from '.';
+import { RawCustomTemple, RawTemplate, Template } from './index';
 import { SendType } from './send';
 
 export function transformToRawTemplate(type: SendType, template: Template): RawTemplate {

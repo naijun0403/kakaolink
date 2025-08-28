@@ -1,10 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES5",
-    "module": "CommonJS",
+    "target": "es2020",
+    "module": "esnext",
     "outDir": "./dist",
     "strict": true,
-    "lib": ["es6", "dom"],
     "esModuleInterop": true,
     "isolatedModules": true
   },

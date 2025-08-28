@@ -22,13 +22,12 @@
  * SOFTWARE.
  */
 
-export * from './api';
-export * from './agent';
-export * from './asynchronous';
-export * from './model';
-export * from './next';
-export * from './request';
-export * from './template';
-export * from './tiara';
-export * as utils from './util';
+export * from './api/index';
+export * from './agent/index';
+export * from './model/index';
+export * from './next/index';
+export * from './request/index';
+export * from './template/index';
+export * from './tiara/index';
+export * as utils from './util/index';
 export * from './config';

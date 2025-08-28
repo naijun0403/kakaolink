@@ -25,11 +25,11 @@
 export namespace Base64 {
 
     export function encode(str: string): string {
-        return String(android.util.Base64.encodeToString(new java.lang.String(str).getBytes(), android.util.Base64.NO_WRAP));
+        return String(Packages.android.util.Base64.encodeToString(new java.lang.String(str).getBytes(), Packages.android.util.Base64.NO_WRAP));
     }
 
     export function decode(base64: string): string {
-        return String(new java.lang.String(android.util.Base64.decode(base64, android.util.Base64.URL_SAFE)));
+        return String(new java.lang.String(Packages.android.util.Base64.decode(base64, Packages.android.util.Base64.URL_SAFE)));
     }
 
 }
