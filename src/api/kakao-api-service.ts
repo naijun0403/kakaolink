@@ -26,7 +26,7 @@ import { RequestClient } from '../request/index';
 import { NextData } from '../next/index';
 import { Configuration, DefaultConfiguration } from '../config';
 import { CreateTokenResponse, PollTokenResponse } from './type';
-import { openUri, Timers } from '../util/index';
+import { openUri } from '../util/index';
 import { TiaraFactory } from '../tiara/index';
 
 export class KakaoApiService {
@@ -129,7 +129,7 @@ export class KakaoApiService {
         let pollingCount = 0;
 
         return await new Promise<Record<string, string>>((resolve, reject) => {
-            const id = Timers.setInterval(async () => {
+            const id = setInterval(async () => {
                 try {
                     const pollTokenRes = await this.accountClient.request({
                         method: 'POST',
@@ -159,23 +159,23 @@ export class KakaoApiService {
 
                             resolve(resultCookies as unknown as Record<string, string>);
 
-                            Timers.clearInterval(id);
+                            clearInterval(id);
                             break;
                         case -420:
                             if (++pollingCount === maxPollingCount) {
                                 reject(`poll token error: ${pollTokenData.status}`);
-                                Timers.clearInterval(id);
+                                clearInterval(id);
                             }
                             break;
                         default: {
                             reject(`poll token error: ${pollTokenData.status}`);
-                            Timers.clearInterval(id);
+                            clearInterval(id);
                             break;
                         }
                     }
                 } catch (err) {
                     reject(err);
-                    Timers.clearInterval(id);
+                    clearInterval(id);
                 }
             }, pollingInterval);
         });
