@@ -128,57 +128,49 @@ export class KakaoApiService {
 
         let pollingCount = 0;
 
-        return await new Promise<Record<string, string>>((resolve, reject) => {
-            const id = setInterval(async () => {
-                try {
-                    const pollTokenRes = await this.accountClient.request({
-                        method: 'POST',
-                        path: '/api/v2/login/web_talk/poll.json',
-                        body: {
-                            _csrf: csrf,
-                            token: createTokenData.token,
-                            loginUrl: '/login?continue=https%3A%2F%2Faccounts.kakao.com%2Fweblogin%2Faccount%2Finfo',
-                            activeSso: true,
-                        },
-                        headers: {
-                            Referer: loginPage.url,
-                            'User-Agent': this.configuration.defaultUserAgent,
-                            'Content-Type': 'application/json',
-                            Origin: 'https://accounts.kakao.com',
-                        }
-                    });
+        while (pollingCount < maxPollingCount) {
+            await new Promise(resolve => setTimeout(resolve, pollingInterval));
 
-                    const pollTokenData = pollTokenRes.json<PollTokenResponse>();
-
-                    switch (pollTokenData.status) {
-                        case 0:
-                            const resultCookies = new java.util.LinkedHashMap<string, string>();
-
-                            resultCookies.putAll(this.accountClient.cookies)
-                            resultCookies.putAll(pollTokenRes.javaCookies);
-
-                            resolve(resultCookies as unknown as Record<string, string>);
-
-                            clearInterval(id);
-                            break;
-                        case -420:
-                            if (++pollingCount === maxPollingCount) {
-                                reject(`poll token error: ${pollTokenData.status}`);
-                                clearInterval(id);
-                            }
-                            break;
-                        default: {
-                            reject(`poll token error: ${pollTokenData.status}`);
-                            clearInterval(id);
-                            break;
-                        }
-                    }
-                } catch (err) {
-                    reject(err);
-                    clearInterval(id);
+            const pollTokenRes = await this.accountClient.request({
+                method: 'POST',
+                path: '/api/v2/login/web_talk/poll.json',
+                body: {
+                    _csrf: csrf,
+                    token: createTokenData.token,
+                    loginUrl: '/login?continue=https%3A%2F%2Faccounts.kakao.com%2Fweblogin%2Faccount%2Finfo',
+                    activeSso: true,
+                },
+                headers: {
+                    Referer: loginPage.url,
+                    'User-Agent': this.configuration.defaultUserAgent,
+                    'Content-Type': 'application/json',
+                    Origin: 'https://accounts.kakao.com',
                 }
-            }, pollingInterval);
-        });
+            });
+
+            const pollTokenData = pollTokenRes.json<PollTokenResponse>();
+
+            switch (pollTokenData.status) {
+                case 0: {
+                    const resultCookies = new java.util.LinkedHashMap<string, string>();
+
+                    resultCookies.putAll(this.accountClient.cookies);
+                    resultCookies.putAll(pollTokenRes.javaCookies);
+
+                    return resultCookies as unknown as Record<string, string>;
+                }
+                case -420:
+                    pollingCount++;
+                    if (pollingCount === maxPollingCount) {
+                        throw new Error(`poll token error: ${pollTokenData.status}`);
+                    }
+                    break;
+                default:
+                    throw new Error(`poll token error: ${pollTokenData.status}`);
+            }
+        }
+
+        throw new Error('Polling timeout: maximum polling count reached');
     }
 
     /**
