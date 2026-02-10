@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-import { RequestClient, ResponseWrapper } from '../request/index';
-import { SendType, Template, transformToRawTemplate } from '../template/index';
+import { RequestClient, ResponseWrapper } from '../request';
+import { SendType, Template, transformToRawTemplate } from '../template';
 import { Configuration, DefaultConfiguration } from '../config';
-import { generateKakaoAgent } from '../agent/index';
-import { Base64 } from '../util/index';
-import { ServerData } from '../model/index';
+import { generateKakaoAgent } from '../agent';
+import { Base64 } from '../util';
+import { ServerData } from '../model';
 
 export class KakaoShareClient {
 

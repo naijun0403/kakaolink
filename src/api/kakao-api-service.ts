@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-import { RequestClient } from '../request/index';
-import { NextData } from '../next/index';
+import { RequestClient } from '../request';
+import { NextData } from '../next';
 import { Configuration, DefaultConfiguration } from '../config';
 import { CreateTokenResponse, PollTokenResponse } from './type';
-import { openUri } from '../util/index';
-import { TiaraFactory } from '../tiara/index';
+import { openUri } from '../util';
+import { TiaraFactory } from '../tiara';
 
 export class KakaoApiService {
 
