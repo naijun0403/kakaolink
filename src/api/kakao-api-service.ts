@@ -178,10 +178,10 @@ export class KakaoApiService {
      *
      * **WARNING**: This method is not recommended to use.
      * please use `loginWithKakaotalk` instead.
-     * @param form
+     * @param _form
      * @private
      */
-    private async loginWithAccount(form: LoginWithAccountForm): Promise<Record<string, string>> {
+    private async loginWithAccount(_form: LoginWithAccountForm): Promise<Record<string, string>> {
         throw new Error('Sorry, this feature not implemented yet');
     }
 

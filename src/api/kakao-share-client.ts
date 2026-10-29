@@ -96,7 +96,7 @@ export class KakaoShareClient {
 
         const serverData = JSON.parse(Base64.decode(serverDataMatched[1])) as ServerData;
 
-        let channelData = serverData.data.chats.find(e => e.title === room);
+        const channelData = serverData.data.chats.find(e => e.title === room);
 
         if (!channelData) {
             throw new Error(`Room "${room}" doesn't exist, please check again`);

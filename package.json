@@ -8,7 +8,16 @@
     "example": "example"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "sh build.sh",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint --deny-warnings .",
+    "lint:fix": "oxlint --fix --deny-warnings .",
+    "check": "pnpm run lint && pnpm run typecheck",
+    "test": "pnpm run build && node --test"
+  },
+  "packageManager": "pnpm@12.16.1",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
   },
   "repository": {
     "type": "git",
@@ -26,6 +35,8 @@
   },
   "homepage": "https://github.com/naijun0403/kakaolink#readme",
   "devDependencies": {
-    "typescript": "^5.9.2"
+    "acorn": "^8.19.0",
+    "oxlint": "^1.90.0",
+    "typescript": "^7.0.2"
   }
 }
