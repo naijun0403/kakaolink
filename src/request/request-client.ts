@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import Jsoup = org.jsoup.Jsoup;
 import { ResponseWrapper } from './response-wrapper';
+import { toJavaStringMap } from './java-map';
 
 export class RequestClient {
 
@@ -34,8 +34,8 @@ export class RequestClient {
     ) {
     }
 
-    setCookies(cookies: Record<string, string>) {
-        this.cookies = cookies as unknown as java.util.LinkedHashMap<string, string>;
+    setCookies(cookies: Readonly<Record<string, string>>) {
+        this.cookies = toJavaStringMap(cookies);
     }
 
     toFullUrl(path: string): string {
@@ -54,7 +54,7 @@ export class RequestClient {
     }
 
     toJsoupConnection(option: RequestOption): org.jsoup.Connection {
-        const connection = Jsoup.connect(this.toFullUrl(option.path))
+        const connection = org.jsoup.Jsoup.connect(this.toFullUrl(option.path))
             .method(org.jsoup.Connection.Method.valueOf(option.method))
             .headers(option.headers ?? {})
             .followRedirects(option.followRedirects ?? true)

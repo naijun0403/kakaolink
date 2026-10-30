@@ -26,10 +26,13 @@ export interface Configuration {
     defaultUserAgent: string;
 
     sdkVersion: string;
+    nativeSdkVersion: string;
 }
 
-export const DefaultConfiguration: Configuration = {
+export const DefaultConfiguration: Readonly<Configuration> = Object.freeze({
     defaultUserAgent: 'Mozilla/5.0 (Linux; Android 13; SM-S908B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36',
 
-    sdkVersion: '2.7.2'
-};
+    sdkVersion: '2.7.2',
+    // Matches the SDK bundled with the documented KakaoTalk 26.9.1 Intent route.
+    nativeSdkVersion: '2.25.1'
+});

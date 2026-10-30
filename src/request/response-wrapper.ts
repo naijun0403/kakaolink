@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+import { toStringRecord } from './java-map';
+
 export class ResponseWrapper {
 
     constructor(
@@ -42,7 +44,7 @@ export class ResponseWrapper {
     }
 
     get headers(): Record<string, string> {
-        return this.response.headers() as unknown as Record<string, string>;
+        return toStringRecord(this.response.headers());
     }
 
     get javaCookies(): java.util.Map<string, string> {
@@ -50,7 +52,7 @@ export class ResponseWrapper {
     }
 
     get cookies(): Record<string, string> {
-        return this.response.cookies() as unknown as Record<string, string>;
+        return toStringRecord(this.response.cookies());
     }
 
     get url(): string {

@@ -25,39 +25,44 @@
 import { RequestClient } from '../request';
 import { NextData } from '../next';
 import { Configuration, DefaultConfiguration } from '../config';
-import { CreateTokenResponse, PollTokenResponse } from './type';
+import type { CreateTokenResponse, PollTokenResponse } from './response';
 import { openUri } from '../util';
 import { TiaraFactory } from '../tiara';
+import type { KakaoSession, LoginOptions } from './types';
+import { toStringRecord } from '../request/java-map';
 
-export class KakaoApiService {
+export class KakaoAuth {
 
     private accountClient = new RequestClient('https://accounts.kakao.com');
     private tiaraClient = new RequestClient('https://stat.tiara.kakao.com');
 
-    private constructor(private configuration: Configuration) {
+    private readonly configuration: Configuration;
+
+    constructor(configuration: Partial<Configuration> = {}) {
+        this.configuration = { ...DefaultConfiguration, ...configuration };
     }
 
-    static createService(
-        configuration: Partial<Configuration> = {}
-    ): KakaoApiService {
-        return new KakaoApiService(
-            Object.assign(DefaultConfiguration, configuration)
-        );
-    }
-
-    async login(form: LoginForm): Promise<Record<string, string>> {
-        if (form.signInWithKakaoTalk) {
-            return await this.loginWithKakaotalk(form as LoginWithKakaotalkForm);
-        } else {
-            return await this.loginWithAccount(form as LoginWithAccountForm);
+    async login(options: LoginOptions): Promise<KakaoSession> {
+        if (options.method !== 'kakaotalk') throw new TypeError('Unsupported login method');
+        if (!options.context || typeof options.context.startActivity !== 'function') {
+            throw new TypeError('An Android context is required');
         }
+        const interval = options.polling?.intervalMs ?? 1000;
+        const attempts = options.polling?.maxAttempts ?? 10;
+        if (!Number.isFinite(interval) || interval < 0) {
+            throw new RangeError('polling.intervalMs must be a non-negative finite number');
+        }
+        if (!Number.isSafeInteger(attempts) || attempts < 1) {
+            throw new RangeError('polling.maxAttempts must be a positive safe integer');
+        }
+        return { cookies: await this.loginWithKakaotalk(options) };
     }
 
     /**
      * login with kakaotalk
      * @param form
      */
-    private async loginWithKakaotalk(form: LoginWithKakaotalkForm): Promise<Record<string, string>> {
+    private async loginWithKakaotalk(form: LoginOptions): Promise<Record<string, string>> {
         const loginPage = await this.accountClient.request({
             method: 'GET',
             path: '/weblogin/account/info',
@@ -123,8 +128,8 @@ export class KakaoApiService {
 
         openUri(form.context, userUri);
 
-        const maxPollingCount = form.pollingCount ?? 10;
-        const pollingInterval = form.pollingInterval ?? 1000;
+        const maxPollingCount = form.polling?.maxAttempts ?? 10;
+        const pollingInterval = form.polling?.intervalMs ?? 1000;
 
         let pollingCount = 0;
 
@@ -157,7 +162,7 @@ export class KakaoApiService {
                     resultCookies.putAll(this.accountClient.cookies);
                     resultCookies.putAll(pollTokenRes.javaCookies);
 
-                    return resultCookies as unknown as Record<string, string>;
+                    return toStringRecord(resultCookies);
                 }
                 case -420:
                     pollingCount++;
@@ -173,43 +178,4 @@ export class KakaoApiService {
         throw new Error('Polling timeout: maximum polling count reached');
     }
 
-    /**
-     * login with kakaotalk
-     *
-     * **WARNING**: This method is not recommended to use.
-     * please use `loginWithKakaotalk` instead.
-     * @param _form
-     * @private
-     */
-    private async loginWithAccount(_form: LoginWithAccountForm): Promise<Record<string, string>> {
-        throw new Error('Sorry, this feature not implemented yet');
-    }
-
-}
-
-export type LoginForm = LoginWithKakaotalkForm | LoginWithAccountForm;
-
-export interface LoginFormRoot {
-    signInWithKakaoTalk?: boolean; // default: true
-    context: android.content.Context;
-}
-
-export interface LoginWithKakaotalkForm extends LoginFormRoot {
-    signInWithKakaoTalk: true;
-
-    pollingInterval?: number; // default: 1000
-    pollingCount?: number; // default: 10
-}
-
-export interface LoginWithAccountForm extends LoginFormRoot {
-    signInWithKakaoTalk: false;
-
-    email: string;
-    password: string;
-    staySignedIn?: boolean;
-    saveSignedIn?: boolean;
-}
-
-export interface LoginResult {
-    status: number;
 }

@@ -1,6 +1,40 @@
 # kakaolink
 KakaoTalkShare API for kakaobot
 
+## 사용 방법
+
+`KakaoLink.login()`에서 로그인 방법을 선택하고, `KakaoLink.web()` 또는
+`KakaoLink.intent()`에서 전송 경로를 선택합니다. Intent 전송에는 별도 로그인이 필요하지 않습니다.
+
+```js
+const { KakaoLink } = require('kakaolink');
+
+async function main() {
+    const client = KakaoLink.intent({
+        context: App.getContext(),
+        nativeAppKey: 'YOUR_NATIVE_APP_KEY',
+    });
+
+    await client.sendTemplate({
+        chatId: '18398338829933617',
+        templateId: 12345,
+        templateArgs: { title: '계산 결과' },
+    });
+}
+
+main().catch(error => Log.e(String(error)));
+```
+
+Native 키에는 호출하는 메신저봇 앱의 패키지명과 서명 키 해시를 등록해야 합니다.
+`chatId`를 생략하면 카카오톡의 대상 선택 화면이 열립니다.
+반환값 `status: 'launched'`는 Intent 실행 완료이며 메시지 전달 완료를 보장하지 않습니다.
+
+- [API 및 기존 코드 변경 방법](docs/API.md)
+- [로그인 후 웹 전송 예제](example/loginWithKakaotalk.js)
+- [로그인 없이 Intent 전송 예제](example/sendWithIntent.js)
+- [이미 준비된 SDK URI 실행 예제](example/sendPreparedIntent.js)
+- [개발 및 빌드](docs/HOW_TO_BUILD.md)
+
 ## 사용된 라이브러리
 - [crypto-js](https://github.com/brix/crypto-js)
 > 이후 패키지 관리자가 들어올때까지 직접 빌드해서 사용합니다.

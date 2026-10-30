@@ -36,7 +36,8 @@
         "commonjs": true
       },
       "globals": {
-        "App": "readonly"
+        "App": "readonly",
+        "Log": "readonly"
       }
     },
     {

@@ -1,6 +1,9 @@
 
 declare namespace java {
     namespace lang {
+        class Long {
+            static ['valueOf(java.lang.String)'](value: string): Long;
+        }
         class String {
             constructor(str: string);
             constructor(bytes: number[]);
@@ -13,6 +16,11 @@ declare namespace java {
     }
     
     namespace util {
+        class Locale {
+            static getDefault(): Locale;
+            getLanguage(): string;
+            getCountry(): string;
+        }
         class Timer {
             constructor();
             constructor(name: string);
@@ -373,13 +381,42 @@ declare namespace Packages {
         namespace content {
             class Context {
                 startActivity(intent: Intent): void;
+                getPackageName(): string;
+                getPackageManager(): pm.PackageManager;
             }
             class Intent {
                 static ACTION_VIEW: string;
+                static ACTION_SEND: string;
                 static FLAG_ACTIVITY_NO_HISTORY: number;
                 static FLAG_ACTIVITY_NEW_TASK: number;
                 constructor(action: string, uri: android.net.Uri);
                 addFlags(flags: number): void;
+                setClassName(packageName: string, className: string): Intent;
+                ['putExtra(java.lang.String,boolean)'](key: string, value: boolean): Intent;
+                ['putExtra(java.lang.String,int)'](key: string, value: number): Intent;
+                ['putExtra(java.lang.String,long)'](key: string, value: java.lang.Long): Intent;
+            }
+            namespace pm {
+                class PackageManager {
+                    getPackageInfo(packageName: string, flags: number): PackageInfo;
+                }
+                class PackageInfo {
+                    versionName: string | null;
+                    signatures: Signature[] | null;
+                }
+                class Signature {
+                    toByteArray(): number[];
+                }
+            }
+        }
+        namespace os {
+            class Build {
+                static MODEL: string;
+            }
+            namespace Build {
+                class VERSION {
+                    static SDK_INT: number;
+                }
             }
         }
         namespace net {
@@ -387,6 +424,13 @@ declare namespace Packages {
                 static parse(uriString: string): Uri;
             }
         }
+    }
+}
+
+declare namespace java.security {
+    class MessageDigest {
+        static getInstance(algorithm: string): MessageDigest;
+        digest(bytes: number[]): number[];
     }
 }
 

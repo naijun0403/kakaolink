@@ -22,57 +22,69 @@
  * SOFTWARE.
  */
 
-import { RequestClient, ResponseWrapper } from '../request';
-import { SendType, Template, transformToRawTemplate } from '../template';
+import { RequestClient } from '../request';
+import { transformToRawTemplate } from '../template';
+import type { CustomTemplate } from '../template/custom-template';
+import type { KakaoSession } from '../auth/types';
 import { Configuration, DefaultConfiguration } from '../config';
 import { generateKakaoAgent } from '../agent';
 import { Base64 } from '../util';
 import { ServerData } from '../model';
 
-export class KakaoShareClient {
+export interface WebClientOptions {
+    jsAppKey: string;
+    origin: string;
+    session: KakaoSession;
+    configuration?: Partial<Configuration>;
+}
+
+export interface WebSendRequest extends CustomTemplate {
+    room: string;
+}
+
+export interface WebSendResult {
+    transport: 'web';
+    status: 'submitted';
+}
+
+export class WebShareClient {
 
     private sharerClient = new RequestClient('https://sharer.kakao.com');
-    private isInited = false;
-    private appKey: string | null = null;
-    private domain: string | null = null;
+    private readonly configuration: Configuration;
+    private readonly appKey: string;
+    private readonly domain: string;
 
-    private constructor(private configuration: Configuration) {
-    }
-
-    static createClient(
-        configuration: Partial<Configuration> = {}
-    ): KakaoShareClient {
-        return new KakaoShareClient(
-            Object.assign(DefaultConfiguration, configuration)
-        )
-    }
-
-    /**
-     * init KakaoShareClient
-     * @param appKey js key
-     * @param domain web platform registered domain
-     * @param cookies login cookies
-     */
-    init(appKey: string, domain: string, cookies: Record<string, string>) {
-        this.isInited = true;
-        this.appKey = appKey;
-        this.domain = domain;
-        this.sharerClient.setCookies(cookies);
-    }
-
-    async sendLink(room: string, template: Template, type: SendType = 'default'): Promise<ResponseWrapper> {
-        if (!this.isInited) {
-            throw new Error('KakaoShareClient is not initialized');
+    constructor(options: WebClientOptions) {
+        if (typeof options.jsAppKey !== 'string' || !options.jsAppKey.trim()) {
+            throw new TypeError('jsAppKey is required');
         }
+        if (typeof options.origin !== 'string' || !/^https?:\/\/[^/?#\s]+\/?$/.test(options.origin)) {
+            throw new TypeError('origin must be an HTTP or HTTPS origin');
+        }
+        if (!options.session || typeof options.session.cookies !== 'object'
+            || options.session.cookies === null || Array.isArray(options.session.cookies)) {
+            throw new TypeError('A login session is required for web sharing');
+        }
+        this.configuration = { ...DefaultConfiguration, ...options.configuration };
+        this.appKey = options.jsAppKey;
+        this.domain = options.origin;
+        this.sharerClient.setCookies(options.session.cookies);
+    }
+
+    async sendTemplate(request: WebSendRequest): Promise<WebSendResult> {
+        if (typeof request.room !== 'string' || !request.room.trim()) {
+            throw new TypeError('room is required for web sharing');
+        }
+        const template = transformToRawTemplate(request);
 
         const linkRes = await this.sharerClient.request({
             method: 'POST',
             path: '/picker/link',
             data: {
                 app_key: this.appKey,
-                ka: generateKakaoAgent(this.configuration, this.domain!),
-                validation_action: type,
-                validation_params: JSON.stringify(transformToRawTemplate(type, template))
+                ka: generateKakaoAgent(this.configuration, this.domain),
+                validation_action: 'custom',
+                validation_params: JSON.stringify(template)
             },
             headers: {
                 'User-Agent': this.configuration.defaultUserAgent
@@ -96,17 +108,17 @@ export class KakaoShareClient {
 
         const serverData = JSON.parse(Base64.decode(serverDataMatched[1])) as ServerData;
 
-        const channelData = serverData.data.chats.find(e => e.title === room);
+        const channelData = serverData.data.chats.find(e => e.title === request.room);
 
         if (!channelData) {
-            throw new Error(`Room "${room}" doesn't exist, please check again`);
+            throw new Error(`Room "${request.room}" doesn't exist, please check again`);
         }
 
         const receiver = Base64.encode(
             JSON.stringify(channelData)
         );
 
-        return await this.sharerClient.request({
+        const response = await this.sharerClient.request({
             method: 'POST',
             path: '/picker/send',
             data: {
@@ -121,11 +133,10 @@ export class KakaoShareClient {
             },
             followRedirects: true
         });
-    }
-
-    clear() {
-        this.isInited = false;
-        this.sharerClient.cookies = new java.util.LinkedHashMap<string, string>();
+        if (response.statusCode < 200 || response.statusCode >= 300) {
+            throw new Error(`Share submission failed: HTTP ${response.statusCode}`);
+        }
+        return { transport: 'web', status: 'submitted' };
     }
 
 }
