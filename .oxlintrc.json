@@ -4,7 +4,7 @@
   "categories": {
     "correctness": "error"
   },
-  "ignorePatterns": ["dist/**", "src/modules/**", "**/*.d.ts"],
+  "ignorePatterns": ["dist/**", "artifacts/**", "src/modules/**", "**/*.d.ts"],
   "env": {
     "es2020": true
   },
@@ -41,7 +41,7 @@
       }
     },
     {
-      "files": ["tests/**/*.mjs"],
+      "files": ["scripts/**/*.mjs", "tests/**/*.mjs"],
       "env": {
         "node": true
       }

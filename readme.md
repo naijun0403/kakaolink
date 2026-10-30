@@ -35,6 +35,12 @@ Native 키에는 호출하는 메신저봇 앱의 패키지명과 서명 키 해
 - [이미 준비된 SDK URI 실행 예제](example/sendPreparedIntent.js)
 - [개발 및 빌드](docs/HOW_TO_BUILD.md)
 
+## 모듈 다운로드
+
+GitHub Actions의 `Build Artifacts` 실행 결과에서 `kakaolink-module` artifact를 다운로드합니다.
+ZIP을 풀어 나온 `kakaolink` 폴더를 봇의 모듈 디렉터리에 넣으면 됩니다.
+[ZIP 구성과 수동 실행 방법](docs/HOW_TO_BUILD.md#ci-모듈-zip)을 참고하세요.
+
 ## 사용된 라이브러리
 - [crypto-js](https://github.com/brix/crypto-js)
 > 이후 패키지 관리자가 들어올때까지 직접 빌드해서 사용합니다.

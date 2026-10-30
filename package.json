@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "sh build.sh",
+    "package:module": "node scripts/package-module.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "oxlint --deny-warnings .",
     "lint:fix": "oxlint --fix --deny-warnings .",

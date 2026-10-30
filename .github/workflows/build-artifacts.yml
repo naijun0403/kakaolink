@@ -1,6 +1,7 @@
 name: Build Artifacts
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main, dev ]
   pull_request:
@@ -23,13 +24,12 @@ jobs:
         run: pnpm run lint
       - name: Typecheck, build, and verify output
         run: pnpm test
-      - name: Save bundle artifact
+      - name: Assemble module
+        run: pnpm run package:module
+      - name: Upload module ZIP
         uses: actions/upload-artifact@v4
         with:
-          path: |
-            dist/
-            package.json
-            LICENSE
-            readme.md
+          name: kakaolink-module
+          path: artifacts/module/
           if-no-files-found: error
           retention-days: 14
