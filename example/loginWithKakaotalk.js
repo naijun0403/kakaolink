@@ -1,19 +1,24 @@
-var { KakaoApiService, KakaoShareClient } = require('kakaolink');
+const { KakaoLink } = require('kakaolink');
 
-const service = KakaoApiService.createService();
-const client = KakaoShareClient.createClient();
+async function main() {
+    const session = await KakaoLink.login({
+        method: 'kakaotalk',
+        context: App.getContext(),
+    });
 
-/**
- * 알아서 카카오톡으로 접속해 로그인 세션을 불러옴
- */
-const cookies = service.login({
-    signInWithKakaoTalk: true,
-    context: App.getContext(), // 레거시: Api.getContext()
-}).awaitResult();
+    const client = KakaoLink.web({
+        jsAppKey: 'YOUR_JAVASCRIPT_APP_KEY',
+        origin: 'https://example.com',
+        session,
+    });
 
-client.init('js app key', 'web platform domain', cookies);
+    await client.sendTemplate({
+        room: 'roomName',
+        templateId: 1, // 사용할 커스텀 템플릿 ID
+        templateArgs: {},
+    });
+}
 
-client.sendLink('roomName', {
-    templateId: 1, // your template id
-    templateArgs: {},
-}, 'custom').awaitResult();
+main().catch(error => {
+    Log.e(String(error));
+});

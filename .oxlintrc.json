@@ -1,0 +1,50 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc"],
+  "categories": {
+    "correctness": "error"
+  },
+  "ignorePatterns": ["dist/**", "artifacts/**", "src/modules/**", "**/*.d.ts"],
+  "env": {
+    "es2020": true
+  },
+  "rules": {
+    "eqeqeq": "error",
+    "no-unused-vars": [
+      "error",
+      {
+        "args": "all",
+        "argsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
+    "prefer-const": "error"
+  },
+  "overrides": [
+    {
+      "files": ["src/**/*.ts"],
+      "globals": {
+        "Packages": "readonly",
+        "java": "readonly",
+        "org": "readonly",
+        "setTimeout": "readonly"
+      }
+    },
+    {
+      "files": ["example/**/*.js"],
+      "env": {
+        "commonjs": true
+      },
+      "globals": {
+        "App": "readonly",
+        "Log": "readonly"
+      }
+    },
+    {
+      "files": ["scripts/**/*.mjs", "tests/**/*.mjs"],
+      "env": {
+        "node": true
+      }
+    }
+  ]
+}

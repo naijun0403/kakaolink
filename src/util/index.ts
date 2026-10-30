@@ -23,6 +23,5 @@
  */
 
 export * from './cookie-parser';
-export * from './timers';
 export * from './uri';
 export * from './base64';

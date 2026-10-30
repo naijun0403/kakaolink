@@ -1,18 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ES5",
-    "module": "CommonJS",
+    "target": "es2020",
+    "module": "node16",
+    "moduleResolution": "node16",
+    "rootDir": "./src",
     "outDir": "./dist",
+    "noEmitOnError": true,
     "strict": true,
-    "lib": ["es6", "dom"],
     "esModuleInterop": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "types": []
   },
   "include": [
-    "src/**/*",
-    "src/**/*.js"
-  ],
-  "exclude": [
-    "node_modules"
+    "src/**/*.ts"
   ]
 }

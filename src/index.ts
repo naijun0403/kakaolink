@@ -22,13 +22,11 @@
  * SOFTWARE.
  */
 
-export * from './api';
-export * from './agent';
-export * from './asynchronous';
-export * from './model';
-export * from './next';
-export * from './request';
-export * from './template';
-export * from './tiara';
-export * as utils from './util';
-export * from './config';
+export { KakaoLink } from './kakao-link';
+export type { KakaoSession, LoginOptions } from './auth/types';
+export type { WebClientOptions, WebSendRequest, WebSendResult } from './web/client';
+export type {
+    IntentClientOptions, IntentSendRequest, IntentLaunchResult, OpenIntentOptions
+} from './intent/kakao-intent-client';
+export type { CustomTemplate } from './template/custom-template';
+export type { Configuration } from './config';

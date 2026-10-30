@@ -22,21 +22,23 @@
  * SOFTWARE.
  */
 
-import { RawCustomTemple, RawTemplate, Template } from '.';
-import { SendType } from './send';
+import { normalizeCustomTemplate, type CustomTemplate } from './custom-template';
 
-export function transformToRawTemplate(type: SendType, template: Template): RawTemplate {
-    switch (type) {
-        case 'custom': {
-            return {
-                link_ver: '4.0',
-                template_id: parseInt(template.templateId.toString()),
-                template_args: template.templateArgs
-            } as RawCustomTemple
-        }
+export interface RawCustomTemplate {
+    link_ver: '4.0';
+    template_id: number;
+    template_args: Record<string, string>;
+}
 
-        case 'default': {
-            throw new Error('not implemented yet');
-        }
+export function transformToRawTemplate(template: CustomTemplate): RawCustomTemplate {
+    const normalized = normalizeCustomTemplate(template);
+    const id = Number(normalized.templateId);
+    if (!Number.isSafeInteger(id)) {
+        throw new RangeError('Web templateId must fit in a JavaScript safe integer');
     }
+    return {
+        link_ver: '4.0',
+        template_id: id,
+        template_args: normalized.templateArgs
+    };
 }

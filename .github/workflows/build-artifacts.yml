@@ -1,32 +1,35 @@
 name: Build Artifacts
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
+          cache: 'pnpm'
       - name: Install dependencies
-        run: npm install
-      - name: Install SWC
-        run: npm install -D @swc/cli @swc/core
-      - name: Build with SWC
-        run: npx swc src -d dist
-      - name: Remove unnecessary files
-        run: |
-          rm -rf .git examples docs .github src build.sh index.js
-      - name: Save bundle artifact
+        run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm run lint
+      - name: Typecheck, build, and verify output
+        run: pnpm test
+      - name: Assemble module
+        run: pnpm run package:module
+      - name: Upload module ZIP
         uses: actions/upload-artifact@v4
         with:
-          path: .
+          name: kakaolink-module
+          path: artifacts/module/
           if-no-files-found: error
           retention-days: 14

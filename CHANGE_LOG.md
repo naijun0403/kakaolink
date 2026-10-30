@@ -6,7 +6,7 @@
 
 3. `sdk` 업데이트 (2.7.2)
 
-4. `Promise` polyfill을 bluebird에서 자체 구현으로 변경하였습니다.
+4. 더이상 라이노를 기준으로 개발되지 않습니다.
 
 ## 1.1.1
 1. `KakaoLinkClient.prototype.send`부분의 버그를 해결하였습니다.

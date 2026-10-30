@@ -64,7 +64,7 @@ export namespace TiaraFactory {
     }
 
     export function randomNumericString(length: number): string {
-        let element = [];
+        const element = [];
         for (let i = 0; i < length; i++) {
             element.push(Math.floor(Math.random() * 10));
         }
@@ -72,7 +72,7 @@ export namespace TiaraFactory {
     }
 
     export function shortenID(id: number) {
-        let element = [];
+        const element = [];
         for (let i = 0; i < id; i++) {
             element.push(
                 TiaraSeeds[Math.floor(Math.random() * TiaraSeeds.length)]
